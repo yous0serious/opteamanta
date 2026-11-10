@@ -9,6 +9,8 @@ coverage/
 supabase.txt
 github_token.txt
 *token*.txt
+supabase_secret.txt
+*secret*.txt
 *.log
 .DS_Store
 test-results/
