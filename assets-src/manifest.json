@@ -192,7 +192,9 @@
     {
       "name": "proj/code",
       "src": "props/proj-code.svg",
-      "width": 28
+      "width": 28,
+      "variants": "towers",
+      "variantsOnly": true
     },
     {
       "name": "sym/req",

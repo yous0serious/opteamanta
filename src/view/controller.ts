@@ -30,6 +30,7 @@ export class Controller {
   /** Debug-Abfragen der Darstellung (nur für E2E/Entwicklung, über window.__bd). */
   debug: DebugApi | null = null;
   private acc = 0;
+  private stopUntil = 0;
   private readonly simListeners = new Set<Listener<SimEvent>>();
   private readonly changeListeners = new Set<Listener<void>>();
   private readonly restartListeners = new Set<Listener<Game>>();
@@ -71,6 +72,8 @@ export class Controller {
   /** Fixed-Step: reale Zeit × Tempo in Ticks à DT umrechnen. */
   advance(realDtSec: number): void {
     if (this.over) return;
+    // Hitstop: Darstellung „friert“ kurz ein; die Simulation pausiert nur in Echtzeit, Ticks bleiben gleich.
+    if (performance.now() < this.stopUntil) return;
     this.acc += Math.min(realDtSec, MAX_FRAME_DT) * this.speed;
     let steps = 0;
     while (this.acc >= DT && steps < MAX_STEPS_PER_FRAME) {
@@ -141,6 +144,11 @@ export class Controller {
   cycleSpeed(): void {
     this.speed = this.speed === 1 ? 2 : this.speed === 2 ? 3 : 1;
     this.changed();
+  }
+
+  /** Kurzer Hitstop (Spec visual-overhaul AC-9): pausiert das Vorrücken der Simulation für `ms` Echtzeit. */
+  hitstop(ms: number): void {
+    this.stopUntil = performance.now() + ms;
   }
 
   restart(): void {
