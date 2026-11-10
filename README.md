@@ -29,6 +29,8 @@ npm run dev        # http://localhost:5173
 | `npm run balance` | Balancing-Kennzahlen über 20 Läufe je Bot (`-- --sweep '{…}'`, `-- --balance '{…}'`, `-- --json`) |
 | `npm run assets` | Atlas `public/assets/game.{png,json}` aus `assets-src/` bauen (SVG-Rendering, Farbvarianten) |
 | `npm run check:assets` | Prüft, dass jede Datei in `public/assets/` mit Lizenz in `CREDITS.md` steht (≤ 3 MB) |
+| `npm run test:integration` | Integrationstests gegen das Supabase-Projekt (nicht Teil von `npm test`) |
+| `npm run build:sim` / `db:push` / `fn:deploy` | Sim-Bündel für Deno / Migrationen einspielen / Edge Functions deployen |
 
 ## Steuerung
 
@@ -74,20 +76,25 @@ src/
     render/       Whiteboard, Türme (Magnet-Badges), Post-its, Partikel, Banner, DONE-Haufen
     controller.ts Brücke HUD ↔ Szene ↔ Sim, Fixed-Step-Loop, Tempo, Auswahl, Hitstop
     hud.ts        DOM-Seitenleiste, input.ts Tastatur, audio.ts prozeduraler Sound
+    leaderboard.ts Bestenliste + Ticker, nickname.ts Teamnamen-Dialog
+  online/         Supabase-Anbindung (api.ts), Daily-Ablauf (daily.ts) – nur mit VITE_SUPABASE_*
   main.ts         Einstieg
+supabase/         Migrationen, Edge Functions (Deno), gebündelte Sim (_shared/sim.js), config.toml
 assets-src/       Rohdateien: Kenney-CC0 (Figuren, Partikel) + eigene SVGs, manifest.json
 public/assets/    Generierter Atlas + CREDITS.md (Lizenzen)
 tests/sim/        Vitest: Daten, Wirtschaft, Wellen, Türme, Gegner, Determinismus, Reinheit, Replay
 tests/view/       Vitest: DONE-Haufen, Lizenzen, Emoji-freies Spielfeld
-tests/e2e/        Playwright: Smoke-Test, Grafik-Prüfungen
-tools/            Bot, Replay-CLI, Benchmark
+tests/e2e/        Playwright: Smoke-Test, Grafik-Prüfungen, Bestenliste (Supabase gemockt)
+tests/server/     Vitest: Server-Logik (Tages-Seed, Berliner Datum, Einreichungsprüfung)
+tests/integration/ Vitest gegen das echte Supabase-Projekt (RLS, Functions, Rangliste, CPU-Messung)
+tools/            Bots, Replay-CLI, Benchmark, Balancing, Sim-Bündel, Supabase-Deploy
 specs/            Specs (Ziele, Akzeptanzkriterien)
 .ai/              Plan, Ledger, ADRs, Roadmap
 ```
 
 ## Regeln für `src/sim/` (Determinismus)
 
-Die Simulation muss in jedem Browser und auf dem Server (später Supabase Edge Function) bitgenau gleich
+Die Simulation muss in jedem Browser und auf dem Server (Supabase Edge Function `verify-runs`) bitgenau gleich
 rechnen. Daher gilt – per ESLint erzwungen:
 
 - Zufall nur über den Seed-RNG (`createRng`), nie `Math.random`.
@@ -131,19 +138,48 @@ Kommandos gelten im angegebenen Tick vor dessen `step()`. Aufgezeichnet werden n
 Netlify baut aus `main` (`netlify.toml`: `npm run build`, Ordner `dist`, Node 22). Der Atlas ist eingecheckt;
 nach Änderungen in `assets-src/` lokal `npm run assets` ausführen und das Ergebnis committen.
 
-## Supabase (ab Spec 3)
+## Bestenliste (Daily Challenge) und Betrieb
 
-Die Bestenliste kommt mit Spec 3. Zugangsdaten gehören in `.env.local` (nicht eingecheckt) bzw. in die
-Netlify-Umgebungsvariablen. Vorarbeit zu Anti-Cheat: `.ai/knowledge/requirements/anti-cheat.md`.
+Alle spielen pro Berliner Kalendertag denselben Seed im Challenge-Modus. Der Server vergibt den Lauf, rechnet das
+eingereichte Replay nach und trägt nur den **selbst berechneten** Score ein (ADR-0004,
+[`specs/leaderboard-supabase/spec.md`](specs/leaderboard-supabase/spec.md)). Ohne die beiden Variablen läuft das
+Spiel offline („Bestenliste offline“, keine Netzwerkaufrufe).
 
 ```
-VITE_SUPABASE_URL=https://<projekt>.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+VITE_SUPABASE_URL=https://<projekt>.supabase.co          # Netlify-Umgebungsvariable
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...          # browser-tauglich, Rechte über RLS
 ```
+
+| Baustein | Ort |
+|---|---|
+| Schema, RLS, RPCs, Cron-Jobs | `supabase/migrations/` → `npm run db:push` (Management-API, Token aus `supabase_token.txt`) |
+| Edge Functions `start-run`, `submit-run`, `verify-runs` | `supabase/functions/` → `npm run fn:deploy` |
+| Simulation für Deno | `npm run build:sim` → `supabase/functions/_shared/sim.js` (Test schlägt fehl, wenn veraltet) |
+| Integrationstests gegen das Projekt | `npm run test:integration` (braucht `supabase.txt`, `supabase_secret.txt`, `.agent-state/fn_secrets.json`) |
+
+Lokale Zugangsdateien (alle gitignored, nie committen): `supabase.txt` (URL, Publishable Key),
+`supabase_secret.txt` (Secret Key), `supabase_token.txt` (Access Token für Deploy/Migrationen).
+Function-Secrets im Projekt: `DAILY_SECRET` (Tages-Seed), `VERIFY_SECRET` (Prüf-Worker, auch im Vault für den Cron-Job),
+`SB_SECRET_KEY`.
+
+**Betrieb**
+
+- *Lauf sperren:* `select admin_reject_submission('<submission-id>', 'Grund');` (SQL-Editor oder Secret Key).
+- *Nickname/Profil löschen:* `select admin_delete_profile('<user-id>');` – Läufe bleiben, erscheinen aber nicht mehr.
+- *Secrets rotieren:* neuen Wert per `supabase secrets set` bzw. Management-API setzen; bei `VERIFY_SECRET` auch den
+  Vault-Eintrag `verify_secret` aktualisieren. Ein neues `DAILY_SECRET` ändert den Seed des laufenden Tages.
+- *Neue Saison:* Jede Änderung von `GAME_VERSION` startet eine neue Bestenliste (Abfragen filtern nach Version);
+  danach `npm run build:sim` und `npm run fn:deploy`.
+- *Wartung:* Cron `leaderboard-maintenance` (03:15 UTC) löscht abgelaufene Sessions und anonyme Nutzer ohne Profil
+  und ohne Läufe nach 30 Tagen; Cron `verify-runs` prüft minütlich liegengebliebene Einreichungen.
+- *Grenzen:* bis 30 Daily-Läufe pro Nutzer und Tag, 30 anonyme Anmeldungen pro Stunde und IP (Supabase-Standard).
+  Bots/TAS lassen sich nicht ausschließen (Anti-Cheat-Analyse: `.ai/knowledge/requirements/anti-cheat.md`).
 
 ## Weiterführend
 
 - Spec: [`specs/foundation-phaser-port/spec.md`](specs/foundation-phaser-port/spec.md),
-  [`specs/visual-overhaul/spec.md`](specs/visual-overhaul/spec.md)
+  [`specs/visual-overhaul/spec.md`](specs/visual-overhaul/spec.md),
+  [`specs/balancing-challenge/spec.md`](specs/balancing-challenge/spec.md),
+  [`specs/leaderboard-supabase/spec.md`](specs/leaderboard-supabase/spec.md)
 - Roadmap: [`.ai/knowledge/roadmap.md`](.ai/knowledge/roadmap.md)
 - ADRs: [`.ai/knowledge/decisions/`](.ai/knowledge/decisions/_index.md)

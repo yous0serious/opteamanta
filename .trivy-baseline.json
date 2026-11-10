@@ -3,15 +3,18 @@
   "Trivy": {
     "Version": "0.76.1"
   },
-  "ReportID": "01a1c775-b8bc-7018-98fa-a691ba40325e",
-  "CreatedAt": "2026-11-10T21:55:43.420007627Z",
-  "ArtifactID": "sha256:0fb21cd034efe2dbc875fa264ba31addcfe2732f0617b859b8d2342a1776804c",
+  "ReportID": "01a1c7e3-d62c-73c9-958f-62fe74291672",
+  "CreatedAt": "2026-11-10T23:55:59.916249093Z",
+  "ArtifactID": "sha256:7796d72edde35d718df0e5e371f2f65b113eab54f318a64412d7f7dae1382cfc",
   "ArtifactName": ".",
   "ArtifactType": "repository",
   "Metadata": {
     "RepoURL": "https://github.com/yous0serious/opteamanta.git",
-    "Branch": "feature/visual-overhaul",
-    "CommitMsg": "feat(view): magnet-badge towers, post-it enemies, kill flight, sprite projectiles, particle emitters, glow, banner and hitstop"
+    "Branch": "feature/leaderboard-supabase",
+    "Commit": "0b9a8ba81156050501cf43e1cf2ec69b74342b31",
+    "CommitMsg": "test(view): allow emojis in DOM-only leaderboard and nickname views (canvas rule unchanged)",
+    "Author": "yous0serious \u003c234270950+yous0serious@users.noreply.github.com\u003e",
+    "Committer": "yous0serious \u003c234270950+yous0serious@users.noreply.github.com\u003e"
   },
   "Results": [
     {
@@ -24,7 +27,7 @@
           "Name": "@fontsource/caveat",
           "Identifier": {
             "PURL": "pkg:npm/%40fontsource/caveat@5.3.0",
-            "UID": "fc1f179e2e2a3e8a"
+            "UID": "1677d4cc530a1801"
           },
           "Version": "5.3.0",
           "Licenses": [
@@ -33,8 +36,35 @@
           "Relationship": "direct",
           "Locations": [
             {
-              "StartLine": 648,
-              "EndLine": 656
+              "StartLine": 665,
+              "EndLine": 673
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@supabase/supabase-js@2.119.0",
+          "Name": "@supabase/supabase-js",
+          "Identifier": {
+            "PURL": "pkg:npm/%40supabase/supabase-js@2.119.0",
+            "UID": "67f1e065636b45c"
+          },
+          "Version": "2.119.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "@supabase/auth-js@2.119.0",
+            "@supabase/functions-js@2.119.0",
+            "@supabase/postgrest-js@2.119.0",
+            "@supabase/realtime-js@2.119.0",
+            "@supabase/storage-js@2.119.0"
+          ],
+          "Locations": [
+            {
+              "StartLine": 2309,
+              "EndLine": 2332
             }
           ],
           "AnalyzedBy": "npm"
@@ -44,7 +74,7 @@
           "Name": "phaser",
           "Identifier": {
             "PURL": "pkg:npm/phaser@4.2.1",
-            "UID": "7b695895287556e6"
+            "UID": "cc3385ed6ed75554"
           },
           "Version": "4.2.1",
           "Licenses": [
@@ -56,8 +86,151 @@
           ],
           "Locations": [
             {
-              "StartLine": 3678,
-              "EndLine": 3686
+              "StartLine": 4008,
+              "EndLine": 4016
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@supabase/auth-js@2.119.0",
+          "Name": "@supabase/auth-js",
+          "Identifier": {
+            "PURL": "pkg:npm/%40supabase/auth-js@2.119.0",
+            "UID": "3b0b66d76389ffc5"
+          },
+          "Version": "2.119.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 2099,
+              "EndLine": 2110
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@supabase/functions-js@2.119.0",
+          "Name": "@supabase/functions-js",
+          "Identifier": {
+            "PURL": "pkg:npm/%40supabase/functions-js@2.119.0",
+            "UID": "ee6a5eff50b5eba5"
+          },
+          "Version": "2.119.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 2229,
+              "EndLine": 2240
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@supabase/phoenix@0.4.5",
+          "Name": "@supabase/phoenix",
+          "Identifier": {
+            "PURL": "pkg:npm/%40supabase/phoenix@0.4.5",
+            "UID": "469704cf51042907"
+          },
+          "Version": "0.4.5",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 2247,
+              "EndLine": 2252
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@supabase/postgrest-js@2.119.0",
+          "Name": "@supabase/postgrest-js",
+          "Identifier": {
+            "PURL": "pkg:npm/%40supabase/postgrest-js@2.119.0",
+            "UID": "3ecfe6ca89856d16"
+          },
+          "Version": "2.119.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 2253,
+              "EndLine": 2264
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@supabase/realtime-js@2.119.0",
+          "Name": "@supabase/realtime-js",
+          "Identifier": {
+            "PURL": "pkg:npm/%40supabase/realtime-js@2.119.0",
+            "UID": "b6abae52c7b3c05d"
+          },
+          "Version": "2.119.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "@supabase/phoenix@0.4.5",
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 2271,
+              "EndLine": 2283
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "@supabase/storage-js@2.119.0",
+          "Name": "@supabase/storage-js",
+          "Identifier": {
+            "PURL": "pkg:npm/%40supabase/storage-js@2.119.0",
+            "UID": "b3ec433fe9ab35fd"
+          },
+          "Version": "2.119.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "iceberg-js@0.8.1",
+            "tslib@2.8.1"
+          ],
+          "Locations": [
+            {
+              "StartLine": 2290,
+              "EndLine": 2302
             }
           ],
           "AnalyzedBy": "npm"
@@ -67,7 +240,7 @@
           "Name": "eventemitter3",
           "Identifier": {
             "PURL": "pkg:npm/eventemitter3@5.0.4",
-            "UID": "b973281ec5ca1926"
+            "UID": "94b0399714ca6ac8"
           },
           "Version": "5.0.4",
           "Licenses": [
@@ -77,8 +250,66 @@
           "Relationship": "indirect",
           "Locations": [
             {
-              "StartLine": 2790,
-              "EndLine": 2795
+              "StartLine": 3101,
+              "EndLine": 3106
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "iceberg-js@0.8.1",
+          "Name": "iceberg-js",
+          "Identifier": {
+            "PURL": "pkg:npm/iceberg-js@0.8.1",
+            "UID": "4a12f1c5bef38ddc"
+          },
+          "Version": "0.8.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 3328,
+              "EndLine": 3336
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "tslib@2.8.1",
+          "Name": "tslib",
+          "Identifier": {
+            "PURL": "pkg:npm/tslib@2.8.1",
+            "UID": "e99b71dd742a1acc"
+          },
+          "Version": "2.8.1",
+          "Licenses": [
+            "0BSD"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 2111,
+              "EndLine": 2116
+            },
+            {
+              "StartLine": 2241,
+              "EndLine": 2246
+            },
+            {
+              "StartLine": 2265,
+              "EndLine": 2270
+            },
+            {
+              "StartLine": 2284,
+              "EndLine": 2289
+            },
+            {
+              "StartLine": 2303,
+              "EndLine": 2308
             }
           ],
           "AnalyzedBy": "npm"
