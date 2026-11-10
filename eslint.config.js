@@ -7,7 +7,7 @@ const bannedMath = ['random', 'hypot', 'pow', 'sin', 'cos', 'tan', 'atan2', 'exp
 
 export default tseslint.config(
   {
-    ignores: ['dist/', 'coverage/', '.tmp/', 'node_modules/', 'playwright-report/', 'test-results/', 'tower-defenese-opTEAManta-v2.html'],
+    ignores: ['dist/', 'coverage/', '.tmp/', 'node_modules/', 'playwright-report/', 'test-results/', 'tower-defenese-opTEAManta-v2.html', 'supabase/functions/_shared/sim.js', 'supabase/.temp/'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

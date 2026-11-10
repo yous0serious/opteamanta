@@ -7,8 +7,8 @@
 | Task | Status | Commit | Note |
 |---|---|---|---|
 | T01 | done | (T01-Commit) | Supabase-CLI 3.1.0 (devDep), `supabase init` (`project_id = opteamanta`, anonyme Anmeldung, Site-URL). Remote per Management-API: anonyme Anmeldung an (Limit 30/h/IP), Site-URL + lokale Redirect-URLs. Function-Secrets `DAILY_SECRET`, `VERIFY_SECRET` (zufällig, lokal nur in `.agent-state/fn_secrets.json`), `SB_SECRET_KEY`. Ruling: Migrationen per eigenem `tools/db-push.ts` über die Management-API (CLI-`db push` bräuchte das DB-Passwort), Tracking in `supabase_migrations.schema_migrations` wie die CLI; Functions per `tools/fn-deploy.ts` (`--use-api`, ohne Docker). |
-| T02 | todo | – | |
-| T03 | todo | – | |
+| T02 | done | (T02-Commit) | Migration `20261110220000_leaderboard.sql` eingespielt (`npm run db:push`); Vault `project_url`/`verify_secret` außerhalb der Migration gesetzt. Datenbankprüfung: RLS auf 4/4 Tabellen, Cron-Jobs `verify-runs` (minütlich, bis 5 Aufrufe) und `leaderboard-maintenance` (03:15 UTC), nur `get_leaderboard`/`get_ticker` öffentlich. Gegenprobe als anonymer Nutzer: Schreiben/Lesen `run_sessions`, Schreiben `submissions`, interne RPCs, fremdes Profil → 403; eigene Submissions leer; ungültiger Nickname → 400 (Constraint); eigenes Profil und `get_leaderboard` → erlaubt. Ruling: Schreibrechte zusätzlich zu RLS per `revoke` entzogen (Defense in Depth). |
+| T03 | done | (T03-Commit) | `tools/build-sim.ts` (esbuild, ESM, neutral) → `supabase/functions/_shared/sim.js` (24,5 KB, ohne Importe, Banner mit Quell-Hash); `tests/sim/bundle.test.ts` grün. Gegenprobe: Bündel rechnet das Bot-Replay mit identischem Hash `aee8c823` nach (131 ms in Node). Bündel vom Linting ausgenommen. |
 | T04 | todo | – | |
 | T05 | todo | – | |
 | T06 | todo | – | |
