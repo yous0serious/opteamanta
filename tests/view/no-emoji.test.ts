@@ -4,9 +4,10 @@ import { join, relative } from 'node:path';
 
 // AC-3: keine Emojis im Spielfeld-Rendering (Canvas). Ausnahmen:
 // - texts.ts: Original-Witztexte (Ticker im DOM),
-// - hud.ts: DOM-Seitenleiste – dort rendert die Systemschrift Emojis normal (Ruling R-8, Spec visual-overhaul).
+// - hud.ts: DOM-Seitenleiste – dort rendert die Systemschrift Emojis normal (Ruling R-8, Spec visual-overhaul),
+// - leaderboard.ts, nickname.ts: ebenfalls nur DOM (Seitenleiste/Dialog, Spec leaderboard-supabase).
 const ROOT = join(process.cwd(), 'src/view');
-const ALLOWED = new Set(['texts.ts', 'hud.ts']);
+const ALLOWED = new Set(['texts.ts', 'hud.ts', 'leaderboard.ts', 'nickname.ts']);
 
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((n) => {
