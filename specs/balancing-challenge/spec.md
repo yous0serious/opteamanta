@@ -1,6 +1,6 @@
 # Spec: Balancing & Challenge-Modus (Teil 3a)
 
-**Status:** Approved
+**Status:** Done
 **Size:** M
 **Ticket:** –
 **Plan:** `.ai/specs/balancing-challenge/plan.md` (nach Freigabe) · **Ledger:** `.ai/specs/balancing-challenge/ledger.md`

@@ -25,11 +25,16 @@ npm run dev        # http://localhost:5173
 | `npm test` | Alle Vitest-Suites der Simulation |
 | `npm run test:e2e` | Playwright-Smoke-Test im Browser (Chromium, headless) |
 | `npm run replay -- <datei.json>` | Replay headless nachrechnen; Exit 0 = Ergebnis stimmt, 1 = Abweichung, 2 = ungültig |
-| `npm run bench` | Fester Bot-Lauf (Seed 12345, bis Welle 30) mit Laufzeitmessung |
+| `npm run bench` | Starker Bot, Challenge (Seed 12345): Spiel- und Nachrechenzeit des Replays |
+| `npm run balance` | Balancing-Kennzahlen über 20 Läufe je Bot (`-- --sweep '{…}'`, `-- --balance '{…}'`, `-- --json`) |
 | `npm run assets` | Atlas `public/assets/game.{png,json}` aus `assets-src/` bauen (SVG-Rendering, Farbvarianten) |
 | `npm run check:assets` | Prüft, dass jede Datei in `public/assets/` mit Lizenz in `CREDITS.md` steht (≤ 3 MB) |
 
 ## Steuerung
+
+**Modi:** *Challenge* (Standard) – 30 Wellen, danach „RELEASE ERFOLGREICH!“ mit Moral-Bonus (Moral × 100);
+*Endlos* – bis zum Burnout. Wahl in der Seitenleiste vor dem ersten Sprint oder per `?mode=endless`.
+Spielversion 0.2.0 (Balancing siehe `specs/balancing-challenge/spec.md`, Werte in `src/sim/data/balance.ts`).
 
 | Eingabe | Aktion |
 |---|---|
@@ -46,6 +51,7 @@ npm run dev        # http://localhost:5173
 | `seed=<0…4294967295>` | Fester Seed (sonst zufällig) – gleicher Seed + gleiche Eingaben = gleiches Spiel |
 | `map=spaghetti\|waterfall\|release-train\|matrix` | Karte erzwingen (sonst aus dem Seed) |
 | `speed=1…10` | Start-Tempo (über den Button nur 1–3) |
+| `mode=challenge\|endless` | Spielmodus (Standard `challenge`) |
 | `fx=high\|low` | Effektstufe: `high` (Standard) mit Schatten, Glow, Vignette; `low` ohne Filter, halbe Partikel |
 | `bench=1` | Performance-Szenario (299 Türme, 150 Gegner); Ergebnis nach ~12 s im Info-Panel und in der Konsole |
 | `debug=1` | Controller als `window.__bd` (im Dev-Server immer), inkl. `window.__bd.debug` |
@@ -91,23 +97,25 @@ rechnen. Daher gilt – per ESLint erzwungen:
 - Zustand ändert sich nur über `Game.apply(command)` und `Game.step()`; die Darstellung liest nur.
 - Jede Balancing-Änderung erhöht `GAME_VERSION` (`src/sim/version.ts`) – alte Replays sind dann nicht mehr vergleichbar.
 
-## Replay-Format v1
+## Replay-Format 2 (Spielversion 0.2.0)
 
 ```json
 {
-  "format": 1,
-  "gameVersion": "0.1.0",
+  "format": 2,
+  "gameVersion": "0.2.0",
   "seed": 12345,
   "mapId": "matrix",
+  "mode": "challenge",
   "commands": [[0, "place", "dev", 10, 4], [0, "startWave"], [1830, "upgrade", 1]],
-  "endTick": 74690,
-  "result": { "score": 287780, "wave": 30, "lives": 100, "over": false }
+  "endTick": 60194,
+  "result": { "score": 26500, "wave": 26, "lives": -20, "over": true, "won": false }
 }
 ```
 
 Kommandos gelten im angegebenen Tick vor dessen `step()`. Aufgezeichnet werden nur angenommene Kommandos.
-Nach Game Over speichert das Spiel das Replay in `localStorage['bd.lastReplay']`; der Button
-„💾 Replay herunterladen“ exportiert es als Datei.
+`parseReplay` lehnt Format 1, fremde Spielversionen, unbekannte Modi und Werte außerhalb der Grenzen ab
+(Feldgröße, Tick-/Kommando-Limits). Nach Spielende speichert das Spiel das Replay in
+`localStorage['bd.lastReplay']`; der Button „💾 Replay herunterladen“ exportiert es als Datei.
 
 ## Grafik und Assets
 
