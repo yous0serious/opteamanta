@@ -79,7 +79,6 @@ export class Game {
       mapId: map.id,
       mode: opts.mode ?? 'challenge',
       money: this.balance.startMoney,
-      waveHpScale: 1,
       lives: START_LIVES,
       wave: 0,
       score: 0,
@@ -179,7 +178,6 @@ export class Game {
     const w = s.wave;
     const pip = (w - 1) % 5 === 0;
     const count = this.balance.waveSizeBase + this.balance.waveSizePerWave * w;
-    s.waveHpScale = hpScaleForWave(this.balance, w);
     const list: EnemyType[] = [];
     for (let i = 0; i < count; i++) {
       const r = this.rng.next();
@@ -385,7 +383,7 @@ export class Game {
   spawnEnemy(type: EnemyType, at?: { dist: number }): Enemy {
     const s = this.state;
     const def = ENEMIES[type];
-    const hpScale = s.waveHpScale * (def.boss ? this.balance.bossHpFactor : 1);
+    const hpScale = hpScaleForWave(this.balance, Math.max(1, s.wave)) * (def.boss ? this.balance.bossHpFactor : 1);
     const hp = def.hp * hpScale;
     const start = this.path[0]!;
     const e: Enemy = {
@@ -474,7 +472,7 @@ export class Game {
     const s = this.state;
     return fnv1a(
       JSON.stringify([
-        s.tick, s.seed, s.mapId, s.mode, s.money, s.lives, s.wave, s.waveHpScale, s.score, s.running, s.over, s.won, s.spawnTimer, s.nextId, s.queue,
+        s.tick, s.seed, s.mapId, s.mode, s.money, s.lives, s.wave, s.score, s.running, s.over, s.won, s.spawnTimer, s.nextId, s.queue,
         s.towers.map((t) => [t.id, t.type, t.cx, t.cy, t.level, t.cooldown, t.spent, t.offTime, t.targetId, t.beam]),
         s.enemies.map((e) => [e.id, e.type, e.x, e.y, e.wi, e.dist, e.hp, e.maxHp, e.slowTime, e.pushCooldown, e.jamCooldown]),
         s.shots.map((sh) => [sh.id, sh.towerId, sh.x, sh.y, sh.targetId, sh.tx, sh.ty, sh.dmg]),
