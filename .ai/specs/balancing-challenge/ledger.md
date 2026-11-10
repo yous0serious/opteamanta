@@ -7,9 +7,9 @@
 | Task | Status | Commit | Note |
 |---|---|---|---|
 | T01 | done | (T01-Commit) | Rauchtest: Challenge-Sieg nach Welle 30 (Bonus 100 × 100), Replay Format 2 `matches`, `startWave` nach Sieg → `gameOver`; Endlos läuft über Welle 30. Parser lehnt Format 1, Version 0.1.0, Turmtyp als Array, `cx = 24`, Tick `1e300`, Modus `hard` ab; `maxTicks` greift. Ruling: nach dem Sieg endet der Tick sofort (Zustand eingefroren wie bei Game Over). 2 Replay-Tests (Format 1) rot bis T05. |
-| T02 | todo | – | |
-| T03 | todo | – | |
-| T04 | todo | – | |
+| T02 | done | (T02–T04-Commit) | `BalanceConfig` + `BALANCE` in `src/sim/data/balance.ts`; HP-Faktor je Welle per Schleife in `state.waveHpScale` (im Hash); Belohnung entkoppelt. Ruling: zusätzlicher Hebel `rewardFactor` (Faktor auf Grundbelohnung), weil `rewardGrowth` allein die Wirtschaft nicht knapp genug macht. Ruling: Perf ohne Verhaltensänderung – Schuss-Türme suchen nur ein Ziel, wenn sie feuern könnten; exakter Vorfilter in `findTarget` (Score/Ticks identisch). |
+| T03 | done | (T02–T04-Commit) | `tools/bot-strong.ts`, `tools/balance.ts` (Worker-Threads, 12 Kerne, `--sweep`/`--balance`/`--json`), `runReplay(r, { balance })` nur für Tools. Ruling: erste Heuristik (reiner Wert pro SP) war schwächer als der Referenz-Bot (15 % vs. 90 % Siege, fast nur Entwickler) → neu: gleicher Turm-Mix wie Referenz, Platzierung nach Pfadabdeckung, Upgrades nach Nutzen/SP, Nachkauf alle 60 Ticks. |
+| T04 | done | (T02–T04-Commit) | Sweeps: starkes exponentielles Wachstum (≥ 1,22) erzeugt eine „Wand“ (beide Bots sterben gleichzeitig); flaches Wachstum + knappe Wirtschaft + zäher Boss trennt gute von mittelmäßiger Spielweise. Gewählt: hpGrowth 1.115, rewardFactor 0.25, rewardGrowth 0, Wellenbonus 40+5w, bossHpFactor 2.5, startMoney 300. `npm run balance`: alle AC-3–AC-7 ✓ (Ref Median 21 / 0 % Siege, Stark 80 % Siege, Einstieg 100 %, Endlos max. 36, Prüfzeit 301 ms). Bench (Seed 12345, starker Bot): Welle 26 verloren, 67 ms Prüfzeit. |
 | T05 | todo | – | |
 | T06 | todo | – | |
 | T07 | todo | – | |

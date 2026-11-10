@@ -3,6 +3,7 @@ import { COLS, MAX_REPLAY_COMMANDS, MAX_REPLAY_TICKS, MAX_TOWER_ID, ROWS } from 
 import { MAPS } from './data/maps';
 import { TOWERS } from './data/towers';
 import { Game } from './game';
+import type { BalanceConfig } from './data/balance';
 import type { ReplayCommand, ReplayResult, ReplayV2 } from './types';
 import { GAME_VERSION } from './version';
 
@@ -64,9 +65,9 @@ export function parseReplay(input: unknown, opts: ParseOptions = {}): ReplayV2 {
   return data as ReplayV2;
 }
 
-/** Spielt ein Replay headless nach und vergleicht das Ergebnis mit result. */
-export function runReplay(r: ReplayV2): ReplayCheck {
-  const game = new Game({ seed: r.seed, mapId: r.mapId, mode: r.mode });
+/** Spielt ein Replay headless nach und vergleicht das Ergebnis mit result. `balance` nur für Tools (Tuning). */
+export function runReplay(r: ReplayV2, opts: { balance?: Readonly<BalanceConfig> } = {}): ReplayCheck {
+  const game = new Game({ seed: r.seed, mapId: r.mapId, mode: r.mode, balance: opts.balance });
   const cmds: readonly ReplayCommand[] = r.commands;
   let i = 0;
   let rejected = false;

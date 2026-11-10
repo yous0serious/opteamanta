@@ -52,6 +52,32 @@ bleibt erhalten, endet aber durch dieselbe Kurve verlässlich.
 | AC-8 | Die Werte stehen als Tabelle „Referenzwerte v0.2.0“ in dieser Spec, und Vitest prüft sie mit Literalwerten; alle Suites grün. | `npm test` |
 | AC-9 | Browser: Modus wählbar (Seitenleiste vor dem ersten Sprint, `?mode=`), HUD zeigt im Challenge „Welle n / 30“, Sieg-Bildschirm „RELEASE ERFOLGREICH!“ mit Score und Replay-Download; Smoke-Tests grün. | `tests/e2e/smoke.spec.ts` + neuer E2E-Fall |
 
+## Referenzwerte v0.2.0
+
+Ermittelt per Bot-Tuning (`npm run balance`, 2026-11-10). Turmwerte unverändert gegenüber Spec 1.
+
+| Wert | v0.1.0 (Original) | v0.2.0 |
+|---|---|---|
+| Startkapital | 200 SP | **300 SP** |
+| HP-Skalierung in Welle w | `1 + 0.28·(w−1)` (linear) | **`1.115^(w−1)`** (exponentiell; w=1: 1, w=2: 1.115, w=10: 2.663629…, w=30: 23.494767…) |
+| Boss-HP | Grund-HP × Skalierung | **× 2.5** zusätzlich |
+| Kill-Belohnung | `round(Grundbelohnung · √hpS)` | **`round(Grundbelohnung · 0.25)`** (ohne Wellenwachstum; z. B. req 6 → 2, story 3 → 1, feat 15 → 4, boss 150 → 38) |
+| Wellenbonus nach Welle w | `50 + 10·w` | **`40 + 5·w`** |
+| Gegner pro Welle | `8 + 2·w` | unverändert `8 + 2·w` |
+| Challenge-Länge | – | **30 Wellen**, danach Sieg |
+| Sieg-Bonus | – | **Moral × 100** Score |
+| Replay-Format / Spielversion | 1 / 0.1.0 | **2 / 0.2.0** |
+
+Messwerte (20 Läufe je Gruppe, Seeds 1–5 × 4 Karten):
+
+| Gruppe | Median Welle | Min–Max | Siege | Einstieg ohne Moralverlust (W1–5) |
+|---|---|---|---|---|
+| Referenz-Bot, Challenge | 21 | 11–26 | 0 % | 100 % |
+| Starker Bot, Challenge | 30 | 26–30 | 80 % | – |
+| Starker Bot, Endlos | 31 | max. 36 | – | – |
+
+Nachrechnen des längsten Challenge-Laufs (starker Bot, 103 085 Ticks): 301 ms (Node).
+
 ## Risiken
 
 - Ein „starker Bot“ ist selbst Heuristik: Erreicht er AC-4 nicht, wird erst die Heuristik verbessert, dann das Balancing gelockert (Ruling).

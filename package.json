@@ -18,7 +18,8 @@
     "replay": "tsx tools/replay-cli.ts",
     "bench": "tsx tools/bench.ts",
     "assets": "tsx tools/build-assets.ts",
-    "check:assets": "tsx tools/check-assets.ts"
+    "check:assets": "tsx tools/check-assets.ts",
+    "balance": "tsx tools/balance.ts"
   },
   "dependencies": {
     "@fontsource/caveat": "^5.3.0",
