@@ -14,7 +14,7 @@
 | T06 | todo | – | |
 | T07 | todo | – | |
 | T08 | todo | – | |
-| T09 | todo | – | |
+| T09 | done | (T09-Commit) | general: 4 Dateien – `donePile.test.ts` (3, AC-6), `no-emoji.test.ts` (1, AC-3), `credits.test.ts` (2, AC-2), `visual.spec.ts` (6 E2E: AC-6, AC-8 ×2, AC-9, AC-11, AC-13); E2E 6/6 grün. AC-8 läuft in der Sandbox im Canvas-Zweig (leere Filterliste + Annotation); WebGL-Zweig erst auf dem Host prüfbar. No-emoji rot bis T05–T07 (erwartet). Brief-Korrektur: Welle 2 zeigt „Sprint 1“. |
 | T10 | todo | – | |
 
 ## Rulings
@@ -26,6 +26,7 @@
 - **R-5** Folge aus R-4: Nachweise für WebGL-Effekte (AC-8 Filter, AC-12 Performance) kommen vom Host des Nutzers; E2E-Tests prüfen Filter nur, wenn `debug.renderer()` = `webgl`, sonst wird `[]` erwartet (T03).
 - **R-6** Veröffentlichung auf dem privaten GitHub-Repo `yous0serious/opteamanta` (Nutzerwunsch, für Netlify): neuer Verlauf ab einem Snapshot-Commit mit privater Identität (`yous0serious`, GitHub-Noreply-Adresse); ab hier committet das lokale Repo mit dieser Identität. Der frühere Verlauf bleibt lokal unter `archive/*`. Lockfile-URLs auf `registry.npmjs.org` umgestellt (Integrität unverändert), interne Hostnamen/Bezeichnungen in Doku neutralisiert, `netlify.toml` ergänzt. Token liegt nur lokal (`github_token.txt`, gitignored) und wird nicht in der Git-Konfiguration gespeichert.
 - **R-7** `body[data-ready="1"]` signalisiert, dass die Spielszene Eingaben annimmt; der Smoke-Test wartet darauf (vorher gingen Klicks während des Preloads verloren – Smoke-Fall 4 rot).
+- **R-8** AC-3 gilt für das Spielfeld (Canvas). Die DOM-Seitenleiste (`hud.ts`) darf Emojis behalten, weil dort die Systemschrift rendert; der Emoji-Test nimmt `hud.ts` und `texts.ts` (Ticker) aus (T09).
 
 ## Open questions
 
