@@ -253,7 +253,7 @@ export class Game {
     }
 
     // 3. Besiegte/durchgelaufene entfernen
-    s.enemies = s.enemies.filter((e) => e.hp > 0);
+    if (s.enemies.some((e) => e.hp <= 0)) s.enemies = s.enemies.filter((e) => e.hp > 0);
 
     // 4. Game Over
     if (s.lives <= 0) {
@@ -284,17 +284,20 @@ export class Game {
 
     // 6. Türme
     for (const t of s.towers) {
-      const stats = this.towerStats(t);
       t.cooldown -= DT;
       t.beam = false;
-      t.targetId = null;
       if (t.offTime > 0) {
         t.offTime -= DT;
+        t.targetId = null;
         continue;
       }
+      // Performance: Schuss-Türme suchen nur ein Ziel, wenn sie feuern könnten (verhaltensgleich – ohne Ziel
+      // wird nicht gefeuert und nicht gewürfelt). `targetId` bleibt dann der zuletzt gesuchte Wert (nur Anzeige).
+      if (t.type !== 'dev' && t.cooldown > 0) continue;
+      const stats = this.towerStats(t);
       const target = this.findTarget(t, stats.range);
+      t.targetId = target ? target.id : null;
       if (!target) continue;
-      t.targetId = target.id;
       if (t.type === 'dev') {
         t.beam = true;
         this.hurt(target, stats.dps * DT, events);
@@ -326,10 +329,10 @@ export class Game {
     }
 
     // 7. Projektile
-    const byId = new Map(s.enemies.map((e) => [e.id, e] as const));
+    const byId = s.shots.length ? new Map(s.enemies.map((e) => [e.id, e] as const)) : null;
     const done = new Set<Shot>();
     for (const shot of s.shots) {
-      const target = byId.get(shot.targetId);
+      const target = byId?.get(shot.targetId);
       const alive = !!target && target.hp > 0;
       if (alive) {
         shot.tx = target.x;
@@ -370,7 +373,7 @@ export class Game {
       }
     }
     if (done.size) s.shots = s.shots.filter((sh) => !done.has(sh));
-    s.enemies = s.enemies.filter((e) => e.hp > 0);
+    if (s.enemies.some((e) => e.hp <= 0)) s.enemies = s.enemies.filter((e) => e.hp > 0);
 
     s.tick++;
     return events;
@@ -522,7 +525,12 @@ export class Game {
     let best: Enemy | null = null;
     for (const e of this.state.enemies) {
       if (e.hp <= 0) continue;
-      if (dist2(e, t) <= r2 && (!best || e.dist > best.dist)) best = e;
+      // Kann das bisherige Ziel nicht ablösen (strikt >, Spawn-Reihenfolge entscheidet bei Gleichstand).
+      if (best && e.dist <= best.dist) continue;
+      // Exakter Vorfilter: dist2 = dx² + dy² ≥ dx² (gleiche Rechnung wie in dist2).
+      const dx = e.x - t.x;
+      if (dx * dx > r2) continue;
+      if (dist2(e, t) <= r2) best = e;
     }
     return best;
   }
