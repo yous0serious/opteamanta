@@ -3,14 +3,15 @@
   "Trivy": {
     "Version": "0.76.1"
   },
-  "ReportID": "01a1c72c-38a5-7825-a638-2a5631ebc00e",
-  "CreatedAt": "2026-11-10T20:35:26.501535007Z",
-  "ArtifactID": "sha256:594cb58629205c6e42f283485c401282f37c44263098bf2d2bb907e3307ff395",
+  "ReportID": "01a1c775-b8bc-7018-98fa-a691ba40325e",
+  "CreatedAt": "2026-11-10T21:55:43.420007627Z",
+  "ArtifactID": "sha256:0fb21cd034efe2dbc875fa264ba31addcfe2732f0617b859b8d2342a1776804c",
   "ArtifactName": ".",
   "ArtifactType": "repository",
   "Metadata": {
-    "Branch": "feature/foundation-phaser-port",
-    "CommitMsg": "feat(view): render game with Phaser 4, DOM HUD, procedural audio and replay export"
+    "RepoURL": "https://github.com/yous0serious/opteamanta.git",
+    "Branch": "feature/visual-overhaul",
+    "CommitMsg": "feat(view): magnet-badge towers, post-it enemies, kill flight, sprite projectiles, particle emitters, glow, banner and hitstop"
   },
   "Results": [
     {
@@ -19,11 +20,31 @@
       "Type": "npm",
       "Packages": [
         {
+          "ID": "@fontsource/caveat@5.3.0",
+          "Name": "@fontsource/caveat",
+          "Identifier": {
+            "PURL": "pkg:npm/%40fontsource/caveat@5.3.0",
+            "UID": "fc1f179e2e2a3e8a"
+          },
+          "Version": "5.3.0",
+          "Licenses": [
+            "OFL-1.1"
+          ],
+          "Relationship": "direct",
+          "Locations": [
+            {
+              "StartLine": 648,
+              "EndLine": 656
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
           "ID": "phaser@4.2.1",
           "Name": "phaser",
           "Identifier": {
             "PURL": "pkg:npm/phaser@4.2.1",
-            "UID": "4177c93d1c4dc5d3"
+            "UID": "7b695895287556e6"
           },
           "Version": "4.2.1",
           "Licenses": [
@@ -35,8 +56,8 @@
           ],
           "Locations": [
             {
-              "StartLine": 2390,
-              "EndLine": 2398
+              "StartLine": 3678,
+              "EndLine": 3686
             }
           ],
           "AnalyzedBy": "npm"
@@ -46,7 +67,7 @@
           "Name": "eventemitter3",
           "Identifier": {
             "PURL": "pkg:npm/eventemitter3@5.0.4",
-            "UID": "ae3d3d8b1da0a2cf"
+            "UID": "b973281ec5ca1926"
           },
           "Version": "5.0.4",
           "Licenses": [
@@ -56,8 +77,8 @@
           "Relationship": "indirect",
           "Locations": [
             {
-              "StartLine": 1720,
-              "EndLine": 1725
+              "StartLine": 2790,
+              "EndLine": 2795
             }
           ],
           "AnalyzedBy": "npm"
