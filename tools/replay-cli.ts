@@ -18,7 +18,7 @@ try {
 }
 
 const r = runReplay(replay);
-console.log(`wave=${r.wave} lives=${r.lives} score=${r.score} tick=${r.tick} hash=${r.hash} matches=${r.matches}`);
+console.log(`mode=${replay.mode} wave=${r.wave} lives=${r.lives} won=${r.won} score=${r.score} tick=${r.tick} hash=${r.hash} matches=${r.matches}`);
 if (!r.matches) {
   console.error(
     `Abweichung: erwartet wave=${replay.result.wave} lives=${replay.result.lives} score=${replay.result.score} ` +

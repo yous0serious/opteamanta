@@ -1,4 +1,4 @@
-import { DT, Game, TILE, type Command, type MapId, type ReplayV1, type SimEvent, type TowerType } from '../sim/index';
+import { DT, Game, TILE, type Command, type MapId, type Replay, type SimEvent, type TowerType } from '../sim/index';
 
 type Listener<T> = (value: T) => void;
 
@@ -161,7 +161,7 @@ export class Controller {
     this.changed();
   }
 
-  lastReplay(): ReplayV1 {
+  lastReplay(): Replay {
     return this.game.toReplay();
   }
 

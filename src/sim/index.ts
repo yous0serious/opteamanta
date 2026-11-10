@@ -7,4 +7,4 @@ export { ENEMIES } from './data/enemies';
 export { MAPS } from './data/maps';
 export { createRng, type Rng } from './rng';
 export { Game, type GameOptions } from './game';
-export { parseReplay, runReplay, type ReplayCheck } from './replay';
+export { parseReplay, runReplay, type ParseOptions, type ReplayCheck } from './replay';

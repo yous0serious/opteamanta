@@ -1,6 +1,8 @@
 export type TowerType = 'dualo' | 'analyst' | 'dev' | 'ppl' | 'scrum';
 export type EnemyType = 'req' | 'cr' | 'story' | 'obj' | 'feat' | 'creep' | 'debt' | 'boss';
 export type MapId = 'spaghetti' | 'waterfall' | 'release-train' | 'matrix';
+/** Challenge: 30 Wellen, dann Sieg. Endlos: bis Game Over. */
+export type GameMode = 'challenge' | 'endless';
 
 export interface TowerDef {
   id: TowerType;
@@ -101,12 +103,14 @@ export interface GameState {
   tick: number;
   seed: number;
   mapId: MapId;
+  mode: GameMode;
   money: number;
   lives: number;
   wave: number;
   score: number;
   running: boolean;
   over: boolean;
+  won: boolean;
   towers: Tower[];
   enemies: Enemy[];
   shots: Shot[];
@@ -149,7 +153,8 @@ export type SimEvent =
   | { type: 'pushed'; enemy: Enemy }
   | { type: 'absent'; tower: Tower }
   | { type: 'jammed'; enemy: Enemy; towerIds: number[]; radius: number }
-  | { type: 'gameOver'; wave: number; score: number };
+  | { type: 'gameOver'; wave: number; score: number }
+  | { type: 'victory'; wave: number; score: number; bonus: number };
 
 export interface TowerStats {
   range: number;
@@ -170,14 +175,21 @@ export interface ReplayResult {
   wave: number;
   lives: number;
   over: boolean;
+  /** Challenge gewonnen (Welle 30 abgeschlossen). */
+  won: boolean;
 }
 
-export interface ReplayV1 {
-  format: 1;
+/** Replay-Format 2 (Spielversion ≥ 0.2.0): zusätzlich `mode` und `result.won`. */
+export interface ReplayV2 {
+  format: 2;
   gameVersion: string;
   seed: number;
   mapId: MapId;
+  mode: GameMode;
   commands: ReplayCommand[];
   endTick: number;
   result: ReplayResult;
 }
+
+/** Aktuelles Replay-Format. */
+export type Replay = ReplayV2;

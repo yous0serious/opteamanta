@@ -6,7 +6,7 @@
 
 | Task | Status | Commit | Note |
 |---|---|---|---|
-| T01 | todo | – | |
+| T01 | done | (T01-Commit) | Rauchtest: Challenge-Sieg nach Welle 30 (Bonus 100 × 100), Replay Format 2 `matches`, `startWave` nach Sieg → `gameOver`; Endlos läuft über Welle 30. Parser lehnt Format 1, Version 0.1.0, Turmtyp als Array, `cx = 24`, Tick `1e300`, Modus `hard` ab; `maxTicks` greift. Ruling: nach dem Sieg endet der Tick sofort (Zustand eingefroren wie bei Game Over). 2 Replay-Tests (Format 1) rot bis T05. |
 | T02 | todo | – | |
 | T03 | todo | – | |
 | T04 | todo | – | |

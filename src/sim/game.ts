@@ -1,4 +1,4 @@
-import { COLS, DT, LEVEL_DMG, LEVEL_RATE, MAX_LEVEL, ROWS, START_LIVES, START_MONEY, TILE } from './constants';
+import { CHALLENGE_WAVES, COLS, DT, LEVEL_DMG, LEVEL_RATE, MAX_LEVEL, ROWS, START_LIVES, START_MONEY, TILE, VICTORY_BONUS_PER_LIFE } from './constants';
 import { toReplayCommand } from './commands';
 import { ENEMIES, HP_SCALE_PER_WAVE, JAM_FIRST, JAM_INTERVAL, JAM_OFF_TIME } from './data/enemies';
 import { MAPS } from './data/maps';
@@ -20,11 +20,12 @@ import type {
   EnemyType,
   GameState,
   MapDef,
+  GameMode,
   MapId,
   Point,
   RejectReason,
   ReplayCommand,
-  ReplayV1,
+  ReplayV2,
   Shot,
   SimEvent,
   Tower,
@@ -36,6 +37,8 @@ import { GAME_VERSION } from './version';
 export interface GameOptions {
   seed: number;
   mapId?: MapId;
+  /** Standard: `challenge` (Spec balancing-challenge). */
+  mode?: GameMode;
 }
 
 /**
@@ -69,12 +72,14 @@ export class Game {
       tick: 0,
       seed,
       mapId: map.id,
+      mode: opts.mode ?? 'challenge',
       money: START_MONEY,
       lives: START_LIVES,
       wave: 0,
       score: 0,
       running: false,
       over: false,
+      won: false,
       towers: [],
       enemies: [],
       shots: [],
@@ -257,6 +262,17 @@ export class Game {
       const bonus = 50 + s.wave * 10;
       s.money += bonus;
       events.push({ type: 'waveCleared', wave: s.wave, bonus });
+      // Challenge: Sieg nach der letzten Welle; der Zustand ist danach eingefroren (wie bei Game Over).
+      if (s.mode === 'challenge' && s.wave >= CHALLENGE_WAVES) {
+        const victoryBonus = s.lives * VICTORY_BONUS_PER_LIFE;
+        s.score += victoryBonus;
+        s.over = true;
+        s.won = true;
+        s.queue = [];
+        events.push({ type: 'victory', wave: s.wave, score: s.score, bonus: victoryBonus });
+        s.tick++;
+        return events;
+      }
     }
 
     // 6. Türme
@@ -448,7 +464,7 @@ export class Game {
     const s = this.state;
     return fnv1a(
       JSON.stringify([
-        s.tick, s.seed, s.mapId, s.money, s.lives, s.wave, s.score, s.running, s.over, s.spawnTimer, s.nextId, s.queue,
+        s.tick, s.seed, s.mapId, s.mode, s.money, s.lives, s.wave, s.score, s.running, s.over, s.won, s.spawnTimer, s.nextId, s.queue,
         s.towers.map((t) => [t.id, t.type, t.cx, t.cy, t.level, t.cooldown, t.spent, t.offTime, t.targetId, t.beam]),
         s.enemies.map((e) => [e.id, e.type, e.x, e.y, e.wi, e.dist, e.hp, e.maxHp, e.slowTime, e.pushCooldown, e.jamCooldown]),
         s.shots.map((sh) => [sh.id, sh.towerId, sh.x, sh.y, sh.targetId, sh.tx, sh.ty, sh.dmg]),
@@ -457,16 +473,17 @@ export class Game {
     );
   }
 
-  toReplay(): ReplayV1 {
+  toReplay(): ReplayV2 {
     const s = this.state;
     return {
-      format: 1,
+      format: 2,
       gameVersion: GAME_VERSION,
       seed: s.seed,
       mapId: s.mapId,
+      mode: s.mode,
       commands: this.commands.map((c) => [...c] as ReplayCommand),
       endTick: s.tick,
-      result: { score: s.score, wave: s.wave, lives: s.lives, over: s.over },
+      result: { score: s.score, wave: s.wave, lives: s.lives, over: s.over, won: s.won },
     };
   }
 

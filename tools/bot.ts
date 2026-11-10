@@ -1,4 +1,4 @@
-import { COLS, Game, ROWS, TILE, TOWERS, type Tower, type TowerType } from '../src/sim/index';
+import { COLS, Game, ROWS, TILE, TOWERS, type GameMode, type MapId, type Tower, type TowerType } from '../src/sim/index';
 
 /** Kauf-Rotation des Bots. */
 export const BOT_ROTATION: readonly TowerType[] = ['dualo', 'dev', 'analyst', 'ppl', 'scrum', 'dev'];
@@ -24,8 +24,8 @@ function candidateCells(game: Game): Array<[number, number]> {
  * Deterministischer Bot: vor jeder Welle Türme der Rotation kaufen, sonst das billigste Upgrade,
  * dann Welle spielen. Endet bei Game Over oder nach maxWave abgeschlossenen Wellen.
  */
-export function playBot(opts: { seed: number; maxWave: number }): Game {
-  const game = new Game({ seed: opts.seed });
+export function playBot(opts: { seed: number; maxWave: number; mode?: GameMode; mapId?: MapId }): Game {
+  const game = new Game({ seed: opts.seed, mapId: opts.mapId, mode: opts.mode ?? 'endless' });
   const cells = candidateCells(game);
   let next = 0;
   const s = game.state;
