@@ -23,6 +23,16 @@
     <button id="big">▶ SPRINT STARTEN</button>
     <div class="row"><button id="spd">⏩ x1</button><button id="mute">🔊 Sound</button></div>
     <button id="replay" hidden>💾 Replay herunterladen</button>
+    <details id="lb" open>
+      <summary>🏆 Bestenliste</summary>
+      <div id="lb-tabs" class="row" role="group" aria-label="Zeitraum">
+        <button data-period="day" class="active">Heute</button>
+        <button data-period="week">Woche</button>
+      </div>
+      <ol id="lb-list"></ol>
+      <div id="lb-status" aria-live="polite"></div>
+      <button id="daily" title="Alle spielen heute dieselbe Karte mit demselben Seed (30 Wellen)">📅 Daily spielen</button>
+    </details>
   </div>
 </div>
 <div id="ticker"><span id="tk"></span></div>

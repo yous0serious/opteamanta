@@ -91,10 +91,10 @@ export class Hud {
     $('wave').textContent = challenge && s.wave > 0 ? `${piLabel(s.wave)} · Welle ${s.wave}/${CHALLENGE_WAVES}` : piLabel(s.wave);
     for (const b of document.querySelectorAll<HTMLButtonElement>('#mode button')) {
       b.classList.toggle('active', b.dataset.mode === s.mode);
-      b.disabled = s.wave > 0 && !s.over;
+      b.disabled = (s.wave > 0 && !s.over) || this.ctl.daily !== null;
     }
     $('score').textContent = String(s.score);
-    $('map').textContent = game.map.name;
+    $('map').textContent = this.ctl.daily ? `${game.map.name} · 📅 Daily` : game.map.name;
     for (const b of this.buttons) {
       const t = b.dataset.t as TowerType;
       b.classList.toggle('sel', t === selected);

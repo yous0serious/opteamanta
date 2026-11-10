@@ -12,6 +12,8 @@ import { installKeyboard } from './view/input';
 import { randomSeed, readParams } from './view/params';
 import { PreloadScene } from './view/PreloadScene';
 import { runBench } from './view/bench';
+import { createOnline } from './online/api';
+import { LeaderboardPanel } from './view/leaderboard';
 
 const params = readParams();
 const settings = readFx(params);
@@ -41,6 +43,11 @@ game.events.on(Phaser.Core.Events.POST_STEP, (_t: number, delta: number) => hud.
 hud.render();
 
 window.addEventListener('beforeunload', () => ctl.saveReplay());
+
+// Bestenliste/Daily (Spec leaderboard-supabase): ohne VITE_SUPABASE_* offline, keine Netzwerkaufrufe.
+void (params.bench ? Promise.resolve(null) : createOnline())
+  .catch(() => null)
+  .then((online) => new LeaderboardPanel(online, ctl));
 
 if (params.bench) {
   const waitReady = (): void => {

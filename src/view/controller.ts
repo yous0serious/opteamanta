@@ -1,4 +1,5 @@
 import { DT, Game, TILE, type Command, type GameMode, type MapId, type Replay, type SimEvent, type TowerType } from '../sim/index';
+import type { DailySession } from '../online/api';
 
 type Listener<T> = (value: T) => void;
 
@@ -49,9 +50,29 @@ export class Controller {
   mode: GameMode;
   private readonly mapId: MapId | undefined;
 
-  /** Moduswechsel nur vor dem ersten Sprint: neues Spiel mit demselben Seed. */
+  /** Laufende Daily-Session (Spec leaderboard-supabase); null bei freien Spielen. */
+  daily: DailySession | null = null;
+  private readonly finishedListeners = new Set<Listener<Game>>();
+
+  /** Wird einmal pro Spiel aufgerufen, sobald es endet (Sieg oder Burnout). */
+  onFinished(fn: Listener<Game>): () => void {
+    this.finishedListeners.add(fn);
+    return () => this.finishedListeners.delete(fn);
+  }
+
+  /** Daily-Lauf mit Server-Seed starten (Challenge-Modus; die Karte folgt aus dem Seed). */
+  startDaily(session: DailySession): void {
+    const game = new Game({ seed: session.seed, mode: 'challenge' });
+    if (game.state.mapId !== session.mapId) throw new Error(`Karte passt nicht zum Seed: ${session.mapId}`);
+    if (this.game.state.wave > 0) this.saveReplay();
+    this.daily = session;
+    this.mode = 'challenge';
+    this.replaceGame(game);
+  }
+
+  /** Moduswechsel nur vor dem ersten Sprint (nicht in der Daily): neues Spiel mit demselben Seed. */
   setMode(mode: GameMode): void {
-    if (mode === this.mode || this.game.state.wave > 0) return;
+    if (mode === this.mode || this.game.state.wave > 0 || this.daily) return;
     this.mode = mode;
     this.game = new Game({ seed: this.game.state.seed, mapId: this.mapId ?? this.game.state.mapId, mode });
     this.acc = 0;
@@ -101,6 +122,7 @@ export class Controller {
       if (this.over) {
         this.acc = 0;
         this.saveReplay();
+        for (const fn of this.finishedListeners) fn(this.game);
         break;
       }
     }
@@ -169,9 +191,15 @@ export class Controller {
     this.stopUntil = performance.now() + ms;
   }
 
+  /** Neues freies Spiel (verlässt eine Daily-Session). */
   restart(): void {
     this.saveReplay();
-    this.game = new Game({ seed: this.nextSeed(), mode: this.mode });
+    this.daily = null;
+    this.replaceGame(new Game({ seed: this.nextSeed(), mode: this.mode }));
+  }
+
+  private replaceGame(game: Game): void {
+    this.game = game;
     this.acc = 0;
     this.selected = null;
     this.selectedTowerId = null;

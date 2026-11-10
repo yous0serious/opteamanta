@@ -52,3 +52,31 @@ button:disabled { opacity: .45; }
 .row button { flex: 1; text-align: center; }
 #mode button { font-family: var(--hand); font-size: 17px; padding: 3px 6px; }
 #mode button.active { background: #fffde7; outline: 2px solid #f9a825; font-weight: bold; }
+
+/* Bestenliste (Spec leaderboard-supabase) */
+#lb { background: #fff; border: 1px solid #cfd4da; border-left: 5px solid #f9a825; border-radius: 4px; padding: 5px 7px; font-size: 12px; }
+#lb summary { font-family: var(--hand); font-size: 20px; cursor: pointer; }
+#lb-tabs { margin: 4px 0; }
+#lb-tabs button { padding: 2px 6px; }
+#lb-tabs button.active { background: #fffde7; outline: 2px solid #f9a825; font-weight: bold; }
+#lb-list { list-style: none; margin: 0; padding: 0; }
+#lb-list li { display: grid; grid-template-columns: 26px 1fr auto 30px; gap: 4px; padding: 1px 2px; }
+#lb-list li.me { background: #fff59d; font-weight: bold; }
+#lb-list li.gap, #lb-list li.empty { display: block; color: #6b7580; text-align: center; }
+#lb-list .rk { color: #6b7580; text-align: right; }
+#lb-list .nk { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#lb-list .sc { text-align: right; font-variant-numeric: tabular-nums; }
+#lb-list .wv { text-align: right; color: #6b7580; }
+#lb-status { margin: 4px 0; min-height: 1em; }
+#lb-status.ok { color: #2e7d32; }
+#lb-status.err { color: #c62828; }
+#lb-status button, #daily { width: 100%; text-align: center; margin-top: 3px; }
+#daily { font-weight: bold; }
+#daily[hidden] { display: none; }
+#nick { border: none; border-radius: 6px; padding: 16px 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, .35); background: #fffde7; width: 320px; }
+#nick::backdrop { background: rgba(38, 50, 56, .45); }
+#nick h2 { margin: 0 0 4px; font-family: var(--hand); font-size: 30px; color: #c62828; }
+#nick p { margin: 0 0 8px; font-size: 12px; }
+#nick input { width: 100%; font-size: 16px; padding: 6px; border: 1px solid #9aa3ad; border-radius: 4px; }
+#nick .hint { font-size: 11px; color: #6b7580; margin: 4px 0 10px; }
+#nick .hint.err { color: #c62828; }
