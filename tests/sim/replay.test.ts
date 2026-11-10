@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseReplay, runReplay } from '../../src/sim/index';
+import { Game, parseReplay, runReplay } from '../../src/sim/index';
 import { STANDARD_SCRIPT, runScript } from './helpers';
 
 function recorded(): ReturnType<typeof runScript> {
@@ -12,10 +12,12 @@ function recorded(): ReturnType<typeof runScript> {
 const raw = (): any => JSON.parse(JSON.stringify(recorded().toReplay()));
 
 describe('AC-10 Replay', () => {
-  it('Format v1, Roundtrip, runReplay stimmt überein und liefert denselben Hash', () => {
+  it('Format 2, Roundtrip, runReplay stimmt überein und liefert denselben Hash', () => {
     const g = recorded();
     const r = g.toReplay();
-    expect(r.format).toBe(1);
+    expect(r.format).toBe(2);
+    expect(r.mode).toBe('challenge');
+    expect(r.result.won).toBe(false);
     expect(r.seed).toBe(42);
     expect(r.mapId).toBe('waterfall');
     expect(r.endTick).toBe(8000);
@@ -58,10 +60,48 @@ describe('AC-10 parseReplay', () => {
   it('akzeptiert gültiges Replay', () => {
     expect(() => parseReplay(raw())).not.toThrow();
   });
-  it('wirft bei format 2', () => {
+  it('wirft bei format 1 mit Meldung', () => {
     const r = raw();
-    r.format = 2;
+    r.format = 1;
+    expect(() => parseReplay(r)).toThrow(/Replay-Format 1/);
+  });
+  it('wirft bei falscher gameVersion', () => {
+    const r = raw();
+    r.gameVersion = '0.1.0';
     expect(() => parseReplay(r)).toThrow();
+  });
+  it('wirft bei Turmtyp als Array', () => {
+    const r = raw();
+    r.commands = [[0, 'place', ['dualo'], 5, 4]];
+    expect(() => parseReplay(r)).toThrow();
+  });
+  it('wirft bei cx = 24 und cy = 15', () => {
+    const r = raw();
+    r.commands = [[0, 'place', 'dualo', 24, 4]];
+    expect(() => parseReplay(r)).toThrow();
+    r.commands = [[0, 'place', 'dualo', 5, 15]];
+    expect(() => parseReplay(r)).toThrow();
+  });
+  it('wirft bei 1e300 als Tick', () => {
+    const r = raw();
+    r.commands = [[1e300, 'startWave']];
+    expect(() => parseReplay(r)).toThrow();
+  });
+  it('wirft bei unbekanntem Modus', () => {
+    const r = raw();
+    r.mode = 'hardcore';
+    expect(() => parseReplay(r)).toThrow();
+  });
+  it('maxTicks-Option greift', () => {
+    expect(() => parseReplay(raw(), { maxTicks: 100 })).toThrow();
+    expect(() => parseReplay(raw(), { maxTicks: 8000 })).not.toThrow();
+  });
+  it('Endlos-Modus im Replay: Roundtrip', () => {
+    const g = new Game({ seed: 3, mapId: 'waterfall', mode: 'endless' });
+    g.step();
+    const r = g.toReplay();
+    expect(r.mode).toBe('endless');
+    expect(runReplay(parseReplay(JSON.parse(JSON.stringify(r)))).matches).toBe(true);
   });
   it('wirft bei absteigenden Ticks', () => {
     const r = raw();

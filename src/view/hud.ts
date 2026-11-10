@@ -1,4 +1,4 @@
-import { TOWERS, TOWER_ORDER, type TowerType } from '../sim/index';
+import { CHALLENGE_WAVES, TOWERS, TOWER_ORDER, type GameMode, type TowerType } from '../sim/index';
 import type { SoundEngine } from './audio';
 import type { Controller } from './controller';
 import { JOKES, TOWER_BLURBS, piLabel } from './texts';
@@ -43,6 +43,9 @@ export class Hud {
       this.markDirty();
     });
     $('replay').addEventListener('click', () => this.downloadReplay());
+    for (const b of document.querySelectorAll<HTMLButtonElement>('#mode button')) {
+      b.addEventListener('click', () => this.ctl.setMode(b.dataset.mode as GameMode));
+    }
     $('info').addEventListener('click', (ev) => {
       const action = (ev.target as HTMLElement).closest<HTMLElement>('[data-action]')?.dataset.action;
       if (action === 'upgrade') this.ctl.upgradeSelected();
@@ -84,7 +87,12 @@ export class Hud {
     const s = game.state;
     $('money').textContent = String(s.money);
     $('lives').textContent = String(Math.max(0, s.lives));
-    $('wave').textContent = piLabel(s.wave);
+    const challenge = s.mode === 'challenge';
+    $('wave').textContent = challenge && s.wave > 0 ? `${piLabel(s.wave)} · Welle ${s.wave}/${CHALLENGE_WAVES}` : piLabel(s.wave);
+    for (const b of document.querySelectorAll<HTMLButtonElement>('#mode button')) {
+      b.classList.toggle('active', b.dataset.mode === s.mode);
+      b.disabled = s.wave > 0 && !s.over;
+    }
     $('score').textContent = String(s.score);
     $('map').textContent = game.map.name;
     for (const b of this.buttons) {
@@ -94,7 +102,13 @@ export class Hud {
     }
     $('spd').textContent = `⏩ x${speed}`;
     $('mute').textContent = this.sound.muted ? '🔇 Stumm' : '🔊 Sound';
-    $('big').textContent = s.over ? '↻ PROJEKT NEU AUFSETZEN' : s.running ? `⏳ ${piLabel(s.wave)} läuft…` : `▶ ${piLabel(s.wave + 1)} STARTEN`;
+    $('big').textContent = s.won
+      ? '↻ NEUES PROGRAMM'
+      : s.over
+        ? '↻ PROJEKT NEU AUFSETZEN'
+        : s.running
+          ? `⏳ ${piLabel(s.wave)} läuft…`
+          : `▶ ${piLabel(s.wave + 1)} STARTEN`;
     $('replay').hidden = !s.over;
 
     let info = DEFAULT_INFO;

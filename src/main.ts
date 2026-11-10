@@ -17,7 +17,9 @@ const params = readParams();
 const settings = readFx(params);
 // ?bench=1: festes Szenario (Seed 12345, Karte matrix), siehe src/view/bench.ts
 const ctl = new Controller(
-  params.bench ? { seed: 12345, mapId: 'matrix', speed: 1 } : { seed: params.seed ?? randomSeed(), mapId: params.mapId, speed: params.speed },
+  params.bench
+    ? { seed: 12345, mapId: 'matrix', speed: 1, mode: 'endless' }
+    : { seed: params.seed ?? randomSeed(), mapId: params.mapId, speed: params.speed, mode: params.mode },
   randomSeed,
 );
 const sound = new SoundEngine(ctl);

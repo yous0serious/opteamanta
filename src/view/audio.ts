@@ -132,6 +132,9 @@ export class SoundEngine {
       case 'waveCleared':
         this.arpeggio([523, 659, 784, 1046], 100);
         break;
+      case 'victory':
+        this.arpeggio([523, 659, 784, 1046, 784, 1046, 1318], 120, 0.3, 'square', 0.14);
+        break;
       case 'jammed':
         this.beep(70, 0.3, 'square', 0.12, 0, 'jm');
         break;

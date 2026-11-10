@@ -52,6 +52,8 @@ export class GameScene extends Phaser.Scene {
   private flashRect!: Phaser.GameObjects.Rectangle;
   private overLayer!: Phaser.GameObjects.Container;
   private overStats!: Phaser.GameObjects.Text;
+  private victoryLayer!: Phaser.GameObjects.Container;
+  private victoryStats!: Phaser.GameObjects.Text;
   private hint!: Phaser.GameObjects.Text;
   private desat: Phaser.Filters.ColorMatrix | null = null;
   private desatT = 0;
@@ -120,7 +122,7 @@ export class GameScene extends Phaser.Scene {
         fontFamily: HAND, fontSize: '26px', fontStyle: 'bold', color: '#1565c0', stroke: '#ffffff', strokeThickness: 5, resolution: 2,
       })
       .setOrigin(0.5);
-    this.layers.overlay.add([this.banner.root, this.flashRect, this.overLayer, this.hint]);
+    this.layers.overlay.add([this.banner.root, this.flashRect, this.overLayer, this.victoryLayer, this.hint]);
 
     this.buildBoard(this.ctl.game);
     this.ctl.onSim((e) => this.onSim(e));
@@ -196,6 +198,22 @@ export class GameScene extends Phaser.Scene {
       .text(WIDTH / 2, HEIGHT / 2 + 108, '[Leertaste] Neues Programm aufsetzen (gleiche Leute, neuer Projektname)', { ...style, color: '#1565c0' })
       .setOrigin(0.5);
     this.overLayer = this.add.container(0, 0, [bg, box, l1, this.overStats, l3]).setVisible(false);
+
+    // Sieg (Spec balancing-challenge AC-9)
+    const vbg = this.add.rectangle(0, 0, WIDTH, HEIGHT, 0xfbfbf7, 0.78).setOrigin(0);
+    const vstamp = this.add.graphics();
+    const vtitle = this.add
+      .text(0, 4, 'RELEASE ERFOLGREICH!', { fontFamily: HAND, fontSize: '72px', fontStyle: 'bold', color: '#2e7d32', resolution: 2 })
+      .setOrigin(0.5);
+    const vw = vtitle.width + 60;
+    vstamp.lineStyle(7, 0x2e7d32, 1).strokeRect(-vw / 2, -55, vw, 110);
+    const vbox = this.add.container(WIDTH / 2, HEIGHT / 2 - 80, [vstamp, vtitle]).setRotation(-0.06);
+    const v1 = this.add.text(WIDTH / 2, HEIGHT / 2 + 20, '30 Wellen überstanden. Der Fachbereich ist sprachlos (zum ersten Mal).', style).setOrigin(0.5);
+    this.victoryStats = this.add.text(WIDTH / 2, HEIGHT / 2 + 58, '', { ...style, fontSize: '30px', color: '#1b5e20' }).setOrigin(0.5);
+    const v3 = this.add
+      .text(WIDTH / 2, HEIGHT / 2 + 108, '[Leertaste] Nächstes Programm · Replay rechts herunterladen', { ...style, color: '#1565c0' })
+      .setOrigin(0.5);
+    this.victoryLayer = this.add.container(0, 0, [vbg, vbox, v1, this.victoryStats, v3]).setVisible(false);
   }
 
   // ===================== Sim-Events → Effekte =====================
@@ -276,6 +294,16 @@ export class GameScene extends Phaser.Scene {
       case 'waveCleared':
         this.banner.show(`SPRINT-REVIEW BESTANDEN! Kapazität +${e.bonus} SP`, INK.green, 22, 1.6, 0xc8e6c9);
         break;
+      case 'victory': {
+        this.banner.hide();
+        const colors = [INK.green, INK.yellow, INK.pink, INK.cyan, TOWERS.dev.color, TOWERS.ppl.color];
+        for (let i = 0; i < 8; i++) {
+          const x = 120 + i * 100;
+          parts.burst(x, HEIGHT / 2 - 60 + (i % 2) * 80, colors[i % colors.length]!, 40, 500, i % 2 ? 'star' : 'circle');
+        }
+        fx.text(WIDTH / 2, 70, `Moral-Bonus +${e.bonus}`, INK.green, 24, 2.5);
+        break;
+      }
       case 'jammed':
         fx.text(e.enemy.x, e.enemy.y - 24, pick(JAM), INK.grey, 12, 1.2);
         fx.ring(e.enemy.x, e.enemy.y, e.radius, INK.grey);
@@ -374,8 +402,12 @@ export class GameScene extends Phaser.Scene {
       this.desat.colorMatrix.grayscale(0.85 * this.desatT);
     }
 
-    if (s.over && !this.overLayer.visible) this.overStats.setText(`Geschafft bis: ${piLabel(s.wave)} · Score: ${s.score}`);
-    this.overLayer.setVisible(s.over);
+    if (s.over && !s.won && !this.overLayer.visible) this.overStats.setText(`Geschafft bis: ${piLabel(s.wave)} · Score: ${s.score}`);
+    if (s.won && !this.victoryLayer.visible) {
+      this.victoryStats.setText(`Score: ${s.score}  ·  Moral: ${s.lives} %  ·  Moral-Bonus: +${s.lives * 100}`);
+    }
+    this.overLayer.setVisible(s.over && !s.won);
+    this.victoryLayer.setVisible(s.won);
     this.hint.setVisible(!this.sfx.started && !s.over);
   }
 

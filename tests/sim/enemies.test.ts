@@ -9,8 +9,8 @@ describe('AC-7 Feature-Zerfall', () => {
     g.spawnEnemy('feat', { dist: 300 });
     const { events } = stepUntil(g, (ev) => ev.some((x) => x.type === 'killed'));
     const k = events.find((x) => x.type === 'killed');
-    expect(k && k.type === 'killed' ? k.reward : 0).toBe(15);
-    expect(g.state.score).toBe(150);
+    expect(k && k.type === 'killed' ? k.reward : 0).toBe(4);
+    expect(g.state.score).toBe(40);
     expect(events.some((x) => x.type === 'split')).toBe(true);
     const stories = g.state.enemies.filter((e) => e.type === 'story');
     expect(stories.length).toBe(2);
@@ -60,8 +60,8 @@ describe('AC-7 Scope Creep', () => {
     g.state.wave = 6;
     const e = g.spawnEnemy('creep');
     stepN(g, 1200);
-    expect(e.maxHp).toBeLessThanOrEqual(2 * 40 * 2.4 + 1e-9);
-    expect(e.maxHp).toBeGreaterThan(191);
+    expect(e.maxHp).toBeLessThanOrEqual(137.86826933575 + 1e-6);
+    expect(e.maxHp).toBeGreaterThan(137);
   });
 });
 

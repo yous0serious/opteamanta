@@ -1,4 +1,4 @@
-import { DT, Game, TILE, type Command, type MapId, type Replay, type SimEvent, type TowerType } from '../sim/index';
+import { DT, Game, TILE, type Command, type GameMode, type MapId, type Replay, type SimEvent, type TowerType } from '../sim/index';
 
 type Listener<T> = (value: T) => void;
 
@@ -36,11 +36,29 @@ export class Controller {
   private readonly restartListeners = new Set<Listener<Game>>();
 
   constructor(
-    opts: { seed: number; mapId?: MapId; speed?: number },
+    opts: { seed: number; mapId?: MapId; speed?: number; mode?: GameMode },
     private readonly nextSeed: () => number,
   ) {
-    this.game = new Game({ seed: opts.seed, mapId: opts.mapId });
+    this.mode = opts.mode ?? 'challenge';
+    this.mapId = opts.mapId;
+    this.game = new Game({ seed: opts.seed, mapId: opts.mapId, mode: this.mode });
     this.speed = opts.speed ?? 1;
+  }
+
+  /** Aktueller Spielmodus; gilt auch für Neustarts. */
+  mode: GameMode;
+  private readonly mapId: MapId | undefined;
+
+  /** Moduswechsel nur vor dem ersten Sprint: neues Spiel mit demselben Seed. */
+  setMode(mode: GameMode): void {
+    if (mode === this.mode || this.game.state.wave > 0) return;
+    this.mode = mode;
+    this.game = new Game({ seed: this.game.state.seed, mapId: this.mapId ?? this.game.state.mapId, mode });
+    this.acc = 0;
+    this.selected = null;
+    this.selectedTowerId = null;
+    for (const fn of this.restartListeners) fn(this.game);
+    this.changed();
   }
 
   get over(): boolean {
@@ -153,7 +171,7 @@ export class Controller {
 
   restart(): void {
     this.saveReplay();
-    this.game = new Game({ seed: this.nextSeed() });
+    this.game = new Game({ seed: this.nextSeed(), mode: this.mode });
     this.acc = 0;
     this.selected = null;
     this.selectedTowerId = null;

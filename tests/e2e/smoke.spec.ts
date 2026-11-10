@@ -50,7 +50,7 @@ test.describe('smoke', () => {
   test('1 loads, initial HUD, no console errors', async ({ page }) => {
     const errors = collectErrors(page);
     await startPort(page, 'seed=7&map=waterfall');
-    await expect(page.locator('#money')).toHaveText('200');
+    await expect(page.locator('#money')).toHaveText('300');
     await expect(page.locator('#lives')).toHaveText('100');
     expect(errors).toEqual([]);
   });
@@ -61,23 +61,26 @@ test.describe('smoke', () => {
     await page.keyboard.press('3');
     await expect(page.locator('.tw[data-t=dev]')).toHaveClass(/sel/);
     await portCell(page, 10, 4);
-    await expect(page.locator('#money')).toHaveText('80');
+    await expect(page.locator('#money')).toHaveText('180');
     expect(errors).toEqual([]);
   });
 
   test('3 info, rejected upgrade, sell', async ({ page }) => {
     const errors = collectErrors(page);
     await startPort(page, 'seed=7&map=waterfall');
+    // Zwei Entwickler (2 × 120) → 60 SP übrig, Upgrade (96) muss abgelehnt werden
     await page.keyboard.press('3');
+    await portCell(page, 12, 4);
     await portCell(page, 10, 4);
-    await expect(page.locator('#money')).toHaveText('80');
+    await expect(page.locator('#money')).toHaveText('60');
+    await page.keyboard.press('Escape');
     await portCell(page, 10, 4);
     await expect(page.locator('#info')).toContainText('Entwickler');
     await page.keyboard.press('u');
     await page.waitForTimeout(300);
-    await expect(page.locator('#money')).toHaveText('80');
+    await expect(page.locator('#money')).toHaveText('60');
     await page.keyboard.press('s');
-    await expect(page.locator('#money')).toHaveText('152');
+    await expect(page.locator('#money')).toHaveText('132');
     expect(errors).toEqual([]);
   });
 
@@ -88,7 +91,7 @@ test.describe('smoke', () => {
     await portCell(page, 10, 4);
     await page.keyboard.press('1');
     await portCell(page, 6, 6);
-    await expect(page.locator('#money')).not.toHaveText('200');
+    await expect(page.locator('#money')).not.toHaveText('300');
     await page.keyboard.press('Escape');
     await runWaves(page, 3);
     await expect(page.locator('#wave')).toContainText(/Sprint ([2-9]|\d{2,})/);
@@ -147,6 +150,50 @@ test.describe('smoke', () => {
     const before = await mute.innerText();
     await mute.click();
     await expect(mute).not.toHaveText(before);
+    expect(errors).toEqual([]);
+  });
+
+  test('8 mode switch before first sprint, locked afterwards', async ({ page }) => {
+    const errors = collectErrors(page);
+    await startPort(page, 'seed=7&map=waterfall&debug=1&speed=10');
+    await expect(page.locator('#mode button[data-mode=challenge]')).toHaveClass(/active/);
+    await page.locator('#mode button[data-mode=endless]').click();
+    await expect(page.locator('#mode button[data-mode=endless]')).toHaveClass(/active/);
+    expect(await page.evaluate(() => (window as unknown as { __bd: { game: { state: { mode: string; seed: number } } } }).__bd.game.state.mode)).toBe('endless');
+    await page.locator('#mode button[data-mode=challenge]').click();
+    await page.keyboard.press(' ');
+    await expect(page.locator('#mode button[data-mode=endless]')).toBeDisabled();
+    await expect(page.locator('#wave')).toContainText('Welle 1/30');
+    expect(errors).toEqual([]);
+  });
+
+  test('9 challenge victory shows release screen and verifiable replay', async ({ page }) => {
+    test.setTimeout(180_000);
+    const errors = collectErrors(page);
+    await startPort(page, 'seed=7&map=waterfall&debug=1&speed=10&mode=challenge');
+    await page.evaluate(() => {
+      const bd = (window as unknown as { __bd: { game: { state: { money: number; wave: number } }; command: (c: unknown) => unknown } }).__bd;
+      bd.game.state.money = 1_000_000;
+      bd.game.state.wave = 29;
+      const cells: Array<[string, number, number]> = [
+        ['dev', 10, 4], ['dev', 12, 4], ['ppl', 11, 5], ['dev', 14, 4], ['dev', 8, 4], ['ppl', 13, 5],
+        ['dev', 6, 9], ['dev', 8, 9], ['ppl', 7, 10], ['dev', 10, 9], ['analyst', 4, 9], ['scrum', 16, 10],
+      ];
+      for (const [tower, cx, cy] of cells) {
+        const ev = bd.command({ type: 'place', tower, cx, cy }) as Array<{ type: string; tower?: { id: number } }>;
+        const id = ev.find((e) => e.type === 'placed')?.tower?.id;
+        if (id) for (let i = 0; i < 4; i++) bd.command({ type: 'upgrade', towerId: id });
+      }
+    });
+    await page.keyboard.press(' ');
+    await expect(page.locator('#big')).toContainText('NEUES PROGRAMM', { timeout: 150_000 });
+    await expect(page.locator('#replay')).toBeVisible();
+    const replay = await page.evaluate(() => (window as unknown as BdWindow).__bd.game.toReplay());
+    expect(replay.result.won).toBe(true);
+    expect(replay.mode).toBe('challenge');
+    // Startgeld/Welle wurden per Debug manipuliert → Replay darf NICHT übereinstimmen (Manipulation wird erkannt)
+    expect(runReplay(replay).matches).toBe(false);
+    await page.screenshot({ path: `${OUT}/victory.png` });
     expect(errors).toEqual([]);
   });
 });

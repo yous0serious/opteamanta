@@ -10,7 +10,7 @@ function rejection(game: Game, cmd: Parameters<Game['apply']>[0]): string | unde
 describe('AC-4 Start und Platzieren', () => {
   it('Startwerte', () => {
     const g = makeGame();
-    expect(g.state.money).toBe(200);
+    expect(g.state.money).toBe(300);
     expect(g.state.lives).toBe(100);
     expect(g.state.wave).toBe(0);
     expect(g.state.score).toBe(0);
@@ -18,7 +18,7 @@ describe('AC-4 Start und Platzieren', () => {
   it('Platzieren zieht Kosten ab und setzt Mittelpunkt', () => {
     const g = makeGame();
     const t = place(g, 'dualo', 5, 4);
-    expect(g.state.money).toBe(170);
+    expect(g.state.money).toBe(270);
     expect([t.x, t.y, t.level, t.spent]).toEqual([220, 180, 1, 30]);
   });
   it('lehnt Pfadzellen ab (inkl. Endpunkte)', () => {
@@ -27,13 +27,13 @@ describe('AC-4 Start und Platzieren', () => {
       expect(rejection(g, { type: 'place', tower: 'dualo', cx: cx!, cy: cy! })).toBe('path');
     }
     expect(g.state.towers.length).toBe(0);
-    expect(g.state.money).toBe(200);
+    expect(g.state.money).toBe(300);
   });
   it('lehnt belegte Zelle ab', () => {
     const g = makeGame();
     place(g, 'dualo', 5, 4);
     expect(rejection(g, { type: 'place', tower: 'dualo', cx: 5, cy: 4 })).toBe('occupied');
-    expect(g.state.money).toBe(170);
+    expect(g.state.money).toBe(270);
   });
   it('lehnt außerhalb ab', () => {
     const g = makeGame();
@@ -109,26 +109,26 @@ describe('AC-4 Belohnungen', () => {
     const k = events.find((e) => e.type === 'killed');
     return { reward: k && k.type === 'killed' ? k.reward : -1, money: g.state.money - money0, score: g.state.score };
   }
-  it('req Welle 1: 6 SP, Score 60', () => {
-    expect(killWithDev(1, 'req')).toEqual({ reward: 6, money: 6, score: 60 });
+  it('req Welle 1: 2 SP, Score 20', () => {
+    expect(killWithDev(1, 'req')).toEqual({ reward: 2, money: 2, score: 20 });
   });
-  it('req Welle 6 (hpS 2.4): round(6*sqrt(2.4)) = 9 SP, Score 90', () => {
-    expect(killWithDev(6, 'req')).toEqual({ reward: 9, money: 9, score: 90 });
+  it('req Welle 6: Belohnung wellenunabhaengig 2 SP, Score 20', () => {
+    expect(killWithDev(6, 'req')).toEqual({ reward: 2, money: 2, score: 20 });
   });
-  it('Wellenbonus Welle 1 = 60, Welle 2 = 70', () => {
+  it('Wellenbonus Welle 1 = 45, Welle 2 = 50', () => {
     const g = makeGame();
     g.apply({ type: 'startWave' });
     g.state.queue = [];
     const m0 = g.state.money;
     const ev = g.step();
-    expect(ev.find((e) => e.type === 'waveCleared')).toMatchObject({ wave: 1, bonus: 60 });
-    expect(g.state.money - m0).toBe(60);
+    expect(ev.find((e) => e.type === 'waveCleared')).toMatchObject({ wave: 1, bonus: 45 });
+    expect(g.state.money - m0).toBe(45);
     expect(g.state.running).toBe(false);
     g.apply({ type: 'startWave' });
     g.state.queue = [];
     const m1 = g.state.money;
     g.step();
-    expect(g.state.money - m1).toBe(70);
+    expect(g.state.money - m1).toBe(50);
   });
   it('Welle gilt erst als beendet, wenn Spielfeld leer', () => {
     const g = makeGame();
@@ -159,7 +159,7 @@ describe('AC-4 Leck und Game Over', () => {
     const ev = stepN(g, 2);
     expect(ev.some((e) => e.type === 'leaked')).toBe(true);
     expect(g.state.enemies.length).toBe(0);
-    expect(g.state.money).toBe(200);
+    expect(g.state.money).toBe(300);
     expect(g.state.score).toBe(0);
   });
   it('Game Over bei Moral <= 0, Warteschlange geleert, Zustand eingefroren', () => {

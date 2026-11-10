@@ -113,7 +113,7 @@ describe('AC-6 Projektile', () => {
     e.hp = 0;
     stepN(g, 60);
     expect(g.state.shots.length).toBe(0);
-    expect(g.state.money).toBe(130);
+    expect(g.state.money).toBe(230);
   });
 });
 
@@ -178,7 +178,7 @@ describe('AC-6 PPL', () => {
     place(g, 'ppl', 6, 4);
     const e = g.spawnEnemy('boss', { dist: 300 });
     g.step();
-    expect(e.hp).toBeCloseTo(900 - 0.9375, 6);
+    expect(e.hp).toBeCloseTo(2250 - 0.9375, 6);
   });
 });
 

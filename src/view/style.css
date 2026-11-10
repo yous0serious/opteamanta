@@ -50,3 +50,5 @@ button:disabled { opacity: .45; }
 @keyframes tick { to { transform: translateX(-100%); } }
 .row { display: flex; gap: 6px; }
 .row button { flex: 1; text-align: center; }
+#mode button { font-family: var(--hand); font-size: 17px; padding: 3px 6px; }
+#mode button.active { background: #fffde7; outline: 2px solid #f9a825; font-weight: bold; }

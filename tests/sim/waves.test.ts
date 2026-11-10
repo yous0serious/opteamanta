@@ -107,21 +107,21 @@ describe('AC-5 Typverteilung (2000+ Ziehungen, +-3 Prozentpunkte)', () => {
 });
 
 describe('AC-5 HP-Skalierung', () => {
-  it('Welle 6: hpS 2.4 -> req 72 HP', () => {
+  it('Welle 6: hpS 1.7233533666968752 -> req 51.7006 HP', () => {
     const g = makeGame();
     g.state.wave = 6;
     const e = g.spawnEnemy('req');
-    expect(e.hpScale).toBeCloseTo(2.4, 6);
-    expect(e.hp).toBeCloseTo(72, 6);
-    expect(e.maxHp).toBeCloseTo(72, 6);
+    expect(e.hpScale).toBeCloseTo(1.7233533666968752, 9);
+    expect(e.hp).toBeCloseTo(51.70060100090626, 6);
+    expect(e.maxHp).toBeCloseTo(51.70060100090626, 6);
   });
-  it('Welle 0 und 1: hpS 1; Welle 30: 9.12', () => {
+  it('Welle 0 und 1: hpS 1; Welle 30: 23.4947676', () => {
     const g = makeGame();
     expect(g.spawnEnemy('req').hpScale).toBeCloseTo(1, 6);
     g.state.wave = 1;
-    expect(g.spawnEnemy('boss').hp).toBeCloseTo(900, 6);
+    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2250, 6);
     g.state.wave = 30;
-    expect(g.spawnEnemy('req').hpScale).toBeCloseTo(9.12, 6);
+    expect(g.spawnEnemy('req').hpScale).toBeCloseTo(23.494767633146218, 9);
   });
 });
 
