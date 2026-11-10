@@ -1,0 +1,15 @@
+# Netlify: statischer Build (Vite). Die Assets in public/assets sind vorgebaut (npm run assets lokal).
+# Caching: Netlify-Standard (ETag-Revalidierung). Kein "immutable" für /assets/*, weil dort auch
+# der ungehashte Atlas (game.png/game.json) liegt.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

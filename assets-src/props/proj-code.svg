@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="20" viewBox="0 0 28 20">
+  <!-- Code-Partikel für den Entwickler-Strahl: </>. Weiß, wird eingefärbt. Eigenes Werk. -->
+  <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 4 L2.5 10 L8 16"/>
+    <path d="M20 4 L25.5 10 L20 16"/>
+    <path d="M16 2.5 L12 17.5"/>
+  </g>
+</svg>

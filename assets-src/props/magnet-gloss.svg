@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <!-- Glanzlicht über dem Magnet-Pin (liegt oben auf). Eigenes Werk. -->
+  <path d="M14 30 A27 27 0 0 1 36 9 A30 30 0 0 0 19 34 Z" fill="#ffffff" opacity="0.75"/>
+  <circle cx="22" cy="20" r="2.6" fill="#ffffff" opacity="0.9"/>
+</svg>

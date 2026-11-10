@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <!-- Post-it (weiß, wird im Spiel eingefärbt). Eigenes Werk. -->
+  <defs>
+    <filter id="paper" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.10 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e9e9e9"/>
+    </linearGradient>
+  </defs>
+  <path d="M5 6 L91 4.5 L92 90 L4.5 91.5 Z" fill="url(#shade)"/>
+  <path d="M5 6 L91 4.5 L92 90 L4.5 91.5 Z" filter="url(#paper)" fill="#fff"/>
+  <!-- Klebestreifen oben -->
+  <path d="M5 6 L91 4.5 L91.2 20 L5.2 21 Z" fill="#000" opacity="0.08"/>
+  <path d="M5 6 L91 4.5 L92 90 L4.5 91.5 Z" fill="none" stroke="#000" stroke-opacity="0.12" stroke-width="1.5"/>
+</svg>

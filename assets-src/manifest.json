@@ -1,0 +1,255 @@
+{
+  "atlas": "game",
+  "maxSize": 2048,
+  "padding": 2,
+  "frames": [
+    {
+      "name": "head/dualo",
+      "src": "kenney/toon-characters-1/dualo-head.png",
+      "width": 56
+    },
+    {
+      "name": "head/dualo-focus",
+      "src": "kenney/toon-characters-1/dualo-headFocus.png",
+      "width": 56
+    },
+    {
+      "name": "head/dualo-shock",
+      "src": "kenney/toon-characters-1/dualo-headShock.png",
+      "width": 56
+    },
+    {
+      "name": "head/analyst",
+      "src": "kenney/toon-characters-1/analyst-head.png",
+      "width": 56
+    },
+    {
+      "name": "head/analyst-focus",
+      "src": "kenney/toon-characters-1/analyst-headFocus.png",
+      "width": 56
+    },
+    {
+      "name": "head/analyst-shock",
+      "src": "kenney/toon-characters-1/analyst-headShock.png",
+      "width": 56
+    },
+    {
+      "name": "head/dev",
+      "src": "kenney/toon-characters-1/dev-head.png",
+      "width": 56
+    },
+    {
+      "name": "head/dev-focus",
+      "src": "kenney/toon-characters-1/dev-headFocus.png",
+      "width": 56
+    },
+    {
+      "name": "head/dev-shock",
+      "src": "kenney/toon-characters-1/dev-headShock.png",
+      "width": 56
+    },
+    {
+      "name": "head/ppl",
+      "src": "kenney/toon-characters-1/ppl-head.png",
+      "width": 56
+    },
+    {
+      "name": "head/ppl-focus",
+      "src": "kenney/toon-characters-1/ppl-headFocus.png",
+      "width": 56
+    },
+    {
+      "name": "head/ppl-shock",
+      "src": "kenney/toon-characters-1/ppl-headShock.png",
+      "width": 56
+    },
+    {
+      "name": "head/scrum",
+      "src": "kenney/toon-characters-1/scrum-head.png",
+      "width": 56
+    },
+    {
+      "name": "head/scrum-focus",
+      "src": "kenney/toon-characters-1/scrum-headFocus.png",
+      "width": 56
+    },
+    {
+      "name": "head/scrum-shock",
+      "src": "kenney/toon-characters-1/scrum-headShock.png",
+      "width": 56
+    },
+    {
+      "name": "fx/circle",
+      "src": "kenney/particle-pack/circle_05.png",
+      "width": 32,
+      "lumaToAlpha": true,
+      "variants": "fx",
+      "variantsOnly": true
+    },
+    {
+      "name": "fx/spark",
+      "src": "kenney/particle-pack/spark_04.png",
+      "width": 32,
+      "lumaToAlpha": true,
+      "variants": "fx",
+      "variantsOnly": true
+    },
+    {
+      "name": "fx/star",
+      "src": "kenney/particle-pack/star_06.png",
+      "width": 32,
+      "lumaToAlpha": true,
+      "variants": "fx",
+      "variantsOnly": true
+    },
+    {
+      "name": "fx/smoke",
+      "src": "kenney/particle-pack/smoke_08.png",
+      "width": 32,
+      "lumaToAlpha": true,
+      "variants": "fx",
+      "variantsOnly": true
+    },
+    {
+      "name": "fx/dirt",
+      "src": "kenney/particle-pack/dirt_02.png",
+      "width": 32,
+      "lumaToAlpha": true,
+      "variants": "fx",
+      "variantsOnly": true
+    },
+    {
+      "name": "prop/postit",
+      "src": "props/postit.svg",
+      "width": 64,
+      "variants": "enemies"
+    },
+    {
+      "name": "prop/postit-curl",
+      "src": "props/postit-curl.svg",
+      "width": 96,
+      "variants": "enemies",
+      "variantsOnly": true
+    },
+    {
+      "name": "prop/paperball",
+      "src": "props/paperball.svg",
+      "width": 48,
+      "variants": "enemies",
+      "variantsOnly": true
+    },
+    {
+      "name": "prop/magnet-ring",
+      "src": "props/magnet-ring.svg",
+      "width": 80,
+      "variants": "towers",
+      "variantsOnly": true
+    },
+    {
+      "name": "prop/magnet-disc",
+      "src": "props/magnet-disc.svg",
+      "width": 80
+    },
+    {
+      "name": "prop/magnet-gloss",
+      "src": "props/magnet-gloss.svg",
+      "width": 80
+    },
+    {
+      "name": "prop/tape",
+      "src": "props/tape.svg",
+      "width": 128,
+      "height": 64,
+      "variants": "maps",
+      "variantsOnly": true
+    },
+    {
+      "name": "prop/whiteboard",
+      "src": "props/whiteboard.svg",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "name": "prop/pin",
+      "src": "props/pin.svg",
+      "width": 40
+    },
+    {
+      "name": "proj/dualo",
+      "src": "props/proj-dualo.svg",
+      "width": 24
+    },
+    {
+      "name": "proj/analyst",
+      "src": "props/proj-analyst.svg",
+      "width": 28
+    },
+    {
+      "name": "proj/scrum",
+      "src": "props/proj-scrum.svg",
+      "width": 28
+    },
+    {
+      "name": "proj/code",
+      "src": "props/proj-code.svg",
+      "width": 28
+    },
+    {
+      "name": "sym/req",
+      "src": "props/sym-req.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/cr",
+      "src": "props/sym-cr.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/story",
+      "src": "props/sym-story.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/obj",
+      "src": "props/sym-obj.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/feat",
+      "src": "props/sym-feat.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/creep",
+      "src": "props/sym-creep.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/debt",
+      "src": "props/sym-debt.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/boss",
+      "src": "props/sym-boss.svg",
+      "width": 48
+    },
+    {
+      "name": "ui/star",
+      "src": "props/ui-star.svg",
+      "width": 24
+    },
+    {
+      "name": "ui/zzz",
+      "src": "props/ui-zzz.svg",
+      "width": 32
+    },
+    {
+      "name": "ui/arrow",
+      "src": "props/ui-arrow.svg",
+      "width": 24,
+      "variants": "towers",
+      "variantsOnly": true
+    }
+  ]
+}

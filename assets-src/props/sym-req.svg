@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Anforderung: beschriebene Zeilen. Eigenes Werk. -->
+  <g fill="none" stroke="#2b3440" stroke-width="3.2" stroke-linecap="round">
+    <path d="M9 13 Q22 11.5 39 13"/>
+    <path d="M9 22 Q24 20.5 36 22.5"/>
+    <path d="M9 31 Q20 29.5 39 31"/>
+    <path d="M9 40 Q16 39 25 40"/>
+  </g>
+</svg>

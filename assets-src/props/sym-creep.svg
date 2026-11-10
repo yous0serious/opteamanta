@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Scope Creep: Käfer. Eigenes Werk. -->
+  <g fill="none" stroke="#2b3440" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="24" cy="28" rx="10" ry="13"/>
+    <circle cx="24" cy="12" r="5"/>
+    <path d="M24 17 L24 41"/>
+    <path d="M14 22 L6 18 M14 29 L5 29 M15 36 L7 41"/>
+    <path d="M34 22 L42 18 M34 29 L43 29 M33 36 L41 41"/>
+    <path d="M21 8 L17 3 M27 8 L31 3"/>
+  </g>
+</svg>

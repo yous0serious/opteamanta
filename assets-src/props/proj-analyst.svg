@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <!-- BA-Projektil: Fragezeichen in Sprechblase. Eigenes Werk. -->
+  <path d="M4 5 Q4 2 7 2 L21 2 Q24 2 24 5 L24 17 Q24 20 21 20 L12 20 L6 26 L7 20 Q4 20 4 17 Z" fill="#ffffff" stroke="#2e7d32" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M10.5 8 Q10.5 5 14 5 Q17.5 5 17.5 8 Q17.5 10 14.5 11.3 L14 13.5" fill="none" stroke="#2e7d32" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="14" cy="17" r="1.5" fill="#2e7d32"/>
+</svg>

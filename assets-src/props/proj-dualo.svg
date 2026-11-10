@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <!-- Dualo-Projektil: Kaffeebohne. Eigenes Werk. -->
+  <ellipse cx="12" cy="12" rx="7" ry="9.5" transform="rotate(-30 12 12)" fill="#6d4c41" stroke="#2b3440" stroke-width="1.8"/>
+  <path d="M8.5 6.5 C13 10 11 14 15.5 17.5" fill="none" stroke="#3e2723" stroke-width="1.8" stroke-linecap="round"/>
+  <ellipse cx="9" cy="8" rx="1.6" ry="2.4" transform="rotate(-30 9 8)" fill="#fff" opacity="0.35"/>
+</svg>

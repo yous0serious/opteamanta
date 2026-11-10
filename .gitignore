@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+.tmp/
+.agent-state/
+.env
+.env.*
+!.env.example
+supabase.txt
+github_token.txt
+*token*.txt
+*.log
+.DS_Store
+test-results/
+playwright-report/

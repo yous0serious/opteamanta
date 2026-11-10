@@ -1,0 +1,68 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.76.1"
+  },
+  "ReportID": "01a1c72c-38a5-7825-a638-2a5631ebc00e",
+  "CreatedAt": "2026-11-10T20:35:26.501535007Z",
+  "ArtifactID": "sha256:594cb58629205c6e42f283485c401282f37c44263098bf2d2bb907e3307ff395",
+  "ArtifactName": ".",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "Branch": "feature/foundation-phaser-port",
+    "CommitMsg": "feat(view): render game with Phaser 4, DOM HUD, procedural audio and replay export"
+  },
+  "Results": [
+    {
+      "Target": "package-lock.json",
+      "Class": "lang-pkgs",
+      "Type": "npm",
+      "Packages": [
+        {
+          "ID": "phaser@4.2.1",
+          "Name": "phaser",
+          "Identifier": {
+            "PURL": "pkg:npm/phaser@4.2.1",
+            "UID": "4177c93d1c4dc5d3"
+          },
+          "Version": "4.2.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "eventemitter3@5.0.4"
+          ],
+          "Locations": [
+            {
+              "StartLine": 2390,
+              "EndLine": 2398
+            }
+          ],
+          "AnalyzedBy": "npm"
+        },
+        {
+          "ID": "eventemitter3@5.0.4",
+          "Name": "eventemitter3",
+          "Identifier": {
+            "PURL": "pkg:npm/eventemitter3@5.0.4",
+            "UID": "ae3d3d8b1da0a2cf"
+          },
+          "Version": "5.0.4",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 1720,
+              "EndLine": 1725
+            }
+          ],
+          "AnalyzedBy": "npm"
+        }
+      ]
+    }
+  ]
+}

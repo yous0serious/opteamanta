@@ -1,0 +1,180 @@
+import { DT, Game, TILE, type Command, type MapId, type ReplayV1, type SimEvent, type TowerType } from '../sim/index';
+
+type Listener<T> = (value: T) => void;
+
+/** Debug-Abfragen der Darstellung (nur für E2E/Entwicklung, über window.__bd.debug). */
+export interface DebugApi {
+  filters: () => string[];
+  motion: () => { shake: boolean; hitstop: boolean };
+  renderer: () => string;
+  pile: () => Array<{ x: number; y: number; type: string }>;
+  /** Nur Debug: Zugriff auf die Phaser-Szene. */
+  scene?: () => unknown;
+}
+
+/** Höchstens so viele Ticks pro Frame (schützt vor Endlosschleifen nach Tab-Wechsel). */
+const MAX_STEPS_PER_FRAME = 120;
+/** Frame-Zeit wird auf 0,1 s begrenzt (Original: 0,05 s pro Update × Tempo). */
+const MAX_FRAME_DT = 0.1;
+export const REPLAY_STORAGE_KEY = 'bd.lastReplay';
+
+/**
+ * Einzige Brücke zwischen DOM-HUD, Phaser-Szene und Simulation.
+ * Hält Auswahl und Tempo, übersetzt Eingaben in Kommandos und verteilt Sim-Events.
+ */
+export class Controller {
+  game: Game;
+  speed: number;
+  selected: TowerType | null = null;
+  selectedTowerId: number | null = null;
+  /** Debug-Abfragen der Darstellung (nur für E2E/Entwicklung, über window.__bd). */
+  debug: DebugApi | null = null;
+  private acc = 0;
+  private readonly simListeners = new Set<Listener<SimEvent>>();
+  private readonly changeListeners = new Set<Listener<void>>();
+  private readonly restartListeners = new Set<Listener<Game>>();
+
+  constructor(
+    opts: { seed: number; mapId?: MapId; speed?: number },
+    private readonly nextSeed: () => number,
+  ) {
+    this.game = new Game({ seed: opts.seed, mapId: opts.mapId });
+    this.speed = opts.speed ?? 1;
+  }
+
+  get over(): boolean {
+    return this.game.state.over;
+  }
+
+  onSim(fn: Listener<SimEvent>): () => void {
+    this.simListeners.add(fn);
+    return () => this.simListeners.delete(fn);
+  }
+
+  onChange(fn: Listener<void>): () => void {
+    this.changeListeners.add(fn);
+    return () => this.changeListeners.delete(fn);
+  }
+
+  onRestart(fn: Listener<Game>): () => void {
+    this.restartListeners.add(fn);
+    return () => this.restartListeners.delete(fn);
+  }
+
+  command(cmd: Command): SimEvent[] {
+    const events = this.game.apply(cmd);
+    this.dispatch(events);
+    this.changed();
+    return events;
+  }
+
+  /** Fixed-Step: reale Zeit × Tempo in Ticks à DT umrechnen. */
+  advance(realDtSec: number): void {
+    if (this.over) return;
+    this.acc += Math.min(realDtSec, MAX_FRAME_DT) * this.speed;
+    let steps = 0;
+    while (this.acc >= DT && steps < MAX_STEPS_PER_FRAME) {
+      this.acc -= DT;
+      steps++;
+      this.dispatch(this.game.step());
+      if (this.over) {
+        this.acc = 0;
+        this.saveReplay();
+        break;
+      }
+    }
+    if (steps === MAX_STEPS_PER_FRAME) this.acc = 0;
+  }
+
+  // ----- Spieleraktionen -----
+
+  /** Button: umschalten; Taste 1–5: immer auswählen (wie Original). */
+  selectType(type: TowerType | null, toggle = true): void {
+    this.selected = toggle && this.selected === type ? null : type;
+    this.selectedTowerId = null;
+    this.changed();
+  }
+
+  clearSelection(): void {
+    this.selected = null;
+    this.selectedTowerId = null;
+    this.changed();
+  }
+
+  /** Klick aufs Spielfeld in Pixelkoordinaten (Original Zeile 185–192). Rückgabe: Turm ausgewählt? */
+  clickBoard(x: number, y: number): 'selectedTower' | 'placed' | 'rejected' | 'cleared' | 'ignored' {
+    if (this.over) return 'ignored';
+    const cx = Math.floor(x / TILE);
+    const cy = Math.floor(y / TILE);
+    const tower = this.game.state.towers.find((t) => t.cx === cx && t.cy === cy);
+    if (tower) {
+      this.selectedTowerId = tower.id;
+      this.selected = null;
+      this.changed();
+      return 'selectedTower';
+    }
+    if (this.selected) {
+      const events = this.command({ type: 'place', tower: this.selected, cx, cy });
+      return events.some((e) => e.type === 'rejected') ? 'rejected' : 'placed';
+    }
+    this.clearSelection();
+    return 'cleared';
+  }
+
+  upgradeSelected(): void {
+    if (this.selectedTowerId !== null) this.command({ type: 'upgrade', towerId: this.selectedTowerId });
+  }
+
+  sellSelected(): void {
+    if (this.selectedTowerId === null) return;
+    this.command({ type: 'sell', towerId: this.selectedTowerId });
+    this.selectedTowerId = null;
+    this.changed();
+  }
+
+  /** Leertaste / großer Button: nächster Sprint oder nach Game Over neu starten. */
+  startOrRestart(): void {
+    if (this.over) this.restart();
+    else if (!this.game.state.running) this.command({ type: 'startWave' });
+  }
+
+  cycleSpeed(): void {
+    this.speed = this.speed === 1 ? 2 : this.speed === 2 ? 3 : 1;
+    this.changed();
+  }
+
+  restart(): void {
+    this.saveReplay();
+    this.game = new Game({ seed: this.nextSeed() });
+    this.acc = 0;
+    this.selected = null;
+    this.selectedTowerId = null;
+    for (const fn of this.restartListeners) fn(this.game);
+    this.changed();
+  }
+
+  lastReplay(): ReplayV1 {
+    return this.game.toReplay();
+  }
+
+  saveReplay(): void {
+    try {
+      localStorage.setItem(REPLAY_STORAGE_KEY, JSON.stringify(this.game.toReplay()));
+    } catch {
+      // Speicher voll oder gesperrt – Replay bleibt über den Download-Button erreichbar.
+    }
+  }
+
+  private dispatch(events: SimEvent[]): void {
+    if (!events.length) return;
+    for (const e of events) {
+      if (e.type === 'sold' && e.tower.id === this.selectedTowerId) this.selectedTowerId = null;
+      for (const fn of this.simListeners) fn(e);
+    }
+    if (events.some((e) => e.type !== 'fired' && e.type !== 'hit')) this.changed();
+  }
+
+  private changed(): void {
+    for (const fn of this.changeListeners) fn();
+  }
+}

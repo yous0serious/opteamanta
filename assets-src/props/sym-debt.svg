@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Tech Debt: Geldschein mit Flügeln. Eigenes Werk. -->
+  <g fill="none" stroke="#2b3440" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 16 L36 16 L36 34 L12 34 Z"/>
+    <circle cx="24" cy="25" r="5"/>
+    <path d="M12 20 Q4 12 3 22 Q6 22 12 25"/>
+    <path d="M36 20 Q44 12 45 22 Q42 22 36 25"/>
+  </g>
+</svg>

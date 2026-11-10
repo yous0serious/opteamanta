@@ -1,0 +1,52 @@
+/* 1:1 aus dem Original (Zeilen 7–37); #game ersetzt das <canvas>. */
+* { box-sizing: border-box; }
+:root { --hand: "Caveat", "Segoe Print", "Bradley Hand", cursive; --ink: #2b3440; }
+body {
+  margin: 0; color: var(--ink); font-family: system-ui, "Segoe UI", Arial, sans-serif; overflow: auto;
+  background: #d9d4ca radial-gradient(circle at 20% 10%, #ece8e0 0, #d9d4ca 70%);
+}
+h1 { margin: 8px 0 0; text-align: center; font-family: var(--hand); font-size: 40px; color: #c62828; transform: rotate(-1deg); }
+.sub { text-align: center; color: #5b6570; font-size: 12px; margin: 2px 0 8px; }
+#wrap { display: flex; justify-content: center; gap: 14px; align-items: flex-start; }
+/* Rahmen außen, Phaser-Container innen ohne Rahmen – sonst misst Phaser den Rahmen mit und skaliert zu groß. */
+#frame {
+  box-sizing: content-box; flex: none; width: min(960px, calc(100vw - 300px));
+  border: 12px solid #b8bec6; border-radius: 8px; background: #fbfbf7;
+  box-shadow: inset 0 0 0 1px #8d949c, 0 8px 18px rgba(0, 0, 0, .25);
+}
+#game { width: 100%; aspect-ratio: 960 / 600; overflow: hidden; cursor: crosshair; }
+#game canvas { display: block; }
+#side { width: 250px; display: flex; flex-direction: column; gap: 7px; }
+.stat { padding: 4px 9px; background: #fff59d; font-size: 19px; box-shadow: 2px 3px 5px rgba(0, 0, 0, .18); font-family: var(--hand); }
+.stat:nth-child(2) { background: #f8bbd0; transform: rotate(.6deg); }
+.stat:nth-child(3) { background: #b3e5fc; transform: rotate(-.5deg); }
+.stat:nth-child(4) { background: #c8e6c9; }
+.stat b { color: #000; }
+button {
+  font-family: inherit; background: #fff; color: var(--ink); border: 1px solid #cfd4da; border-left: 5px solid var(--c, #90a4ae);
+  border-radius: 4px; padding: 6px 8px; cursor: pointer; text-align: left; font-size: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .15); transition: .1s;
+}
+button:hover { transform: translateY(-1px); box-shadow: 0 3px 7px rgba(0, 0, 0, .2); }
+button.sel { background: #fffde7; outline: 2px solid var(--c, #90a4ae); }
+button:disabled { opacity: .45; }
+.tw b { font-size: 13px; }
+.tw small { color: #6b7580; display: block; margin-top: 2px; }
+.tw[data-t=dualo] { --c: #1e88e5; }
+.tw[data-t=analyst] { --c: #43a047; }
+.tw[data-t=dev] { --c: #d81b60; }
+.tw[data-t=ppl] { --c: #f9a825; }
+.tw[data-t=scrum] { --c: #8e24aa; }
+#info { min-height: 110px; font-size: 12px; background: #fff; border: 1px dashed #9aa3ad; border-radius: 4px; padding: 7px; }
+#info button { padding: 4px 6px; margin-top: 2px; }
+#big { font-size: 16px; text-align: center; color: #fff; background: #2e7d32; border: none; font-weight: bold; }
+#replay { text-align: center; }
+#replay[hidden] { display: none; }
+#ticker {
+  max-width: 1224px; margin: 10px auto 0; overflow: hidden; white-space: nowrap; background: #263238; color: #eceff1;
+  font-size: 13px; padding: 4px 0;
+}
+#ticker span { display: inline-block; padding-left: 100%; animation: tick 90s linear infinite; }
+@keyframes tick { to { transform: translateX(-100%); } }
+.row { display: flex; gap: 6px; }
+.row button { flex: 1; text-align: center; }

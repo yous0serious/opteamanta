@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <!-- Pinnnadel (PPL-Projektil), Kopf oben links, Nadel nach rechts unten. Eigenes Werk. -->
+  <path d="M19 21 L35 37" stroke="#90a4ae" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M19 21 L35 37" stroke="#eceff1" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M8 14 L14 8 L25 19 L19 25 Z" fill="#f9a825" stroke="#2b3440" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="10" cy="10" r="7.5" fill="#fbc02d" stroke="#2b3440" stroke-width="2"/>
+  <circle cx="8" cy="8" r="2.4" fill="#fff" opacity="0.85"/>
+</svg>

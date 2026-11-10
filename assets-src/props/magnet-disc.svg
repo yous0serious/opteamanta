@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <!-- Innere Scheibe des Magnet-Pins (Hintergrund für die Figur). Eigenes Werk. -->
+  <defs>
+    <radialGradient id="disc" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eef1f4"/>
+    </radialGradient>
+  </defs>
+  <circle cx="40" cy="40" r="29" fill="url(#disc)"/>
+  <circle cx="40" cy="40" r="29" fill="none" stroke="#2b3440" stroke-width="2" stroke-opacity="0.35"/>
+</svg>

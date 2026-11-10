@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Schlafzeichen „Zz“ für gestörte Türme. Eigenes Werk. -->
+  <g fill="none" stroke="#1565c0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 12 L26 12 L14 26 L26 26"/>
+    <path d="M4 4 L11 4 L4 12 L11 12"/>
+  </g>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Objective: Zielscheibe mit Pfeil. Eigenes Werk. -->
+  <g fill="none" stroke="#2b3440" stroke-width="3" stroke-linecap="round">
+    <circle cx="22" cy="26" r="16"/>
+    <circle cx="22" cy="26" r="9"/>
+    <path d="M22 26 L41 7"/>
+    <path d="M35 6 L41 7 L42 13"/>
+  </g>
+  <circle cx="22" cy="26" r="3" fill="#c62828"/>
+</svg>
