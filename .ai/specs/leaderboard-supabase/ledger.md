@@ -6,7 +6,7 @@
 
 | Task | Status | Commit | Note |
 |---|---|---|---|
-| T01 | todo | – | |
+| T01 | done | (T01-Commit) | Supabase-CLI 3.1.0 (devDep), `supabase init` (`project_id = opteamanta`, anonyme Anmeldung, Site-URL). Remote per Management-API: anonyme Anmeldung an (Limit 30/h/IP), Site-URL + lokale Redirect-URLs. Function-Secrets `DAILY_SECRET`, `VERIFY_SECRET` (zufällig, lokal nur in `.agent-state/fn_secrets.json`), `SB_SECRET_KEY`. Ruling: Migrationen per eigenem `tools/db-push.ts` über die Management-API (CLI-`db push` bräuchte das DB-Passwort), Tracking in `supabase_migrations.schema_migrations` wie die CLI; Functions per `tools/fn-deploy.ts` (`--use-api`, ohne Docker). |
 | T02 | todo | – | |
 | T03 | todo | – | |
 | T04 | todo | – | |
