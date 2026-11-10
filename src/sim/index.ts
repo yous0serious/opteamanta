@@ -4,6 +4,7 @@ export * from './types';
 export { GAME_VERSION } from './version';
 export { TOWERS, TOWER_ORDER } from './data/towers';
 export { ENEMIES } from './data/enemies';
+export { BALANCE, hpScaleForWave, rewardForWave, type BalanceConfig } from './data/balance';
 export { MAPS } from './data/maps';
 export { createRng, type Rng } from './rng';
 export { Game, type GameOptions } from './game';

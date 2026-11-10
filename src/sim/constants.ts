@@ -9,7 +9,6 @@ export const HEIGHT = 600;
 export const TICK_RATE = 60;
 export const DT = 1 / 60;
 
-export const START_MONEY = 200;
 export const START_LIVES = 100;
 export const MAX_LEVEL = 5;
 

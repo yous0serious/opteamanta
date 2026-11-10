@@ -1,6 +1,7 @@
-import { CHALLENGE_WAVES, COLS, DT, LEVEL_DMG, LEVEL_RATE, MAX_LEVEL, ROWS, START_LIVES, START_MONEY, TILE, VICTORY_BONUS_PER_LIFE } from './constants';
+import { CHALLENGE_WAVES, COLS, DT, LEVEL_DMG, LEVEL_RATE, MAX_LEVEL, ROWS, START_LIVES, TILE, VICTORY_BONUS_PER_LIFE } from './constants';
 import { toReplayCommand } from './commands';
-import { ENEMIES, HP_SCALE_PER_WAVE, JAM_FIRST, JAM_INTERVAL, JAM_OFF_TIME } from './data/enemies';
+import { BALANCE, hpScaleForWave, rewardForWave, type BalanceConfig } from './data/balance';
+import { ENEMIES, JAM_FIRST, JAM_INTERVAL, JAM_OFF_TIME } from './data/enemies';
 import { MAPS } from './data/maps';
 import {
   DUALO_ABSENT_CHANCE,
@@ -39,6 +40,8 @@ export interface GameOptions {
   mapId?: MapId;
   /** Standard: `challenge` (Spec balancing-challenge). */
   mode?: GameMode;
+  /** Nur Tools/Tests (Tuning): abweichendes Balancing. Spiel und Replays nutzen immer `BALANCE`. */
+  balance?: Readonly<BalanceConfig>;
 }
 
 /**
@@ -52,6 +55,7 @@ export class Game {
   readonly pathLength: number;
   readonly pathCells: ReadonlySet<string>;
   private readonly rng: Rng;
+  private readonly balance: Readonly<BalanceConfig>;
   private readonly commands: ReplayCommand[] = [];
   private readonly statsCache = new Map<number, { level: number; x: number; y: number; stats: TowerStats }>();
   private statsTowers: Tower[] | null = null;
@@ -60,6 +64,7 @@ export class Game {
   constructor(opts: GameOptions) {
     const seed = opts.seed >>> 0;
     this.rng = createRng(seed);
+    this.balance = opts.balance ?? BALANCE;
     // D-2: der erste Zug bestimmt die Karte – immer, damit die Folge unabhängig von mapId gleich bleibt.
     const index = this.rng.int(MAPS.length);
     const map = opts.mapId ? MAPS.find((m) => m.id === opts.mapId) : MAPS[index];
@@ -73,7 +78,8 @@ export class Game {
       seed,
       mapId: map.id,
       mode: opts.mode ?? 'challenge',
-      money: START_MONEY,
+      money: this.balance.startMoney,
+      waveHpScale: 1,
       lives: START_LIVES,
       wave: 0,
       score: 0,
@@ -172,7 +178,8 @@ export class Game {
     s.running = true;
     const w = s.wave;
     const pip = (w - 1) % 5 === 0;
-    const count = 8 + w * 2;
+    const count = this.balance.waveSizeBase + this.balance.waveSizePerWave * w;
+    s.waveHpScale = hpScaleForWave(this.balance, w);
     const list: EnemyType[] = [];
     for (let i = 0; i < count; i++) {
       const r = this.rng.next();
@@ -259,7 +266,7 @@ export class Game {
     // 5. Welle beendet
     if (s.running && !s.queue.length && !s.enemies.length) {
       s.running = false;
-      const bonus = 50 + s.wave * 10;
+      const bonus = this.balance.waveBonusBase + this.balance.waveBonusPerWave * s.wave;
       s.money += bonus;
       events.push({ type: 'waveCleared', wave: s.wave, bonus });
       // Challenge: Sieg nach der letzten Welle; der Zustand ist danach eingefroren (wie bei Game Over).
@@ -375,7 +382,7 @@ export class Game {
   spawnEnemy(type: EnemyType, at?: { dist: number }): Enemy {
     const s = this.state;
     const def = ENEMIES[type];
-    const hpScale = 1 + (Math.max(1, s.wave) - 1) * HP_SCALE_PER_WAVE;
+    const hpScale = s.waveHpScale * (def.boss ? this.balance.bossHpFactor : 1);
     const hp = def.hp * hpScale;
     const start = this.path[0]!;
     const e: Enemy = {
@@ -464,7 +471,7 @@ export class Game {
     const s = this.state;
     return fnv1a(
       JSON.stringify([
-        s.tick, s.seed, s.mapId, s.mode, s.money, s.lives, s.wave, s.score, s.running, s.over, s.won, s.spawnTimer, s.nextId, s.queue,
+        s.tick, s.seed, s.mapId, s.mode, s.money, s.lives, s.wave, s.waveHpScale, s.score, s.running, s.over, s.won, s.spawnTimer, s.nextId, s.queue,
         s.towers.map((t) => [t.id, t.type, t.cx, t.cy, t.level, t.cooldown, t.spent, t.offTime, t.targetId, t.beam]),
         s.enemies.map((e) => [e.id, e.type, e.x, e.y, e.wi, e.dist, e.hp, e.maxHp, e.slowTime, e.pushCooldown, e.jamCooldown]),
         s.shots.map((sh) => [sh.id, sh.towerId, sh.x, sh.y, sh.targetId, sh.tx, sh.ty, sh.dmg]),
@@ -529,7 +536,7 @@ export class Game {
   private kill(e: Enemy, events: SimEvent[]): void {
     const s = this.state;
     const def = ENEMIES[e.type];
-    const reward = Math.round(def.reward * Math.sqrt(e.hpScale));
+    const reward = rewardForWave(this.balance, def.reward, s.wave);
     s.money += reward;
     s.score += reward * 10;
     events.push({ type: 'killed', enemy: e, reward });

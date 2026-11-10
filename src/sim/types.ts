@@ -107,6 +107,8 @@ export interface GameState {
   money: number;
   lives: number;
   wave: number;
+  /** HP-Faktor der aktuellen Welle (BalanceConfig.hpGrowth^(wave−1)). */
+  waveHpScale: number;
   score: number;
   running: boolean;
   over: boolean;

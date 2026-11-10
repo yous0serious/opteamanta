@@ -22,7 +22,6 @@ export const ENEMIES: Readonly<Record<EnemyType, EnemyDef>> = {
   },
 };
 
-export const HP_SCALE_PER_WAVE = 0.28;
 export const JAM_FIRST = 1;
 export const JAM_INTERVAL = 3;
 export const JAM_OFF_TIME = 2;
