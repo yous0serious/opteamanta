@@ -1,0 +1,150 @@
+import Phaser from 'phaser';
+import type { Tower, TowerType } from '../../../sim/index';
+import { ATLAS } from '../../PreloadScene';
+import type { ViewCtx } from '../entities';
+
+// Turm als Arbeitsplatz mit Ganzkörperfigur (Spec office-makeover AC-4, ADR-0005).
+
+/** Posen je Rolle (Kenney Toon Characters 1, `char/<rolle>/<pose>`). */
+const POSES: Record<TowerType, { idle: string; fire: readonly string[] }> = {
+  dualo: { idle: 'idle', fire: ['attack0', 'attack1'] },
+  analyst: { idle: 'idle', fire: ['talk', 'show'] },
+  dev: { idle: 'interact', fire: ['interact', 'hold'] },
+  ppl: { idle: 'think', fire: ['show', 'wide'] },
+  scrum: { idle: 'idle', fire: ['kick', 'attack2'] },
+};
+const CHEER = ['cheer0', 'cheer1'] as const;
+
+/** Gegenstand der Rolle auf dem Tisch. */
+const ROLE_ITEM: Record<TowerType, string> = { dualo: 'item/cup', analyst: 'item/clipboard', dev: 'item/laptop', ppl: 'item/folder', scrum: 'item/bell' };
+/** Ausstattung je Stufe (rechts auf dem Tisch). */
+const LEVEL_ITEM = ['item/notepad', 'item/notebook', 'item/monitor', 'item/monitor', 'item/monitor'] as const;
+
+const ROLE_COLOR: Record<TowerType, number> = { dualo: 0x1e88e5, analyst: 0x43a047, dev: 0xd81b60, ppl: 0xf9a825, scrum: 0x8e24aa };
+
+const CHAR_H = 58;
+const FEET_Y = 12;
+const DESK_W = 42;
+
+export class WorkstationView {
+  readonly root: Phaser.GameObjects.Container;
+  private readonly char: Phaser.GameObjects.Image;
+  private readonly charScale: number;
+  private readonly mat: Phaser.GameObjects.Ellipse;
+  private readonly levelItem: Phaser.GameObjects.Image;
+  private readonly extra: Phaser.GameObjects.Image;
+  private readonly zzz: Phaser.GameObjects.Image;
+  private readonly stars: Phaser.GameObjects.Image[] = [];
+  private drawnLevel = 0;
+  private pose = '';
+  private fireT = 0;
+  private fireIdx = 0;
+  private cheerT = 0;
+  private typeT = 0;
+  private popT = 0;
+  private appearT = 0.25;
+  private readonly phase = Math.random() * Math.PI * 2;
+  private facing = 1;
+
+  constructor(
+    private readonly ctx: ViewCtx,
+    readonly tower: Tower,
+  ) {
+    const s = ctx.scene;
+    const type = tower.type;
+    this.mat = s.add.ellipse(0, FEET_Y + 2, 40, 18, ROLE_COLOR[type], 0.22);
+    const shadow = s.add.ellipse(0, FEET_Y + 4, 34, 10, 0x000000, 0.16);
+    this.char = s.add.image(0, FEET_Y, ATLAS, `char/${type}/${POSES[type].idle}`).setOrigin(0.5, 1);
+    this.charScale = CHAR_H / this.char.height;
+    this.char.setScale(this.charScale);
+    const desk = s.add.image(0, FEET_Y - 3, ATLAS, 'prop/desk').setOrigin(0.5, 0.5);
+    desk.setScale(DESK_W / desk.width);
+    const roleItem = s.add.image(-9, FEET_Y - 8, ATLAS, ROLE_ITEM[type]).setOrigin(0.5, 1);
+    roleItem.setScale(13 / Math.max(roleItem.width, roleItem.height));
+    this.levelItem = s.add.image(10, FEET_Y - 8, ATLAS, LEVEL_ITEM[0]).setOrigin(0.5, 1);
+    this.extra = s.add.image(16, FEET_Y - 7, ATLAS, 'item/cup').setOrigin(0.5, 1).setVisible(false);
+    this.extra.setScale(8 / this.extra.width);
+    this.zzz = s.add.image(14, -42, ATLAS, 'ui/zzz').setDisplaySize(16, 16).setVisible(false);
+    this.root = s.add.container(tower.x, tower.y, [this.mat, shadow, this.char, desk, roleItem, this.levelItem, this.extra, this.zzz]);
+    if (ctx.reducedMotion) this.appearT = 0;
+  }
+
+  /** Sortierschlüssel für die Tiefe (Füße). */
+  get depthY(): number {
+    return this.tower.y + FEET_Y;
+  }
+
+  fire(): void {
+    this.fireT = 0.22;
+    this.fireIdx = (this.fireIdx + 1) % POSES[this.tower.type].fire.length;
+  }
+
+  upgrade(): void {
+    this.cheer(0.9);
+    if (!this.ctx.reducedMotion) this.popT = 0.3;
+  }
+
+  cheer(seconds: number): void {
+    this.cheerT = Math.max(this.cheerT, seconds);
+  }
+
+  private setPose(p: string): void {
+    if (p === this.pose) return;
+    this.pose = p;
+    this.char.setFrame(`char/${this.tower.type}/${p}`);
+  }
+
+  update(dt: number, time: number, target: { x: number; y: number } | null): void {
+    const t = this.tower;
+    const off = t.offTime > 0;
+    this.fireT -= dt;
+    this.cheerT -= dt;
+    this.typeT += dt;
+
+    // Pose wählen: Ausfall > Jubel > Angriff/Strahl > Ruhe
+    let pose = POSES[t.type].idle;
+    if (off) pose = 'hurt';
+    else if (this.cheerT > 0) pose = CHEER[Math.floor(this.cheerT * 6) % 2]!;
+    else if (t.beam) pose = Math.floor(this.typeT * 8) % 2 ? 'interact' : 'hold';
+    else if (this.fireT > 0) pose = POSES[t.type].fire[this.fireIdx]!;
+    this.setPose(pose);
+    this.zzz.setVisible(off);
+    this.char.setAlpha(off ? 0.75 : 1);
+
+    if (target && !off) this.facing = target.x < t.x - 2 ? -1 : target.x > t.x + 2 ? 1 : this.facing;
+    this.char.setFlipX(this.facing < 0);
+
+    // Erscheinen, Upgrade-Pop, Atmen
+    let k = 1;
+    if (this.appearT > 0) {
+      this.appearT -= dt;
+      k = Phaser.Math.Easing.Back.Out(1 - Math.max(0, this.appearT) / 0.25);
+    }
+    if (this.popT > 0) {
+      this.popT -= dt;
+      k *= 1 + 0.25 * Math.sin((Math.max(0, this.popT) / 0.3) * Math.PI);
+    }
+    const breathe = this.ctx.reducedMotion ? 0 : Math.sin(time * 2.2 + this.phase) * 0.02;
+    this.char.setScale(this.charScale * k * (1 - breathe * 0.5), this.charScale * k * (1 + breathe));
+    if (!this.ctx.reducedMotion && off) this.zzz.y = -42 + Math.sin(time * 3) * 2;
+
+    if (t.level !== this.drawnLevel) {
+      this.drawnLevel = t.level;
+      this.levelItem.setFrame(LEVEL_ITEM[t.level - 1] ?? LEVEL_ITEM[0]);
+      this.levelItem.setScale(13 / Math.max(this.levelItem.width, this.levelItem.height));
+      this.extra.setVisible(t.level >= 4);
+      for (const st of this.stars) st.destroy();
+      this.stars.length = 0;
+      for (let i = 0; i < t.level; i++) {
+        const star = this.ctx.scene.add.image((i - (t.level - 1) / 2) * 7, FEET_Y + 9, ATLAS, 'ui/star').setDisplaySize(8, 8);
+        this.stars.push(star);
+        this.root.add(star);
+      }
+      this.mat.setFillStyle(ROLE_COLOR[t.type], 0.18 + t.level * 0.04);
+    }
+  }
+
+  destroy(): void {
+    this.root.destroy();
+  }
+}

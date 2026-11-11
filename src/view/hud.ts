@@ -1,6 +1,7 @@
 import { CHALLENGE_WAVES, TOWERS, TOWER_ORDER, type GameMode, type TowerType } from '../sim/index';
 import type { SoundEngine } from './audio';
 import type { Controller } from './controller';
+import { applySprite } from './sprite';
 import { JOKES, TOWER_BLURBS, piLabel } from './texts';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string): T => {
@@ -10,7 +11,7 @@ const $ = <T extends HTMLElement = HTMLElement>(id: string): T => {
 };
 
 const DEFAULT_INFO =
-  'Wähle einen Turm (1–5) und klick auf das Spielfeld.<br>Klick auf einen Turm zum Auswählen.<br>[U] Upgrade · [S] Verkaufen<br>[Leertaste] nächster Sprint';
+  'Wähle ein Teammitglied (1–5) und klick auf einen freien Platz.<br><span class="muted">Klick auf einen Arbeitsplatz: Details · [U] Upgrade · [S] Abgeben · [Leertaste] nächster Sprint</span>';
 
 /** DOM-Seitenleiste (Original Zeilen 45–60, ui() Zeilen 204–214). */
 export class Hud {
@@ -71,14 +72,16 @@ export class Hud {
   }
 
   private buildTowerButtons(): void {
-    const anchor = $('info');
+    const box = $('towers');
     TOWER_ORDER.forEach((type, i) => {
       const def = TOWERS[type];
       const b = document.createElement('button');
       b.className = 'tw';
       b.dataset.t = type;
-      b.innerHTML = `<b>[${i + 1}] ${def.emoji} ${def.name} – ${def.cost}</b><small>${TOWER_BLURBS[type]}</small>`;
-      anchor.before(b);
+      b.title = TOWER_BLURBS[type];
+      b.innerHTML = `<span class="pt"><span class="spr"></span></span><span class="nm">${def.name}</span><span class="ct"><i class="ico ico-coin"></i>${def.cost}</span><span class="key">${i + 1}</span>`;
+      applySprite(b.querySelector<HTMLElement>('.spr')!, `head/${type}`, 32);
+      box.append(b);
     });
   }
 
@@ -86,7 +89,9 @@ export class Hud {
     const { game, selected, selectedTowerId, speed } = this.ctl;
     const s = game.state;
     $('money').textContent = String(s.money);
-    $('lives').textContent = String(Math.max(0, s.lives));
+    const lives = Math.max(0, s.lives);
+    $('lives').textContent = String(lives);
+    $('lives-bar').style.width = `${Math.min(100, lives)}%`;
     const challenge = s.mode === 'challenge';
     $('wave').textContent = challenge && s.wave > 0 ? `${piLabel(s.wave)} · Welle ${s.wave}/${CHALLENGE_WAVES}` : piLabel(s.wave);
     for (const b of document.querySelectorAll<HTMLButtonElement>('#mode button')) {
@@ -94,21 +99,25 @@ export class Hud {
       b.disabled = (s.wave > 0 && !s.over) || this.ctl.daily !== null;
     }
     $('score').textContent = String(s.score);
-    $('map').textContent = this.ctl.daily ? `${game.map.name} · 📅 Daily` : game.map.name;
+    $('map').textContent = this.ctl.daily ? `${game.map.name} · Daily` : game.map.name;
     for (const b of this.buttons) {
       const t = b.dataset.t as TowerType;
       b.classList.toggle('sel', t === selected);
       b.disabled = s.money < TOWERS[t].cost;
     }
-    $('spd').textContent = `⏩ x${speed}`;
-    $('mute').textContent = this.sound.muted ? '🔇 Stumm' : '🔊 Sound';
-    $('big').textContent = s.won
-      ? '↻ NEUES PROGRAMM'
+    $('spd').textContent = `Tempo x${speed}`;
+    $('mute').textContent = this.sound.muted ? 'Ton aus' : 'Ton an';
+    const big = $('big');
+    big.textContent = s.won
+      ? 'NEUES PROGRAMM'
       : s.over
-        ? '↻ PROJEKT NEU AUFSETZEN'
+        ? 'PROJEKT NEU AUFSETZEN'
         : s.running
-          ? `⏳ ${piLabel(s.wave)} läuft…`
-          : `▶ ${piLabel(s.wave + 1)} STARTEN`;
+          ? `${piLabel(s.wave)} läuft…`
+          : `${piLabel(s.wave + 1)} STARTEN`;
+    big.classList.toggle('running', s.running && !s.over);
+    big.classList.toggle('over', s.over && !s.won);
+    big.classList.toggle('won', s.won);
     $('replay').hidden = !s.over;
 
     let info = DEFAULT_INFO;
@@ -117,15 +126,15 @@ export class Hud {
       const def = TOWERS[tower.type];
       const st = game.towerStats(tower);
       const up = game.upgradeCost(tower);
-      const push = tower.type === 'scrum' ? `<br>Rückstoß: ${Math.floor(def.push! * (1 + 0.2 * (tower.level - 1)))}` : '';
+      const push = tower.type === 'scrum' ? ` · Rückstoß ${Math.floor(def.push! * (1 + 0.2 * (tower.level - 1)))}` : '';
       info =
-        `<b>${def.emoji} ${def.name}</b> – Stufe ${tower.level}/5<br>Reichweite: ${Math.floor(st.range)}<br>` +
-        `${st.dps ? `DPS: ${Math.floor(st.dps)}` : `Schaden: ${Math.floor(st.dmg)}`}${push}${st.boosted ? '<br>🧭 PPL-Boost aktiv (+25%)' : ''}<br><br>` +
-        `<button data-action="upgrade">⬆ Upgrade (${up ?? 'max'}) [U]</button> ` +
-        `<button data-action="sell">👋 Abgeben (+${game.sellValue(tower)}) [S]</button>`;
+        `<b>${def.name}</b> <span class="muted">Stufe ${tower.level}/5</span><br>Reichweite ${Math.floor(st.range)} · ` +
+        `${st.dps ? `DPS ${Math.floor(st.dps)}` : `Schaden ${Math.floor(st.dmg)}`}${push}${st.boosted ? '<br><span class="muted">PPL-Boost aktiv (+25 %)</span>' : ''}<br>` +
+        `<button data-action="upgrade">Upgrade (${up ?? 'max'}) [U]</button>` +
+        `<button data-action="sell">Abgeben (+${game.sellValue(tower)}) [S]</button>`;
     } else if (selected) {
       const def = TOWERS[selected];
-      info = `<b>${def.emoji} ${def.name}</b><br>Kosten: ${def.cost}<br>Klick aufs Feld zum Platzieren.<br>Rechtsklick/ESC: abbrechen`;
+      info = `<b>${def.name}</b> <span class="muted">Kosten ${def.cost}</span><br>${TOWER_BLURBS[selected]}<br><span class="muted">Klick aufs Feld · Rechtsklick/Esc: abbrechen</span>`;
     }
     if (info !== this.lastInfo) {
       this.lastInfo = info;

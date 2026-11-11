@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="64" viewBox="0 0 120 64">
+  <!-- Schreibtisch in Schrägsicht (eigenes Werk, flacher Kenney-ähnlicher Stil) -->
+  <rect x="10" y="30" width="7" height="32" rx="2" fill="#8d6e63"/>
+  <rect x="103" y="30" width="7" height="32" rx="2" fill="#8d6e63"/>
+  <rect x="6" y="26" width="108" height="22" rx="3" fill="#bc8a5f"/>
+  <rect x="6" y="40" width="108" height="8" rx="3" fill="#a47148"/>
+  <rect x="44" y="30" width="32" height="10" rx="2" fill="#a47148"/>
+  <rect x="56" y="33" width="8" height="3" rx="1.5" fill="#ffe0b2"/>
+  <path d="M4 18 Q4 12 10 12 L110 12 Q116 12 116 18 L116 26 L4 26 Z" fill="#e0b48a"/>
+  <path d="M4 22 L116 22 L116 27 Q116 29 114 29 L6 29 Q4 29 4 27 Z" fill="#c99a6c"/>
+  <path d="M12 15 L108 15" stroke="#f1d1b0" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

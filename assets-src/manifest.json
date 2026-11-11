@@ -256,352 +256,772 @@
     {
       "name": "char/dualo/idle",
       "src": "kenney/toon-characters-1/poses/dualo-idle.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/attack0",
       "src": "kenney/toon-characters-1/poses/dualo-attack0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/attack1",
       "src": "kenney/toon-characters-1/poses/dualo-attack1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/attack2",
       "src": "kenney/toon-characters-1/poses/dualo-attack2.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/interact",
       "src": "kenney/toon-characters-1/poses/dualo-interact.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/talk",
       "src": "kenney/toon-characters-1/poses/dualo-talk.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/think",
       "src": "kenney/toon-characters-1/poses/dualo-think.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/cheer0",
       "src": "kenney/toon-characters-1/poses/dualo-cheer0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/cheer1",
       "src": "kenney/toon-characters-1/poses/dualo-cheer1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/hold",
       "src": "kenney/toon-characters-1/poses/dualo-hold.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/show",
       "src": "kenney/toon-characters-1/poses/dualo-show.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/hurt",
       "src": "kenney/toon-characters-1/poses/dualo-hurt.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/kick",
       "src": "kenney/toon-characters-1/poses/dualo-kick.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dualo/wide",
       "src": "kenney/toon-characters-1/poses/dualo-wide.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/idle",
       "src": "kenney/toon-characters-1/poses/analyst-idle.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/attack0",
       "src": "kenney/toon-characters-1/poses/analyst-attack0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/attack1",
       "src": "kenney/toon-characters-1/poses/analyst-attack1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/attack2",
       "src": "kenney/toon-characters-1/poses/analyst-attack2.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/interact",
       "src": "kenney/toon-characters-1/poses/analyst-interact.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/talk",
       "src": "kenney/toon-characters-1/poses/analyst-talk.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/think",
       "src": "kenney/toon-characters-1/poses/analyst-think.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/cheer0",
       "src": "kenney/toon-characters-1/poses/analyst-cheer0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/cheer1",
       "src": "kenney/toon-characters-1/poses/analyst-cheer1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/hold",
       "src": "kenney/toon-characters-1/poses/analyst-hold.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/show",
       "src": "kenney/toon-characters-1/poses/analyst-show.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/hurt",
       "src": "kenney/toon-characters-1/poses/analyst-hurt.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/kick",
       "src": "kenney/toon-characters-1/poses/analyst-kick.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/analyst/wide",
       "src": "kenney/toon-characters-1/poses/analyst-wide.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/idle",
       "src": "kenney/toon-characters-1/poses/dev-idle.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/attack0",
       "src": "kenney/toon-characters-1/poses/dev-attack0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/attack1",
       "src": "kenney/toon-characters-1/poses/dev-attack1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/attack2",
       "src": "kenney/toon-characters-1/poses/dev-attack2.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/interact",
       "src": "kenney/toon-characters-1/poses/dev-interact.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/talk",
       "src": "kenney/toon-characters-1/poses/dev-talk.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/think",
       "src": "kenney/toon-characters-1/poses/dev-think.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/cheer0",
       "src": "kenney/toon-characters-1/poses/dev-cheer0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/cheer1",
       "src": "kenney/toon-characters-1/poses/dev-cheer1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/hold",
       "src": "kenney/toon-characters-1/poses/dev-hold.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/show",
       "src": "kenney/toon-characters-1/poses/dev-show.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/hurt",
       "src": "kenney/toon-characters-1/poses/dev-hurt.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/kick",
       "src": "kenney/toon-characters-1/poses/dev-kick.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/dev/wide",
       "src": "kenney/toon-characters-1/poses/dev-wide.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/idle",
       "src": "kenney/toon-characters-1/poses/ppl-idle.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/attack0",
       "src": "kenney/toon-characters-1/poses/ppl-attack0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/attack1",
       "src": "kenney/toon-characters-1/poses/ppl-attack1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/attack2",
       "src": "kenney/toon-characters-1/poses/ppl-attack2.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/interact",
       "src": "kenney/toon-characters-1/poses/ppl-interact.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/talk",
       "src": "kenney/toon-characters-1/poses/ppl-talk.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/think",
       "src": "kenney/toon-characters-1/poses/ppl-think.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/cheer0",
       "src": "kenney/toon-characters-1/poses/ppl-cheer0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/cheer1",
       "src": "kenney/toon-characters-1/poses/ppl-cheer1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/hold",
       "src": "kenney/toon-characters-1/poses/ppl-hold.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/show",
       "src": "kenney/toon-characters-1/poses/ppl-show.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/hurt",
       "src": "kenney/toon-characters-1/poses/ppl-hurt.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/kick",
       "src": "kenney/toon-characters-1/poses/ppl-kick.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/ppl/wide",
       "src": "kenney/toon-characters-1/poses/ppl-wide.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/idle",
       "src": "kenney/toon-characters-1/poses/scrum-idle.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/attack0",
       "src": "kenney/toon-characters-1/poses/scrum-attack0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/attack1",
       "src": "kenney/toon-characters-1/poses/scrum-attack1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/attack2",
       "src": "kenney/toon-characters-1/poses/scrum-attack2.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/interact",
       "src": "kenney/toon-characters-1/poses/scrum-interact.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/talk",
       "src": "kenney/toon-characters-1/poses/scrum-talk.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/think",
       "src": "kenney/toon-characters-1/poses/scrum-think.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/cheer0",
       "src": "kenney/toon-characters-1/poses/scrum-cheer0.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/cheer1",
       "src": "kenney/toon-characters-1/poses/scrum-cheer1.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/hold",
       "src": "kenney/toon-characters-1/poses/scrum-hold.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/show",
       "src": "kenney/toon-characters-1/poses/scrum-show.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/hurt",
       "src": "kenney/toon-characters-1/poses/scrum-hurt.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/kick",
       "src": "kenney/toon-characters-1/poses/scrum-kick.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "char/scrum/wide",
       "src": "kenney/toon-characters-1/poses/scrum-wide.png",
-      "width": 96
+      "width": 84,
+      "crop": {
+        "left": 0,
+        "top": 28,
+        "width": 192,
+        "height": 228
+      }
     },
     {
       "name": "tile/100",
@@ -1078,6 +1498,41 @@
       "name": "prop/crown",
       "src": "props/crown.svg",
       "width": 48
+    },
+    {
+      "name": "prop/desk",
+      "src": "props/desk.svg",
+      "width": 96
+    },
+    {
+      "name": "prop/sign",
+      "src": "props/sign.svg",
+      "width": 140
+    },
+    {
+      "name": "deco/plant",
+      "src": "props/plant.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/cooler",
+      "src": "props/cooler.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/coffee",
+      "src": "props/coffee.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/printer",
+      "src": "props/printer.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/cabinet",
+      "src": "props/cabinet.svg",
+      "width": 80
     }
   ],
   "monsters": [

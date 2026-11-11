@@ -3,41 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BACKLOG DEFENSE 3000 ™</title>
+<title>BACKLOG DEFENSE 3000</title>
 </head>
 <body>
-<h1>📌 BACKLOG DEFENSE 3000 📌</h1>
-<div class="sub">NEON-KFZ AG · Team „Prozessoptimierung“: Der Fachbereich schickt Anforderungen, Change Requests, Features und Objectives. Stell dein Team auf, bevor alles in die Deadline rauscht!</div>
+<header id="top">
+  <div id="brand">
+    <h1>Backlog Defense <span>3000</span></h1>
+    <div class="sub">NEON-KFZ AG · Team „Prozessoptimierung“ – stell dein Team auf, bevor alles in die Deadline rauscht!</div>
+  </div>
+  <div id="stats">
+    <div class="chip" title="Kapazität (Story Points)"><i class="ico ico-coin"></i><b id="money"></b><small>SP</small></div>
+    <div class="chip chip-moral" title="Team-Moral"><i class="ico ico-heart"></i><b id="lives"></b><small>%</small><span class="meter"><span id="lives-bar"></span></span></div>
+    <div class="chip chip-wave" title="Sprint"><i class="ico ico-flag"></i><b id="wave"></b></div>
+    <div class="chip" title="Score"><i class="ico ico-trophy"></i><b id="score"></b></div>
+    <div class="chip chip-map" title="Karte"><i class="ico ico-map"></i><b id="map"></b></div>
+    <button id="team-name" class="chip chip-team" hidden title="Teamname ändern"></button>
+  </div>
+</header>
 <div id="wrap">
   <div id="frame"><div id="game"></div></div>
-  <div id="side">
-    <div class="stat">⚙️ Kapazität: <b id="money"></b> SP</div>
-    <div class="stat">💖 Team-Moral: <b id="lives"></b> %</div>
-    <div class="stat">🗓️ <b id="wave"></b> &nbsp; 🏆 <b id="score"></b></div>
-    <div class="stat">🗺️ Karte: <b id="map"></b></div>
-    <div id="mode" class="row" role="group" aria-label="Spielmodus">
-      <button data-mode="challenge" title="30 Wellen – wer schafft das Release?">🏁 Challenge (30)</button>
-      <button data-mode="endless" title="Bis zum Burnout">♾ Endlos</button>
-    </div>
-    <div id="info"></div>
-    <button id="big">▶ SPRINT STARTEN</button>
-    <div class="row"><button id="spd">⏩ x1</button><button id="mute">🔊 Sound</button></div>
-    <button id="replay" hidden>💾 Replay herunterladen</button>
-    <details id="lb" open>
-      <summary>🏆 Bestenliste</summary>
-      <div id="lb-tabs" class="row" role="group" aria-label="Zeitraum">
+  <aside id="side">
+    <section class="card" id="team-card">
+      <h2>Dein Team <small>Taste 1–5</small></h2>
+      <div id="towers"></div>
+      <div id="info"></div>
+    </section>
+    <section class="card" id="control-card">
+      <button id="big">Sprint starten</button>
+      <div class="row">
+        <button id="spd" title="Tempo">x1</button>
+        <button id="mute" title="Ton an/aus">Ton</button>
+        <button id="replay" hidden title="Replay herunterladen">Replay</button>
+      </div>
+      <div id="mode" class="row seg" role="group" aria-label="Spielmodus">
+        <button data-mode="challenge" title="30 Wellen – wer schafft das Release?">Challenge 30</button>
+        <button data-mode="endless" title="Bis zum Burnout">Endlos</button>
+      </div>
+    </section>
+    <section class="card" id="lb">
+      <h2>Bestenliste</h2>
+      <div id="play-kind" class="row seg" role="group" aria-label="Spielart">
+        <button data-kind="daily" class="active" title="Alle spielen heute dieselbe Karte – zählt für die Bestenliste">Daily</button>
+        <button data-kind="free" title="Zufällige Karte, Challenge oder Endlos – zählt nicht">Freies Spiel</button>
+      </div>
+      <div id="lb-status" aria-live="polite"></div>
+      <div id="lb-tabs" class="row seg" role="group" aria-label="Zeitraum">
         <button data-period="day" class="active">Heute</button>
         <button data-period="week">Woche</button>
       </div>
       <ol id="lb-list"></ol>
-      <div id="lb-status" aria-live="polite"></div>
-      <div id="play-kind" class="row" role="group" aria-label="Spielart">
-        <button data-kind="daily" class="active" title="Alle spielen heute dieselbe Karte – zählt für die Bestenliste">Daily</button>
-        <button data-kind="free" title="Zufällige Karte, Challenge oder Endlos – zählt nicht">Freies Spiel</button>
-      </div>
-      <button id="team-name" hidden title="Teamname ändern"></button>
-    </details>
-  </div>
+    </section>
+  </aside>
 </div>
 <div id="ticker"><span id="tk"></span></div>
 <script type="module" src="/src/main.ts"></script>

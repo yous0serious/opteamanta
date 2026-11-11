@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+  <!-- Topfpflanze, Schrägsicht (eigenes Werk) -->
+  <ellipse cx="32" cy="90" rx="20" ry="5" fill="#000" opacity="0.15"/>
+  <path d="M30 62 C14 52 6 34 14 20 C22 34 28 44 30 62 Z" fill="#43a047"/>
+  <path d="M34 62 C50 52 58 34 50 18 C42 34 36 44 34 62 Z" fill="#388e3c"/>
+  <path d="M32 62 C24 44 24 22 32 6 C40 22 40 44 32 62 Z" fill="#66bb6a"/>
+  <path d="M31 62 C18 58 8 50 4 40 C16 42 26 50 31 62 Z" fill="#2e7d32"/>
+  <path d="M33 62 C46 58 56 50 60 40 C48 42 38 50 33 62 Z" fill="#4caf50"/>
+  <path d="M32 58 L32 14" stroke="#a5d6a7" stroke-width="2" opacity="0.7"/>
+  <path d="M16 60 L48 60 L44 88 Q44 90 42 90 L22 90 Q20 90 20 88 Z" fill="#ef6c00"/>
+  <rect x="14" y="58" width="36" height="8" rx="3" fill="#ff8f00"/>
+  <path d="M22 70 L42 70" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/>
+</svg>

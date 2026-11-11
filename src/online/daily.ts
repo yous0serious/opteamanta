@@ -63,7 +63,7 @@ export class DailyFlow {
     } catch (err) {
       this.kind = 'free';
       this.ui.showKind('free');
-      this.ui.status(`⚠️ Online-Anmeldung fehlgeschlagen: ${errText(err)} – freies Spiel`, 'err');
+      this.ui.status(`Online-Anmeldung fehlgeschlagen: ${errText(err)} – freies Spiel`, 'err');
       return;
     }
     await this.start();
@@ -75,7 +75,7 @@ export class DailyFlow {
     this.starting = true;
     this.kind = 'daily';
     this.ui.showKind('daily');
-    this.ui.status('⏳ Daily wird geladen…');
+    this.ui.status('Daily wird geladen…');
     try {
       const session = await this.api.startDaily();
       const s = this.ctl.game.state;
@@ -90,7 +90,7 @@ export class DailyFlow {
       this.kind = 'free';
       this.ui.showKind('free');
       if (this.ctl.over) this.ctl.restart();
-      this.ui.status(`⚠️ Daily nicht verfügbar: ${errText(err)} – freies Spiel`, 'err', {
+      this.ui.status(`Daily nicht verfügbar: ${errText(err)} – freies Spiel`, 'err', {
         label: 'Daily erneut versuchen',
         run: () => void this.start(),
       });
@@ -133,7 +133,7 @@ export class DailyFlow {
     try {
       this.ui.status('Wird eingereicht…');
       const id = await this.api.submit(session.sessionId, replay);
-      this.ui.status('⏳ Wird geprüft… (der Server spielt deinen Lauf nach)');
+      this.ui.status('Wird geprüft… (der Server spielt deinen Lauf nach)');
       const deadline = Date.now() + POLL_MAX_MS;
       while (Date.now() < deadline) {
         await sleep(POLL_MS);
@@ -141,18 +141,18 @@ export class DailyFlow {
         if (st?.status === 'verified') {
           const rank = await this.ui.refresh();
           const today = session.dailyDate === berlinDate() ? (rank ? ` · Tagesrang ${rank}` : '') : '';
-          this.ui.status(`✅ Geprüft: Score ${st.score ?? replay.result.score}${today}`, 'ok');
+          this.ui.status(`Geprüft: Score ${st.score ?? replay.result.score}${today}`, 'ok');
           return;
         }
         if (st?.status === 'rejected') {
-          this.ui.status(`❌ Abgelehnt: ${st.reason ?? 'unbekannter Grund'}`, 'err');
+          this.ui.status(`Abgelehnt: ${st.reason ?? 'unbekannter Grund'}`, 'err');
           return;
         }
       }
-      this.ui.status('⏳ Prüfung dauert länger – das Ergebnis erscheint später in der Bestenliste.', 'info');
+      this.ui.status('Prüfung dauert länger – das Ergebnis erscheint später in der Bestenliste.', 'info');
     } catch (err) {
       const final = err instanceof ApiError && err.status >= 400 && err.status < 500 && err.status !== 429;
-      this.ui.status(`⚠️ Einreichen fehlgeschlagen: ${errText(err)}`, 'err', final ? undefined : retry);
+      this.ui.status(`Einreichen fehlgeschlagen: ${errText(err)}`, 'err', final ? undefined : retry);
     }
   }
 }

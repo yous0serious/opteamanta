@@ -1,5 +1,8 @@
 import '@fontsource/caveat/600.css';
 import '@fontsource/caveat/700.css';
+import '@fontsource/nunito/400.css';
+import '@fontsource/nunito/700.css';
+import '@fontsource/nunito/800.css';
 import './view/style.css';
 import Phaser from 'phaser';
 import { HEIGHT, WIDTH } from './sim/index';

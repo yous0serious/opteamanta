@@ -122,7 +122,7 @@ export class LeaderboardPanel implements DailyUi {
       score.title = r.won ? `Sieg · Moral ${r.lives} %` : `bis Welle ${r.wave}`;
       const wave = document.createElement('span');
       wave.className = 'wv';
-      wave.textContent = r.won ? '🏁' : `W${r.wave}`;
+      wave.textContent = r.won ? 'Sieg' : `W${r.wave}`;
       li.append(rank, nick, score, wave);
       list.append(li);
     }

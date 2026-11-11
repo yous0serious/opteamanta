@@ -19,6 +19,12 @@ interface FrameSpec {
   variants?: keyof typeof PALETTES;
   /** Nur die Varianten erzeugen, nicht den ungefärbten Grund-Frame. */
   variantsOnly?: boolean;
+  /** Aufhellen: Anteil (0–1), mit dem jede Farbe zu Weiß gemischt wird (helle Böden, Spec office-makeover AC-3). */
+  lighten?: number;
+  /** Ausschnitt vor dem Skalieren (Quell-px), z. B. einheitlicher oberer Rand aller Posen. */
+  crop?: { left: number; top: number; width: number; height: number };
+  /** Transparente Ränder abschneiden. */
+  trim?: boolean;
 }
 interface Manifest {
   atlas: string;
@@ -38,6 +44,8 @@ async function render(frame: FrameSpec): Promise<Buffer> {
   const isSvg = extname(file) === '.svg';
   // SVG mit hoher Dichte rendern, damit das Verkleinern scharf bleibt.
   let img = sharp(input, isSvg ? { density: 288 } : {});
+  if (frame.trim) img = sharp(await img.trim({ threshold: 1 }).png().toBuffer());
+  if (frame.crop) img = sharp(await img.extract(frame.crop).png().toBuffer());
   if (frame.width || frame.height) {
     img = img.resize({ width: frame.width, height: frame.height, fit: frame.width && frame.height ? 'fill' : 'inside' });
   }
@@ -48,6 +56,12 @@ async function render(frame: FrameSpec): Promise<Buffer> {
       .joinChannel(alpha, { raw: { width: info.width, height: info.height, channels: 1 } })
       .png()
       .toBuffer();
+  }
+  if (frame.lighten) {
+    const k = frame.lighten;
+    const { data, info } = await img.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    for (let i = 0; i < data.length; i += 4) for (let c = 0; c < 3; c++) data[i + c] = Math.round(data[i + c]! + (255 - data[i + c]!) * k);
+    return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
   }
   return img.png().toBuffer();
 }

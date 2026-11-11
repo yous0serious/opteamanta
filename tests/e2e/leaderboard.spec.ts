@@ -218,8 +218,8 @@ test.describe('online build (mocked Supabase)', () => {
     await open(page);
     await expectDailyRunning(page);
     await playToBurnout(page);
-    await expect(page.locator('#lb-status')).toContainText('⏳ Wird geprüft…');
-    await expect(page.locator('#lb-status')).toContainText('✅ Geprüft: Score 4242 · Tagesrang 14', { timeout: 20_000 });
+    await expect(page.locator('#lb-status')).toContainText('Wird geprüft…');
+    await expect(page.locator('#lb-status')).toContainText('Geprüft: Score 4242 · Tagesrang 14', { timeout: 20_000 });
     await expect(page.locator('dialog#nick')).toHaveCount(0);
     const submits = mock.find('POST', '/functions/v1/submit-run');
     expect(submits).toHaveLength(1);
@@ -239,7 +239,7 @@ test.describe('online build (mocked Supabase)', () => {
     await open(page);
     await expectDailyRunning(page);
     await playToBurnout(page);
-    await expect(page.locator('#lb-status')).toContainText('❌ Abgelehnt: Ergebnis stimmt nicht', { timeout: 20_000 });
+    await expect(page.locator('#lb-status')).toContainText('Abgelehnt: Ergebnis stimmt nicht', { timeout: 20_000 });
     await expect(page.locator('dialog#nick')).toHaveCount(0);
     expect(errors).toEqual([]);
   });
@@ -256,10 +256,10 @@ test.describe('online build (mocked Supabase)', () => {
     await open(page);
     await expectDailyRunning(page);
     await playToBurnout(page);
-    await expect(page.locator('#lb-status')).toContainText('⚠️ Einreichen fehlgeschlagen');
+    await expect(page.locator('#lb-status')).toContainText('Einreichen fehlgeschlagen');
     await expect(page.locator('#lb-action')).toHaveText('Erneut einreichen');
     await page.locator('#lb-action').click();
-    await expect(page.locator('#lb-status')).toContainText('✅ Geprüft: Score 4242', { timeout: 20_000 });
+    await expect(page.locator('#lb-status')).toContainText('Geprüft: Score 4242', { timeout: 20_000 });
     expect(mock.find('POST', '/functions/v1/submit-run')).toHaveLength(2);
     expect(errors).toEqual([]);
   });

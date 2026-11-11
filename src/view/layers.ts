@@ -5,10 +5,12 @@ import type { FxSettings } from './fx';
 export interface Layers {
   world: Phaser.GameObjects.Container;
   board: Phaser.GameObjects.Container;
+  /** Bodenflecken (Spec office-makeover). */
+  decals: Phaser.GameObjects.Container;
   pile: Phaser.GameObjects.Container;
   under: Phaser.GameObjects.Container;
-  towers: Phaser.GameObjects.Container;
-  enemies: Phaser.GameObjects.Container;
+  /** Arbeitsplätze und Monster gemeinsam, nach Fußpunkt sortiert (Tiefe). */
+  actors: Phaser.GameObjects.Container;
   enemyUi: Phaser.GameObjects.Container;
   shots: Phaser.GameObjects.Container;
   particles: Phaser.GameObjects.Container;
@@ -19,29 +21,27 @@ export interface Layers {
 type Named = { name: string; layer: string };
 const registry = new WeakMap<Phaser.Scene, Named[]>();
 
-/** Ebenen anlegen; bei fx=high Schatten auf Türmen/Gegnern und Kamera-Vignette (Filter pro Ebene, nicht pro Objekt). */
+/**
+ * Ebenen anlegen. Spec office-makeover AC-3: keine abdunkelnden Kamerafilter (keine Vignette);
+ * bei fx=high und WebGL nur ein weicher Schatten auf der Figuren-Ebene.
+ */
 export function createLayers(scene: Phaser.Scene, fx: FxSettings): Layers {
   const c = (): Phaser.GameObjects.Container => scene.add.container(0, 0);
   const layers: Layers = {
-    world: c(), board: c(), pile: c(), under: c(), towers: c(), enemies: c(), enemyUi: c(),
+    world: c(), board: c(), decals: c(), pile: c(), under: c(), actors: c(), enemyUi: c(),
     shots: c(), particles: c(), texts: c(), overlay: c(),
   };
   layers.world.add([
-    layers.board, layers.pile, layers.under, layers.towers, layers.enemies, layers.enemyUi,
+    layers.board, layers.decals, layers.pile, layers.under, layers.actors, layers.enemyUi,
     layers.shots, layers.particles, layers.texts,
   ]);
   const active: Named[] = [];
-  // Filter gibt es nur im WebGL-Renderer (Canvas-Fallback: Ruling R-4).
+  // Filter gibt es nur im WebGL-Renderer (Canvas-Fallback: Ruling R-4 Spec visual-overhaul).
   const webgl = scene.game.renderer.type === Phaser.WEBGL;
   if (fx.level === 'high' && webgl) {
-    for (const key of ['towers', 'enemies'] as const) {
-      const layer = layers[key];
-      layer.enableFilters();
-      layer.filters?.internal.addShadow(1, 1.5, 0.12, 1, 0x000000, 6, 0.35);
-      active.push({ name: 'Shadow', layer: key });
-    }
-    scene.cameras.main.filters.external.addVignette(0.5, 0.5, 0.9, 0.35);
-    active.push({ name: 'Vignette', layer: 'camera' });
+    layers.actors.enableFilters();
+    layers.actors.filters?.internal.addShadow(1, 1.5, 0.1, 1, 0x000000, 6, 0.25);
+    active.push({ name: 'Shadow', layer: 'actors' });
   }
   registry.set(scene, active);
   return layers;
@@ -59,7 +59,7 @@ export function unregisterFilter(scene: Phaser.Scene, layer: string, name: strin
   if (i >= 0) list.splice(i, 1);
 }
 
-/** Namen aktiver Filter, z. B. `towers:Shadow` (E2E über window.__bd.debug.filters()). */
+/** Namen aktiver Filter, z. B. `actors:Shadow` (E2E über window.__bd.debug.filters()). */
 export function activeFilters(scene: Phaser.Scene): string[] {
   return (registry.get(scene) ?? []).map((f) => `${f.layer}:${f.name}`);
 }

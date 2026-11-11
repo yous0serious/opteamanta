@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="64" viewBox="0 0 140 64">
+  <!-- Schild (Fachbereich/Deadline), weiß, wird im Spiel beschriftet; eigenes Werk -->
+  <rect x="4" y="8" width="132" height="52" rx="10" fill="#000" opacity="0.12"/>
+  <rect x="2" y="2" width="132" height="52" rx="10" fill="#ffffff"/>
+  <rect x="2" y="2" width="132" height="12" rx="6" fill="#eceff1"/>
+  <circle cx="14" cy="8" r="3" fill="#b0bec5"/>
+  <circle cx="122" cy="8" r="3" fill="#b0bec5"/>
+</svg>

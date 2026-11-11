@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="100" viewBox="0 0 56 100">
+  <!-- Wasserspender, Schrägsicht (eigenes Werk) -->
+  <ellipse cx="28" cy="95" rx="20" ry="4" fill="#000" opacity="0.15"/>
+  <path d="M16 6 Q16 2 20 2 L36 2 Q40 2 40 6 L42 30 Q42 34 38 34 L18 34 Q14 34 14 30 Z" fill="#81d4fa"/>
+  <path d="M19 8 L21 30" stroke="#e1f5fe" stroke-width="3" stroke-linecap="round"/>
+  <rect x="20" y="32" width="16" height="6" fill="#4fc3f7"/>
+  <rect x="10" y="38" width="36" height="56" rx="4" fill="#eceff1"/>
+  <rect x="10" y="38" width="36" height="8" rx="4" fill="#cfd8dc"/>
+  <rect x="16" y="52" width="24" height="16" rx="3" fill="#b0bec5"/>
+  <rect x="19" y="55" width="5" height="6" rx="1" fill="#e53935"/>
+  <rect x="32" y="55" width="5" height="6" rx="1" fill="#1e88e5"/>
+  <rect x="10" y="84" width="36" height="10" rx="3" fill="#cfd8dc"/>
+</svg>

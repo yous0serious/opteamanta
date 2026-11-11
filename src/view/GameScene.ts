@@ -7,10 +7,13 @@ import { activeFilters, createLayers, registerFilter, unregisterFilter, type Lay
 import { DonePile } from './logic/donePile';
 import { ATLAS } from './PreloadScene';
 import { WaveBanner } from './render/banner';
-import { Board } from './render/board';
-import { dashedCircle, dashedPolyline, hex } from './render/draw';
+import { dashedCircle, hex } from './render/draw';
 import { Effects } from './render/effects';
-import { EnemyView, TowerView, type ViewCtx } from './render/entities';
+import type { ViewCtx } from './render/entities';
+import { Decals } from './render/office/decals';
+import { OfficeFloor } from './render/office/floor';
+import { MONSTER_W, MonsterView, createMonsterAnims } from './render/office/monster';
+import { WorkstationView } from './render/office/workstation';
 import { Particles } from './render/particles';
 import { PileView } from './render/pile';
 import { ABSENT, HAND, INK, JAM, KILL, LEAK, SPRINTS, UPGRADE_TITLES, pick, piLabel } from './texts';
@@ -22,8 +25,9 @@ const PILE_AREA = { x: 720, y: 470, w: 240, h: 130 };
 const PILE_MAX = 60;
 const HITSTOP_MS = 60;
 
-const SHOT_FRAME = { dualo: 'proj/dualo', analyst: 'proj/analyst', scrum: 'proj/scrum', ppl: 'prop/pin', dev: 'proj/dualo' } as const;
-const SHOT_SIZE = { dualo: 12, analyst: 17, scrum: 16, ppl: 20, dev: 12 } as const;
+/** Geschosse als Büro-Gegenstände (Spec office-makeover AC-6). */
+const SHOT_FRAME = { dualo: 'item/cup', analyst: 'item/notepad', scrum: 'item/bell', ppl: 'item/folder', dev: 'item/cup' } as const;
+const SHOT_SIZE = { dualo: 16, analyst: 16, scrum: 16, ppl: 20, dev: 12 } as const;
 
 /** Entfernt Darstellungen, deren Sim-Objekt nicht mehr existiert. */
 function prune<V extends { destroy(): void }>(views: Map<number, V>, seen: ReadonlySet<number>): void {
@@ -37,9 +41,11 @@ function prune<V extends { destroy(): void }>(views: Map<number, V>, seen: Reado
 
 /** Spielfeld: rendert den Sim-Zustand und übersetzt Maus-Eingaben in Controller-Aufrufe. */
 export class GameScene extends Phaser.Scene {
-  private board!: Board;
+  private board!: OfficeFloor;
   private layers!: Layers;
   private ctx!: ViewCtx;
+  private decals!: Decals;
+  private puffs!: Phaser.GameObjects.Particles.ParticleEmitter;
   private under!: Phaser.GameObjects.Graphics;
   private beams!: Phaser.GameObjects.Graphics;
   private beamLayer!: Phaser.GameObjects.Container;
@@ -59,8 +65,8 @@ export class GameScene extends Phaser.Scene {
   private desatT = 0;
 
   private readonly fx = new Effects();
-  private readonly towers = new Map<number, TowerView>();
-  private readonly enemies = new Map<number, EnemyView>();
+  private readonly towers = new Map<number, WorkstationView>();
+  private readonly enemies = new Map<number, MonsterView>();
   private readonly trails = new Map<number, Array<[number, number]>>();
   private readonly shots = new Map<number, Phaser.GameObjects.Image>();
   private readonly floatTexts = new Map<number, Phaser.GameObjects.Text>();
@@ -91,11 +97,13 @@ export class GameScene extends Phaser.Scene {
     const webgl = this.game.renderer.type === Phaser.WEBGL;
     this.ctx = { scene: this, webgl, filters: webgl && this.settings.level === 'high', reducedMotion: this.settings.reducedMotion };
     this.layers = createLayers(this, this.settings);
+    createMonsterAnims(this);
+    this.decals = new Decals(this, this.layers.decals);
     this.under = this.add.graphics();
     this.layers.under.add(this.under);
 
-    // Strahlen in eigener Ebene, damit ein einziger Glow-Filter alle Strahlen erfasst.
-    this.beams = this.add.graphics();
+    // Strahlen in eigener Ebene: additiv „leuchtend“ (auch im Canvas-Renderer), bei WebGL zusätzlich Glow-Filter.
+    this.beams = this.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     this.beamLayer = this.add.container(0, 0, [this.beams]);
     this.trailsG = this.add.graphics();
     this.layers.shots.add([this.trailsG, this.beamLayer]);
@@ -111,6 +119,12 @@ export class GameScene extends Phaser.Scene {
     this.layers.shots.add(this.codeFx);
 
     this.parts = new Particles(this, this.layers.particles, this.settings.particleScale);
+    this.puffs = this.add.particles(0, 0, ATLAS, {
+      frame: ['puff/00', 'puff/06', 'puff/12', 'puff/18'], emitting: false, lifespan: { min: 380, max: 700 },
+      speed: { min: 15, max: 70 }, scale: { start: 0.22, end: 0.5 }, alpha: { start: 0.85, end: 0 }, rotate: { min: 0, max: 360 },
+      maxParticles: 300,
+    });
+    this.layers.particles.add(this.puffs);
     this.ringsG = this.add.graphics();
     this.layers.particles.add(this.ringsG);
 
@@ -149,7 +163,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private buildBoard(game: Game): void {
-    this.board = new Board(this, game, this.settings.reducedMotion);
+    this.board = new OfficeFloor(this, game, this.settings.reducedMotion);
     this.layers.board.add(this.board.root);
     const pile = new DonePile({
       max: PILE_MAX,
@@ -176,6 +190,8 @@ export class GameScene extends Phaser.Scene {
     this.trails.clear();
     this.fx.clear();
     this.parts.clear();
+    this.puffs.killAll();
+    this.decals.clear();
     this.banner.hide();
     if (this.desat) {
       this.cameras.main.filters.internal.remove(this.desat);
@@ -259,9 +275,12 @@ export class GameScene extends Phaser.Scene {
       case 'killed': {
         const boss = e.enemy.type === 'boss';
         const color = ENEMIES[e.enemy.type].color;
-        parts.burst(e.enemy.x, e.enemy.y, color, boss ? 120 : 18, boss ? 400 : 200, 'circle');
-        parts.burst(e.enemy.x, e.enemy.y, color, boss ? 40 : 6, boss ? 300 : 160, 'dirt');
-        fx.text(e.enemy.x, e.enemy.y - 10, pick(KILL), INK.neutral, 13, 1);
+        const n = Math.max(1, Math.round((boss ? 14 : 5) * this.settings.particleScale));
+        this.puffs.explode(n, e.enemy.x, e.enemy.y);
+        parts.burst(e.enemy.x, e.enemy.y, color, boss ? 90 : 14, boss ? 400 : 200, 'circle');
+        parts.burst(e.enemy.x, e.enemy.y, INK.yellow, boss ? 30 : 4, boss ? 300 : 160, 'star');
+        this.decals.splat(e.enemy.x, e.enemy.y, e.enemy.type, MONSTER_W[e.enemy.type] * 1.3);
+        if (boss || Math.random() < 0.3) fx.text(e.enemy.x, e.enemy.y - 24, pick(KILL), INK.neutral, 13, 1);
         this.flyToPile(e.enemy);
         if (boss) {
           fx.shake = 25;
@@ -291,9 +310,12 @@ export class GameScene extends Phaser.Scene {
           registerFilter(this, 'camera', 'ColorMatrix');
         }
         break;
-      case 'waveCleared':
+      case 'waveCleared': {
         this.banner.show(`SPRINT-REVIEW BESTANDEN! Kapazität +${e.bonus} SP`, INK.green, 22, 1.6, 0xc8e6c9);
+        let i = 0;
+        for (const v of this.towers.values()) this.time.delayedCall((i++ % 12) * 40, () => v.cheer(1.1));
         break;
+      }
       case 'victory': {
         this.banner.hide();
         const colors = [INK.green, INK.yellow, INK.pink, INK.cyan, TOWERS.dev.color, TOWERS.ppl.color];
@@ -386,6 +408,7 @@ export class GameScene extends Phaser.Scene {
 
     this.fx.update(s.over ? dt * 0.3 : dt);
     this.board.update(this.time_, dt);
+    this.decals.update(dt);
     this.banner.update(dt);
     this.syncEntities(dt);
     this.drawUnder();
@@ -414,20 +437,29 @@ export class GameScene extends Phaser.Scene {
   private syncEntities(dt: number): void {
     const s = this.ctl.game.state;
     const enemyPos = new Map(s.enemies.map((e) => [e.id, e] as const));
+    const actors = this.layers.actors;
 
     const seenT = new Set<number>();
     for (const t of s.towers) {
       seenT.add(t.id);
       let v = this.towers.get(t.id);
       if (!v) {
-        v = new TowerView(this.ctx, t);
+        v = new WorkstationView(this.ctx, t);
         this.towers.set(t.id, v);
-        this.layers.towers.add(v.root);
+        actors.add(v.root);
+        this.board.setOccupied(t.cx, t.cy, true);
       }
       v.update(dt, this.time_, t.targetId !== null ? (enemyPos.get(t.targetId) ?? null) : null);
+      v.root.setDepth(v.depthY);
       if (t.beam) this.sfx.laser();
     }
-    prune(this.towers, seenT);
+    for (const [id, v] of this.towers) {
+      if (!seenT.has(id)) {
+        this.board.setOccupied(v.tower.cx, v.tower.cy, false);
+        v.destroy();
+        this.towers.delete(id);
+      }
+    }
 
     const seenE = new Set<number>();
     for (const e of s.enemies) {
@@ -435,13 +467,16 @@ export class GameScene extends Phaser.Scene {
       seenE.add(e.id);
       let v = this.enemies.get(e.id);
       if (!v) {
-        v = new EnemyView(this.ctx, e, this.layers.enemyUi);
+        v = new MonsterView(this.ctx, e, this.layers.enemyUi);
         this.enemies.set(e.id, v);
-        this.layers.enemies.add(v.root);
+        actors.add(v.root);
       }
       v.update(dt, this.time_);
+      v.root.setDepth(v.depthY);
     }
     prune(this.enemies, seenE);
+    // Tiefe: wer weiter unten steht, wird später gezeichnet
+    actors.sort('depth');
   }
 
   /** Vorschau, Aura, Auswahl, Boost-Ringe; Entwickler-Strahlen in der Glow-Ebene. */
@@ -467,25 +502,35 @@ export class GameScene extends Phaser.Scene {
       const off = t.offTime > 0;
       if (t.type === 'ppl') {
         const aura = TOWERS.ppl.aura!;
-        g.fillStyle(0xf9a825, 0.06).fillCircle(t.x, t.y, aura);
-        g.lineStyle(1.5, 0xf9a825, 0.55);
-        dashedCircle(g, t.x, t.y, aura, 4, 6);
+        const pulse = this.settings.reducedMotion ? 0 : Math.sin(this.time_ * 2 + t.id) * 4;
+        g.fillStyle(0xffd54f, 0.08).fillCircle(t.x, t.y, aura + pulse);
+        g.lineStyle(2, 0xf9a825, 0.4);
+        dashedCircle(g, t.x, t.y, aura + pulse, 5, 7, this.time_ * 10);
       }
       if (t.id === this.ctl.selectedTowerId) {
-        g.lineStyle(1.5, 0x37474f, 1);
+        g.fillStyle(0x1565c0, 0.06).fillCircle(t.x, t.y, stats.range);
+        g.lineStyle(2, 0x1565c0, 0.8);
         dashedCircle(g, t.x, t.y, stats.range, 6, 6, this.time_ * 20);
       }
       const target = t.beam && t.targetId !== null ? byId.get(t.targetId) : undefined;
       if (target) {
-        b.lineStyle(6 + t.level * 2, 0xd81b60, 0.25).lineBetween(t.x, t.y, target.x, target.y);
-        b.lineStyle(2.5, 0xd81b60, 1);
-        dashedPolyline(b, [t, target], 6, 4, -this.time_ * 80);
-        if (Math.random() < 0.25 * this.settings.particleScale) {
+        const sx = t.x;
+        const sy = t.y - 8;
+        const tx = target.x;
+        const ty = target.y - 4;
+        const flick = this.settings.reducedMotion ? 1 : 0.85 + Math.random() * 0.3;
+        b.lineStyle((12 + t.level * 3) * flick, 0xd81b60, 0.18).lineBetween(sx, sy, tx, ty);
+        b.lineStyle((5 + t.level) * flick, 0xff4f9a, 0.45).lineBetween(sx, sy, tx, ty);
+        b.lineStyle(2, 0xffffff, 0.9).lineBetween(sx, sy, tx, ty);
+        b.fillStyle(0xff80ab, 0.5).fillCircle(tx, ty, (8 + t.level * 2) * flick);
+        if (Math.random() < 0.3 * this.settings.particleScale) {
           const f = Math.random();
-          this.codeFx.explode(1, t.x + (target.x - t.x) * f, t.y + (target.y - t.y) * f);
+          this.codeFx.explode(1, sx + (tx - sx) * f, sy + (ty - sy) * f);
         }
       }
-      if (stats.boosted && !off) g.lineStyle(3, 0xf9a825, 1).strokeCircle(t.x, t.y, 22);
+      if (stats.boosted && !off) {
+        g.lineStyle(2.5, 0xffca28, 0.9).strokeEllipse(t.x, t.y + 15, 44, 16);
+      }
     }
   }
 

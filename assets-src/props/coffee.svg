@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="84" viewBox="0 0 80 84">
+  <!-- Kaffeemaschine auf Schränkchen, Schrägsicht (eigenes Werk) -->
+  <ellipse cx="40" cy="80" rx="34" ry="4" fill="#000" opacity="0.15"/>
+  <rect x="6" y="44" width="68" height="36" rx="3" fill="#bc8a5f"/>
+  <rect x="6" y="40" width="68" height="8" rx="3" fill="#e0b48a"/>
+  <rect x="10" y="52" width="28" height="24" rx="2" fill="#a47148"/>
+  <rect x="42" y="52" width="28" height="24" rx="2" fill="#a47148"/>
+  <rect x="34" y="62" width="4" height="6" rx="1" fill="#ffe0b2"/>
+  <rect x="42" y="62" width="4" height="6" rx="1" fill="#ffe0b2"/>
+  <rect x="18" y="4" width="44" height="38" rx="5" fill="#37474f"/>
+  <rect x="18" y="4" width="44" height="9" rx="5" fill="#546e7a"/>
+  <rect x="24" y="16" width="14" height="8" rx="2" fill="#80deea"/>
+  <circle cx="51" cy="20" r="4" fill="#ff7043"/>
+  <rect x="30" y="28" width="20" height="4" rx="1" fill="#263238"/>
+  <path d="M34 34 L46 34 L45 41 L35 41 Z" fill="#ffffff"/>
+  <path d="M37 32 L37 30 M43 32 L43 29" stroke="#bcaaa4" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
