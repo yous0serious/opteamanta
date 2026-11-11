@@ -48,3 +48,4 @@
 
 - 2026-11-10: Spec 3b freigegeben, ADR-0004 (proposed). Plan + 10 Briefs geschrieben, wartet auf Freigabe.
 - 2026-11-11: T01–T10 abgeschlossen; typecheck, lint, test 179/179, build, test:e2e 26/26, test:integration 38/38 grün; Push nach `main`.
+- 2026-11-11: Netlify-Build hing bei `npm install` (8 min, „Exit handler never called“): 28 `resolved`-URLs im Lockfile zeigten auf den Sandbox-Spiegel (interner Host, für Netlify unerreichbar). Fix: auf registry.npmjs.org umgestellt (Integrität stichprobenhaft geprüft), sauberes `npm ci` nur gegen das öffentliche Registry ok, Schutztest `tests/lockfile.test.ts`. Netlify-Badge verdeckte „Daily spielen“ → `padding-bottom: 80px`. Live-Test auf opteamanta.netlify.app: kompletter Daily-Ablauf bis „Geprüft · Tagesrang 1“, 0 Konsolenfehler.
