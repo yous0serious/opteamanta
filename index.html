@@ -31,7 +31,11 @@
       </div>
       <ol id="lb-list"></ol>
       <div id="lb-status" aria-live="polite"></div>
-      <button id="daily" title="Alle spielen heute dieselbe Karte mit demselben Seed (30 Wellen)">📅 Daily spielen</button>
+      <div id="play-kind" class="row" role="group" aria-label="Spielart">
+        <button data-kind="daily" class="active" title="Alle spielen heute dieselbe Karte – zählt für die Bestenliste">Daily</button>
+        <button data-kind="free" title="Zufällige Karte, Challenge oder Endlos – zählt nicht">Freies Spiel</button>
+      </div>
+      <button id="team-name" hidden title="Teamname ändern"></button>
     </details>
   </div>
 </div>

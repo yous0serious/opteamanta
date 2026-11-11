@@ -83,6 +83,17 @@ export class OnlineApi {
     return (data as { nickname: string } | null)?.nickname ?? null;
   }
 
+  /** Vorhandenen Teamnamen liefern oder automatisch einen erzeugen (Spec office-makeover AC-2). */
+  async ensureProfile(generate: () => string, attempts = 5): Promise<string> {
+    const existing = await this.nickname();
+    if (existing) return existing;
+    for (let i = 0; i < attempts; i++) {
+      const name = generate();
+      if ((await this.setNickname(name)) === 'ok') return name;
+    }
+    throw new ApiError('profile_failed', 0);
+  }
+
   async setNickname(nickname: string): Promise<NicknameResult> {
     if (!NICKNAME_RE.test(nickname)) return 'invalid';
     const userId = this.userId ?? (await this.signIn());

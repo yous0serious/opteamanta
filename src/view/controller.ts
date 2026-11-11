@@ -175,11 +175,16 @@ export class Controller {
     this.changed();
   }
 
-  /** Leertaste / großer Button: nächster Sprint oder nach Game Over neu starten. */
+  /** Leertaste/großer Button nach Spielende: neues Spiel (Daily-Ablauf kann übernehmen, z. B. neuer Daily-Versuch). */
   startOrRestart(): void {
-    if (this.over) this.restart();
-    else if (!this.game.state.running) this.command({ type: 'startWave' });
+    if (this.over) {
+      if (this.restartOverride?.()) return;
+      this.restart();
+    } else if (!this.game.state.running) this.command({ type: 'startWave' });
   }
+
+  /** Optional: übernimmt den Neustart nach Spielende (true = erledigt). */
+  restartOverride: (() => boolean) | null = null;
 
   cycleSpeed(): void {
     this.speed = this.speed === 1 ? 2 : this.speed === 2 ? 3 : 1;
@@ -196,6 +201,12 @@ export class Controller {
     this.saveReplay();
     this.daily = null;
     this.replaceGame(new Game({ seed: this.nextSeed(), mode: this.mode }));
+  }
+
+  /** Freies Spiel im gewünschten Modus starten (Schalter „Freies Spiel“). */
+  startFree(mode: GameMode = this.mode): void {
+    this.mode = mode;
+    this.restart();
   }
 
   private replaceGame(game: Game): void {

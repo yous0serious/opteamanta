@@ -1,5 +1,5 @@
 import { berlinDate, type BoardRow, type OnlineApi, type Period, type TickerRow } from '../online/api';
-import { DailyFlow, type DailyUi } from '../online/daily';
+import { DailyFlow, type DailyUi, type PlayKind } from '../online/daily';
 import type { Controller } from './controller';
 import { askNickname } from './nickname';
 import { JOKES } from './texts';
@@ -24,7 +24,6 @@ export function tickerText(records: readonly TickerRow[]): string {
 /** Seitenleisten-Block „Bestenliste“ mit Heute/Woche, eigenem Rang, Daily-Button und Statuszeile. */
 export class LeaderboardPanel implements DailyUi {
   private period: Period = 'day';
-  private flow: DailyFlow | null = null;
   private lastTicker = '';
   private readonly tickerSince = new Date(Date.now() - 24 * 3600_000).toISOString();
 
@@ -35,11 +34,13 @@ export class LeaderboardPanel implements DailyUi {
     if (!api) {
       $('lb-list').innerHTML = '';
       this.status('Bestenliste offline');
-      $('daily').hidden = true;
+      $('play-kind').hidden = true;
+      $('team-name').hidden = true;
       $('lb-tabs').hidden = true;
       return;
     }
-    this.flow = new DailyFlow(api, ctl, this);
+    const flow = new DailyFlow(api, ctl, this);
+
     for (const b of document.querySelectorAll<HTMLButtonElement>('#lb-tabs button')) {
       b.addEventListener('click', () => {
         this.period = b.dataset.period as Period;
@@ -47,24 +48,26 @@ export class LeaderboardPanel implements DailyUi {
         void this.refresh();
       });
     }
-    $('daily').addEventListener('click', () => {
-      const s = this.ctl.game.state;
-      if (s.wave > 0 && !s.over && !window.confirm('Laufendes Spiel abbrechen und die Daily starten?')) return;
-      void this.flow?.start();
+    for (const b of document.querySelectorAll<HTMLButtonElement>('#play-kind button')) {
+      b.addEventListener('click', () => {
+        if (b.dataset.kind === flow.kind) return;
+        const s = this.ctl.game.state;
+        if (s.wave > 0 && !s.over && !window.confirm('Laufendes Spiel abbrechen?')) return;
+        if (b.dataset.kind === 'free') flow.playFree();
+        else void flow.start();
+      });
+    }
+    $('team-name').addEventListener('click', () => {
+      void askNickname((name) => flow.rename(name), flow.name ?? '');
     });
-    this.ctl.onChange(() => this.syncDailyButton());
     this.status('Lade Bestenliste…');
-    void this.boot();
+    void this.boot(flow);
   }
 
-  private async boot(): Promise<void> {
-    try {
-      await this.api!.signIn();
-    } catch {
-      // Lesen klappt auch ohne Anmeldung (RPC für anon); Daily meldet den Fehler beim Start.
-    }
+  private async boot(flow: DailyFlow): Promise<void> {
+    // Anmeldung, Teamname und Daily-Start (Spec office-makeover AC-1/AC-2); Lesen klappt auch ohne Anmeldung.
+    await flow.boot();
     await this.refresh();
-    if ($('lb-status').textContent === 'Lade Bestenliste…') this.status('');
     await this.pollTicker();
     window.setInterval(() => {
       if (document.hidden) return;
@@ -138,12 +141,6 @@ export class LeaderboardPanel implements DailyUi {
     }
   }
 
-  private syncDailyButton(): void {
-    const d = this.ctl.daily;
-    const btn = $<HTMLButtonElement>('daily');
-    btn.disabled = !!d && !this.ctl.game.state.over;
-  }
-
   // ----- DailyUi -----
 
   status(text: string, kind: 'info' | 'ok' | 'err' = 'info', action?: { label: string; run: () => void }): void {
@@ -159,11 +156,13 @@ export class LeaderboardPanel implements DailyUi {
     }
   }
 
-  askNickname(): Promise<string | null> {
-    return askNickname((name) => this.api!.setNickname(name));
+  showName(name: string | null): void {
+    const el = $('team-name');
+    el.hidden = !name;
+    el.textContent = name ? `Team: ${name}` : '';
   }
 
-  busy(on: boolean): void {
-    $<HTMLButtonElement>('daily').disabled = on;
+  showKind(kind: PlayKind): void {
+    for (const b of document.querySelectorAll<HTMLButtonElement>('#play-kind button')) b.classList.toggle('active', b.dataset.kind === kind);
   }
 }

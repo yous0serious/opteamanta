@@ -3,21 +3,21 @@ import { NICKNAME_RE, type NicknameResult } from '../online/api';
 const HINT = '3–16 Zeichen: Buchstaben, Ziffern, Leerzeichen, - und _';
 
 /**
- * Modaler Dialog „Wie heißt dein Team?“ (Spec leaderboard-supabase AC-9).
+ * Modaler Dialog zum Ändern des Teamnamens (Spec office-makeover AC-2; ursprünglich leaderboard-supabase AC-9).
  * `save` prüft serverseitig (Eindeutigkeit); Ergebnis: gespeicherter Name oder null bei Abbruch.
  */
-export function askNickname(save: (name: string) => Promise<NicknameResult>): Promise<string | null> {
+export function askNickname(save: (name: string) => Promise<NicknameResult>, initial = ''): Promise<string | null> {
   const dlg = document.createElement('dialog');
   dlg.id = 'nick';
   dlg.innerHTML = `
     <form method="dialog">
-      <h2>Wie heißt dein Team?</h2>
+      <h2>Teamname ändern</h2>
       <p>Der Name erscheint in der Bestenliste.</p>
       <input id="nick-input" name="nick" maxlength="16" autocomplete="nickname" required placeholder="z. B. Team Kanban" />
       <div id="nick-msg" class="hint"></div>
       <div class="row">
-        <button value="cancel" formnovalidate id="nick-cancel">Später</button>
-        <button value="ok" id="nick-ok">✅ Eintragen</button>
+        <button value="cancel" formnovalidate id="nick-cancel">Abbrechen</button>
+        <button value="ok" id="nick-ok">Speichern</button>
       </div>
     </form>`;
   document.body.append(dlg);
@@ -25,6 +25,7 @@ export function askNickname(save: (name: string) => Promise<NicknameResult>): Pr
   const msg = dlg.querySelector<HTMLElement>('#nick-msg')!;
   const ok = dlg.querySelector<HTMLButtonElement>('#nick-ok')!;
   msg.textContent = HINT;
+  input.value = initial;
 
   return new Promise((resolve) => {
     const finish = (value: string | null): void => {
@@ -67,5 +68,6 @@ export function askNickname(save: (name: string) => Promise<NicknameResult>): Pr
     });
     dlg.showModal();
     input.focus();
+    input.select();
   });
 }
