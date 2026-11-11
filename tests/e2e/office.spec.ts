@@ -306,7 +306,7 @@ test.describe('AC-7 layout', () => {
           const loc = page.locator(sel);
           const n = await loc.count();
           expect(n, sel).toBeGreaterThanOrEqual(1);
-          if (sel === '.tw') expect(n).toBe(5);
+          if (sel === '.tw') expect(n).toBe(9);
           for (let i = 0; i < n; i++) {
             const b = (await loc.nth(i).boundingBox())!;
             expect(b, `${sel}#${i} visible`).not.toBeNull();
@@ -327,9 +327,9 @@ test.describe('AC-7 layout', () => {
     });
   }
 
-  test('keyboard: 1-5, Esc, u/s, space', async ({ page }) => {
+  test('keyboard: 1-9, Esc, u/s, space', async ({ page }) => {
     await open(page, 'map=waterfall&seed=7&speed=3');
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 9; i++) {
       await page.keyboard.press(String(i));
       await expect(page.locator('.tw.sel')).toHaveCount(1);
       await expect(page.locator('.tw').nth(i - 1)).toHaveClass(/sel/);
