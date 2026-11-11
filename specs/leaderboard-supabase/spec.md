@@ -1,6 +1,6 @@
 # Spec: Bestenliste mit Supabase (Teil 3b)
 
-**Status:** Approved
+**Status:** Done
 **Size:** L
 **Ticket:** –
 **Plan:** `.ai/specs/leaderboard-supabase/plan.md` (nach Freigabe) · **Ledger:** `.ai/specs/leaderboard-supabase/ledger.md`

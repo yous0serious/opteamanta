@@ -57,6 +57,7 @@ button:disabled { opacity: .45; }
 #lb { background: #fff; border: 1px solid #cfd4da; border-left: 5px solid #f9a825; border-radius: 4px; padding: 5px 7px; font-size: 12px; }
 #lb summary { font-family: var(--hand); font-size: 20px; cursor: pointer; }
 #lb-tabs { margin: 4px 0; }
+#lb-tabs[hidden] { display: none; }
 #lb-tabs button { padding: 2px 6px; }
 #lb-tabs button.active { background: #fffde7; outline: 2px solid #f9a825; font-weight: bold; }
 #lb-list { list-style: none; margin: 0; padding: 0; }
