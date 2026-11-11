@@ -1,6 +1,8 @@
 import { CHALLENGE_WAVES, TOWERS, TOWER_ORDER, type GameMode, type TowerType } from '../sim/index';
 import type { SoundEngine } from './audio';
 import type { Controller } from './controller';
+import { setFxLevel, type FxLevel, type FxSettings } from './fx';
+import { shareResult, shareState } from './share';
 import { applySprite } from './sprite';
 import { JOKES, TOWER_BLURBS, piLabel } from './texts';
 
@@ -11,7 +13,7 @@ const $ = <T extends HTMLElement = HTMLElement>(id: string): T => {
 };
 
 const DEFAULT_INFO =
-  'Wähle ein Teammitglied (1–5) und klick auf einen freien Platz.<br><span class="muted">Klick auf einen Arbeitsplatz: Details · [U] Upgrade · [S] Abgeben · [Leertaste] nächster Sprint</span>';
+  'Wähle ein Teammitglied (1–9) und klick auf einen freien Platz.<br><span class="muted">Klick auf einen Arbeitsplatz: Details · [U] Upgrade · [S] Abgeben · [Leertaste] nächster Sprint</span>';
 
 /** DOM-Seitenleiste (Original Zeilen 45–60, ui() Zeilen 204–214). */
 export class Hud {
@@ -23,6 +25,9 @@ export class Hud {
   constructor(
     private readonly ctl: Controller,
     private readonly sound: SoundEngine,
+    private readonly fx: FxSettings,
+    /** Bild des Spielfelds für die Teilen-Karte (Phaser-Snapshot). */
+    private readonly snapshot: () => Promise<CanvasImageSource | null> = async () => null,
   ) {
     this.buildTowerButtons();
     this.buttons = [...document.querySelectorAll<HTMLButtonElement>('.tw')];
@@ -44,6 +49,27 @@ export class Hud {
       this.markDirty();
     });
     $('replay').addEventListener('click', () => this.downloadReplay());
+    $('share').addEventListener('click', () => void this.share());
+    // Einstellungen: Effektstufe und Lautstärken (Spec season-2 AC-9/AC-10)
+    for (const b of document.querySelectorAll<HTMLButtonElement>('#fx-level button')) {
+      b.addEventListener('click', () => {
+        setFxLevel(this.fx, b.dataset.fx as FxLevel);
+        this.markDirty();
+      });
+    }
+    const music = $<HTMLInputElement>('vol-music');
+    const sfx = $<HTMLInputElement>('vol-sfx');
+    music.value = String(Math.round(this.sound.settings.music * 100));
+    sfx.value = String(Math.round(this.sound.settings.sfx * 100));
+    music.addEventListener('input', () => {
+      this.sound.start();
+      this.sound.setMusicVolume(Number(music.value) / 100);
+    });
+    sfx.addEventListener('input', () => {
+      this.sound.start();
+      this.sound.setSfxVolume(Number(sfx.value) / 100);
+      this.sound.play('coin', 0.6);
+    });
     for (const b of document.querySelectorAll<HTMLButtonElement>('#mode button')) {
       b.addEventListener('click', () => this.ctl.setMode(b.dataset.mode as GameMode));
     }
@@ -79,7 +105,7 @@ export class Hud {
       b.className = 'tw';
       b.dataset.t = type;
       b.title = TOWER_BLURBS[type];
-      b.innerHTML = `<span class="pt"><span class="spr"></span></span><span class="nm">${def.name}</span><span class="ct"><i class="ico ico-coin"></i>${def.cost}</span><span class="key">${i + 1}</span>`;
+      b.innerHTML = `<span class="pt"><span class="spr"></span></span><span class="nm">${def.name}</span><span class="ct"><i class="ico ico-coin"></i>${def.cost}</span><span class="key">${i + 1}</span>${def.limit ? `<span class="lim">max. ${def.limit}</span>` : ''}`;
       applySprite(b.querySelector<HTMLElement>('.spr')!, `head/${type}`, 32);
       box.append(b);
     });
@@ -103,7 +129,10 @@ export class Hud {
     for (const b of this.buttons) {
       const t = b.dataset.t as TowerType;
       b.classList.toggle('sel', t === selected);
-      b.disabled = s.money < TOWERS[t].cost;
+      const limit = TOWERS[t].limit;
+      const full = limit !== undefined && s.towers.filter((x) => x.type === t).length >= limit;
+      b.classList.toggle('full', full);
+      b.disabled = s.money < TOWERS[t].cost || full;
     }
     $('spd').textContent = `Tempo x${speed}`;
     $('mute').textContent = this.sound.muted ? 'Ton aus' : 'Ton an';
@@ -119,6 +148,8 @@ export class Hud {
     big.classList.toggle('over', s.over && !s.won);
     big.classList.toggle('won', s.won);
     $('replay').hidden = !s.over;
+    $('share').hidden = !s.over;
+    for (const b of document.querySelectorAll<HTMLButtonElement>('#fx-level button')) b.classList.toggle('active', b.dataset.fx === this.fx.level);
 
     let info = DEFAULT_INFO;
     const tower = selectedTowerId !== null ? game.towerById(selectedTowerId) : undefined;
@@ -140,6 +171,30 @@ export class Hud {
       this.lastInfo = info;
       $('info').innerHTML = info;
     }
+  }
+
+  /** Ergebnis teilen (Spec season-2 AC-11). */
+  private async share(): Promise<void> {
+    const { game, daily } = this.ctl;
+    const s = game.state;
+    const [, m, d] = daily?.dailyDate.split('-') ?? [];
+    const res = await shareResult(
+      {
+        daily: daily ? `${d}.${m}.` : null,
+        wave: s.wave,
+        waves: s.mode === 'challenge' ? CHALLENGE_WAVES : null,
+        lives: s.lives,
+        score: s.score,
+        rank: daily ? shareState.rank : null,
+        team: shareState.team,
+        map: game.map.name,
+        won: s.won,
+      },
+      await this.snapshot(),
+    );
+    const btn = $('share');
+    btn.textContent = res.method === 'share' ? 'Geteilt!' : 'Text kopiert, Bild gespeichert';
+    setTimeout(() => (btn.textContent = 'Teilen'), 2500);
   }
 
   private downloadReplay(): void {

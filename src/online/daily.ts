@@ -1,5 +1,6 @@
 import type { Game } from '../sim/index';
 import type { Controller } from '../view/controller';
+import { shareState } from '../view/share';
 import { ApiError, berlinDate, reasonText, type DailySession, type OnlineApi } from './api';
 import { generateName } from './names';
 
@@ -140,6 +141,7 @@ export class DailyFlow {
         const st = await this.api.submission(id).catch(() => null);
         if (st?.status === 'verified') {
           const rank = await this.ui.refresh();
+          shareState.rank = rank;
           const today = session.dailyDate === berlinDate() ? (rank ? ` · Tagesrang ${rank}` : '') : '';
           this.ui.status(`Geprüft: Score ${st.score ?? replay.result.score}${today}`, 'ok');
           return;

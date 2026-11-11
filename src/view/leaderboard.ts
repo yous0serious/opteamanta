@@ -2,6 +2,7 @@ import { berlinDate, type BoardRow, type OnlineApi, type Period, type TickerRow 
 import { DailyFlow, type DailyUi, type PlayKind } from '../online/daily';
 import type { Controller } from './controller';
 import { askNickname } from './nickname';
+import { shareState } from './share';
 import { JOKES } from './texts';
 
 /** Aktualisierung von Bestenliste und Ticker (Spec leaderboard-supabase T08). */
@@ -160,6 +161,7 @@ export class LeaderboardPanel implements DailyUi {
     const el = $('team-name');
     el.hidden = !name;
     el.textContent = name ? `Team: ${name}` : '';
+    shareState.team = name;
   }
 
   showKind(kind: PlayKind): void {

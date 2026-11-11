@@ -9,6 +9,7 @@ import { HEIGHT, WIDTH } from './sim/index';
 import { SoundEngine } from './view/audio';
 import { Controller } from './view/controller';
 import { readFx } from './view/fx';
+import { shareState } from './view/share';
 import { GameScene } from './view/GameScene';
 import { Hud } from './view/hud';
 import { installKeyboard } from './view/input';
@@ -29,11 +30,12 @@ const ctl = new Controller(
 );
 const sound = new SoundEngine(ctl);
 ctl.onSim((e) => sound.onSim(e));
-const hud = new Hud(ctl, sound);
+// Teilen-Karte: Bild des Spielfelds über Phasers Snapshot (funktioniert in WebGL und Canvas)
+const hud = new Hud(ctl, sound, settings, () => new Promise((resolve) => game.renderer.snapshot((img) => resolve(img as HTMLImageElement))));
 installKeyboard(ctl, sound);
 
 const scene = new GameScene(ctl, sound, settings);
-ctl.debug = { ...scene.debugApi(), audio: () => sound.status() };
+ctl.debug = { ...scene.debugApi(), audio: () => sound.status(), share: () => shareState.last, fxLevel: () => settings.level };
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',

@@ -19,6 +19,10 @@ export interface DebugApi {
   effects?: () => Record<string, number>;
   /** Zustand der Audio-Engine (Spec season-2 AC-10). */
   audio?: () => unknown;
+  /** Letztes Teilen-Ergebnis (Spec season-2 AC-11). */
+  share?: () => unknown;
+  /** Aktive Effektstufe (Spec season-2 AC-9). */
+  fxLevel?: () => string;
 }
 
 /** Höchstens so viele Ticks pro Frame (schützt vor Endlosschleifen nach Tab-Wechsel). */
@@ -141,7 +145,7 @@ export class Controller {
 
   // ----- Spieleraktionen -----
 
-  /** Button: umschalten; Taste 1–5: immer auswählen (wie Original). */
+  /** Button: umschalten; Taste 1–9: immer auswählen (wie Original). */
   selectType(type: TowerType | null, toggle = true): void {
     this.selected = toggle && this.selected === type ? null : type;
     this.selectedTowerId = null;

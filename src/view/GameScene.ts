@@ -154,7 +154,7 @@ export class GameScene extends Phaser.Scene {
     this.flashRect = this.add.rectangle(0, 0, WIDTH, HEIGHT, 0xc62828, 0).setOrigin(0);
     this.buildGameOver();
     this.hint = this.add
-      .text(WIDTH / 2, HEIGHT - 28, 'Klick irgendwo oder drück 1–5 → Turm wählen · LEERTASTE → Sprint starten', {
+      .text(WIDTH / 2, HEIGHT - 28, 'Klick irgendwo oder drück 1–9 → Teammitglied wählen · LEERTASTE → Sprint starten', {
         fontFamily: HAND, fontSize: '26px', fontStyle: 'bold', color: '#1565c0', stroke: '#ffffff', strokeThickness: 5, resolution: 2,
       })
       .setOrigin(0.5);

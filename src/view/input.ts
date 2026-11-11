@@ -7,7 +7,7 @@ export function installKeyboard(ctl: Controller, sound: SoundEngine): void {
   window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     const k = e.key.toLowerCase();
-    if (k.length === 1 && k >= '1' && k <= '5') {
+    if (k.length === 1 && k >= '1' && k <= '9' && TOWER_ORDER[Number(k) - 1]) {
       sound.start();
       ctl.selectType(TOWER_ORDER[Number(k) - 1]!, false);
     } else if (k === ' ') {

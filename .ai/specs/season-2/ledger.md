@@ -12,10 +12,10 @@
 | T04 | todo | – | Ruling: Function-Deploy erst in T13 (Live-Client läuft bis zum Push mit 0.2.0; ein 0.3.0-Server würde dessen Läufe ablehnen). Integrationstests ebenfalls in T13. |
 | T05 | done | `d55670a` (+ Budget-Fix) | `tools/characters.ts`: Umfärben über Farbtonbereiche, Kopfposition je Pose per Alpha-Template-Matching, Zubehör an Kopf/Augen/Kinn (Gesichtszubehör nicht in der Rückenpose `hurt`); Rollen RTE (Schaffnermütze, Petrol), RTA (Brille, Indigo), RTO (Fliege, Rot), Vorstand (Sonnenbrille, Krawatte, graue Weste) mit Porträts; 4 Statisten mit 8 Laufposen; Monster Meeting/Hotfix; Requisiten Münze, Eis, Schredder, Lampe, Sprechblase, Bauplan, Glow (Rollenfarben). Atlas 650 Frames, 3,06 MB. Ruling: `check:assets`-Grenze 3 → 6 MB laut Spec 4/5 (Atlas + Schriften). |
 | T06 | in_progress | `d55670a` | general: 27 CC0-Audiodateien (3 Loops, 4 Jingles, 20 SFX), Lizenzbelege `assets-src/audio/SOURCES.md`, `check:assets` prüft Audio (6,32 MB ≤ 8 MB). Offen: Audio-Engine. Hinweis: Jingles ohne Abhören ausgewählt → Nutzer prüft in der Vorschau. |
-| T07 | todo | – | |
-| T08 | todo | – | |
-| T09 | todo | – | |
-| T10 | todo | – | |
+| T07 | done | `24fffcd` | `season2fx.ts`: Bauplan-Raster auf Laufband-Feldern im Runway (pulsierend, gedimmt bei Störung), PI-Sync-Welle + Leuchten unter geboosteten Arbeitsplätzen, Münzen beim Business Value, Eis-Overlay + angehaltene Animation bei Freeze, Schredder bei „Projekt eingestampft“, „Termin!“-Blasen bei Meeting-Störung; RTA zeigt alle ~1,6 s auf den Bauplan, solange Gegner im Runway sind. |
+| T08 | done | `2bc96f5` | `juice.ts`: Combo-Zähler mit Titeln, Zeitlupe ab Combo 10 und beim Boss (nur Maximal, `Controller.timeScale` – nur Echtzeit-Tempo), SP-Münzen zur Kapazitätsanzeige (Chip hüpft), gebündelte Schadenszahlen, Boss-Auftritt mit Zoom/Pan + Namenskarte, Beförderungs-Lichtsäule; Drop-in beim Platzieren. Effektstufen `max/normal/calm` (live umschaltbar, gespeichert, URL `fx=high/low` kompatibel, reduced motion → Ruhig). |
+| T09 | done | `2bc96f5` | `life.ts`: Statisten (4 umgefärbte Figuren, Laufanimation, max. 2), Kaffeedampf, Drucker-Papier beim Wellenende, Sprechblasen-Sprüche (≤ 1 je 4 Arbeitsplätze), Tageslicht (Morgen hell, Abend warm per Multiply), Schreibtischlampen ab Welle 20. Helligkeit Welle 25: 0,844. |
+| T10 | done | (T10-Commit) | 9 Turmkarten (3 Spalten, Tasten 1–9, Vorstand „max. 1“ + Sperre), Einstellungen (Effektstufe, Musik-/Effekt-Lautstärke), „Saison 2“, Teilen (`share.ts`: Text + Karte 1200 × 630 mit Phaser-Snapshot, Web Share API oder Kopieren + Download). Layout 1366 × 768: Bestenliste endet bei 748 px; Liste passt ihre Höhe der Fensterhöhe an. |
 | T11 | todo | – | |
 | T12 | todo | – | |
 | T13 | todo | – | |
