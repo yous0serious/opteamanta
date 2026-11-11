@@ -126,12 +126,19 @@ Kommandos gelten im angegebenen Tick vor dessen `step()`. Aufgezeichnet werden n
 
 ## Grafik und Assets
 
-- Figuren und Partikel: Kenney „Toon Characters 1“ und „Particle Pack“ (CC0), Requisiten (Post-it, Klebeband, Magnet,
-  Symbole) als eigene SVGs, Schrift Caveat (OFL-1.1). Lizenzen: `public/assets/CREDITS.md`.
-- Farben werden beim Asset-Build vorgefärbt (Paletten aus den Sim-Daten, `src/view/render/palette.ts`), damit das
-  Spiel auch im Canvas-Renderer (ohne WebGL) richtig aussieht. Filter (Schatten, Glow, Vignette, Entsättigung) gibt
-  es nur mit WebGL und `fx=high`.
-- Bewegungsreduktion: Bei `prefers-reduced-motion: reduce` entfallen Wackeln, Hitstop und Animationen.
+Look „Cartoon-Büro“ (Spec `office-makeover`, ADR-0005), ausschließlich CC0 und eigene Grafiken:
+
+- **Teammitglieder:** Kenney „Toon Characters 1“ (Ganzkörper-Posen für Ruhe, Angriff, Tippen, Jubeln, Burnout) an eigenen
+  Schreibtischen; Ausstattung und Sterne zeigen die Stufe.
+- **Gegner:** Monster aus Kenneys „Monster Builder Pack“, beim Asset-Build zusammengesetzt (`tools/monsters.ts`,
+  Rezepte in `assets-src/manifest.json`) – mit Lauf-Frames, Treffer-Silhouette und Ticket-Post-it.
+- **Boden:** beim Start erzeugt (Dielen, Teppich, Fliesen je Karte), animiertes Kanban-Laufband, Deko in Schrägsicht
+  (eigene SVGs: Pflanze, Wasserspender, Kaffeemaschine, Drucker, Aktenschrank).
+- **Effekte:** Kenney „Particle Pack“, „Smoke Particles“, „Splat Pack“ (Bodenflecken), „Generic Items“ (Geschosse).
+- **Oberfläche:** Schriften Caveat und Nunito (OFL-1.1), Icons als eigene SVGs. Lizenzen: `public/assets/CREDITS.md`.
+- Farben werden beim Build vorgefärbt bzw. Silhouetten vorgerendert, damit das Spiel auch im Canvas-Renderer (ohne
+  WebGL) vollständig aussieht; mit WebGL und `fx=high` kommt ein weicher Schatten dazu. Keine abdunkelnden Filter.
+- Bewegungsreduktion: Bei `prefers-reduced-motion: reduce` entfallen Wackeln, Hitstop, Lauf- und Atemanimationen.
 
 ## Hosting
 
@@ -144,6 +151,11 @@ Alle spielen pro Berliner Kalendertag denselben Seed im Challenge-Modus. Der Ser
 eingereichte Replay nach und trägt nur den **selbst berechneten** Score ein (ADR-0004,
 [`specs/leaderboard-supabase/spec.md`](specs/leaderboard-supabase/spec.md)). Ohne die beiden Variablen läuft das
 Spiel offline („Bestenliste offline“, keine Netzwerkaufrufe).
+
+Online startet beim Öffnen automatisch ein Daily-Lauf; jeder bekommt einen automatischen Teamnamen
+(„<Adjektiv> <Tier> <NNNN>“, per Klick änderbar), Ergebnisse werden nach Spielende ohne Dialog eingereicht und
+„Nochmal“ startet einen neuen Daily-Versuch. Der Schalter „Freies Spiel“ wechselt zu lokalen Spielen
+(Challenge oder Endlos), die nicht in die Bestenliste eingehen.
 
 ```
 VITE_SUPABASE_URL=https://<projekt>.supabase.co          # Netlify-Umgebungsvariable
