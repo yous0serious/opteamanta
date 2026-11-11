@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ENEMIES, type Enemy, type EnemyType } from '../../../sim/index';
+import { ENEMIES, WIDTH, type Enemy, type EnemyType } from '../../../sim/index';
 import { ATLAS } from '../../PreloadScene';
 import { HAND } from '../../texts';
 import type { ViewCtx } from '../entities';
@@ -77,9 +77,9 @@ export class MonsterView {
     return this.enemy.y + FEET;
   }
 
-  /** Aktueller Frame (Debug/E2E). */
+  /** Sichtbarer Frame (Debug/E2E): während des Trefferblitzes die Silhouette `…/hit`. */
   get frameName(): string {
-    return this.body.frame.name;
+    return this.hitT > 0 ? this.flash.frame.name : this.body.frame.name;
   }
 
   /** Angezeigte Breite in px (Debug/E2E). */
@@ -120,7 +120,10 @@ export class MonsterView {
     }
     this.slow.setVisible(e.slowTime > 0);
     if (e.slowTime > 0) this.slow.setPosition(e.x + 12, top - 6 + Math.sin(time * 6) * 2);
-    this.name?.setPosition(e.x, e.y + FEET + 14);
+    if (this.name) {
+      const half = this.name.width / 2 + 4;
+      this.name.setPosition(Math.min(WIDTH - half, Math.max(half, e.x)), e.y + FEET + 14);
+    }
   }
 
   destroy(): void {
