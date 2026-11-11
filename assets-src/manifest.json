@@ -252,6 +252,1006 @@
       "width": 24,
       "variants": "towers",
       "variantsOnly": true
+    },
+    {
+      "name": "char/dualo/idle",
+      "src": "kenney/toon-characters-1/poses/dualo-idle.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/attack0",
+      "src": "kenney/toon-characters-1/poses/dualo-attack0.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/attack1",
+      "src": "kenney/toon-characters-1/poses/dualo-attack1.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/attack2",
+      "src": "kenney/toon-characters-1/poses/dualo-attack2.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/interact",
+      "src": "kenney/toon-characters-1/poses/dualo-interact.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/talk",
+      "src": "kenney/toon-characters-1/poses/dualo-talk.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/think",
+      "src": "kenney/toon-characters-1/poses/dualo-think.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/cheer0",
+      "src": "kenney/toon-characters-1/poses/dualo-cheer0.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/cheer1",
+      "src": "kenney/toon-characters-1/poses/dualo-cheer1.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/hold",
+      "src": "kenney/toon-characters-1/poses/dualo-hold.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/show",
+      "src": "kenney/toon-characters-1/poses/dualo-show.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/hurt",
+      "src": "kenney/toon-characters-1/poses/dualo-hurt.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/kick",
+      "src": "kenney/toon-characters-1/poses/dualo-kick.png",
+      "width": 96
+    },
+    {
+      "name": "char/dualo/wide",
+      "src": "kenney/toon-characters-1/poses/dualo-wide.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/idle",
+      "src": "kenney/toon-characters-1/poses/analyst-idle.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/attack0",
+      "src": "kenney/toon-characters-1/poses/analyst-attack0.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/attack1",
+      "src": "kenney/toon-characters-1/poses/analyst-attack1.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/attack2",
+      "src": "kenney/toon-characters-1/poses/analyst-attack2.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/interact",
+      "src": "kenney/toon-characters-1/poses/analyst-interact.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/talk",
+      "src": "kenney/toon-characters-1/poses/analyst-talk.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/think",
+      "src": "kenney/toon-characters-1/poses/analyst-think.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/cheer0",
+      "src": "kenney/toon-characters-1/poses/analyst-cheer0.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/cheer1",
+      "src": "kenney/toon-characters-1/poses/analyst-cheer1.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/hold",
+      "src": "kenney/toon-characters-1/poses/analyst-hold.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/show",
+      "src": "kenney/toon-characters-1/poses/analyst-show.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/hurt",
+      "src": "kenney/toon-characters-1/poses/analyst-hurt.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/kick",
+      "src": "kenney/toon-characters-1/poses/analyst-kick.png",
+      "width": 96
+    },
+    {
+      "name": "char/analyst/wide",
+      "src": "kenney/toon-characters-1/poses/analyst-wide.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/idle",
+      "src": "kenney/toon-characters-1/poses/dev-idle.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/attack0",
+      "src": "kenney/toon-characters-1/poses/dev-attack0.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/attack1",
+      "src": "kenney/toon-characters-1/poses/dev-attack1.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/attack2",
+      "src": "kenney/toon-characters-1/poses/dev-attack2.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/interact",
+      "src": "kenney/toon-characters-1/poses/dev-interact.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/talk",
+      "src": "kenney/toon-characters-1/poses/dev-talk.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/think",
+      "src": "kenney/toon-characters-1/poses/dev-think.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/cheer0",
+      "src": "kenney/toon-characters-1/poses/dev-cheer0.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/cheer1",
+      "src": "kenney/toon-characters-1/poses/dev-cheer1.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/hold",
+      "src": "kenney/toon-characters-1/poses/dev-hold.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/show",
+      "src": "kenney/toon-characters-1/poses/dev-show.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/hurt",
+      "src": "kenney/toon-characters-1/poses/dev-hurt.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/kick",
+      "src": "kenney/toon-characters-1/poses/dev-kick.png",
+      "width": 96
+    },
+    {
+      "name": "char/dev/wide",
+      "src": "kenney/toon-characters-1/poses/dev-wide.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/idle",
+      "src": "kenney/toon-characters-1/poses/ppl-idle.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/attack0",
+      "src": "kenney/toon-characters-1/poses/ppl-attack0.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/attack1",
+      "src": "kenney/toon-characters-1/poses/ppl-attack1.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/attack2",
+      "src": "kenney/toon-characters-1/poses/ppl-attack2.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/interact",
+      "src": "kenney/toon-characters-1/poses/ppl-interact.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/talk",
+      "src": "kenney/toon-characters-1/poses/ppl-talk.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/think",
+      "src": "kenney/toon-characters-1/poses/ppl-think.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/cheer0",
+      "src": "kenney/toon-characters-1/poses/ppl-cheer0.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/cheer1",
+      "src": "kenney/toon-characters-1/poses/ppl-cheer1.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/hold",
+      "src": "kenney/toon-characters-1/poses/ppl-hold.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/show",
+      "src": "kenney/toon-characters-1/poses/ppl-show.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/hurt",
+      "src": "kenney/toon-characters-1/poses/ppl-hurt.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/kick",
+      "src": "kenney/toon-characters-1/poses/ppl-kick.png",
+      "width": 96
+    },
+    {
+      "name": "char/ppl/wide",
+      "src": "kenney/toon-characters-1/poses/ppl-wide.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/idle",
+      "src": "kenney/toon-characters-1/poses/scrum-idle.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/attack0",
+      "src": "kenney/toon-characters-1/poses/scrum-attack0.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/attack1",
+      "src": "kenney/toon-characters-1/poses/scrum-attack1.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/attack2",
+      "src": "kenney/toon-characters-1/poses/scrum-attack2.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/interact",
+      "src": "kenney/toon-characters-1/poses/scrum-interact.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/talk",
+      "src": "kenney/toon-characters-1/poses/scrum-talk.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/think",
+      "src": "kenney/toon-characters-1/poses/scrum-think.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/cheer0",
+      "src": "kenney/toon-characters-1/poses/scrum-cheer0.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/cheer1",
+      "src": "kenney/toon-characters-1/poses/scrum-cheer1.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/hold",
+      "src": "kenney/toon-characters-1/poses/scrum-hold.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/show",
+      "src": "kenney/toon-characters-1/poses/scrum-show.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/hurt",
+      "src": "kenney/toon-characters-1/poses/scrum-hurt.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/kick",
+      "src": "kenney/toon-characters-1/poses/scrum-kick.png",
+      "width": 96
+    },
+    {
+      "name": "char/scrum/wide",
+      "src": "kenney/toon-characters-1/poses/scrum-wide.png",
+      "width": 96
+    },
+    {
+      "name": "tile/100",
+      "src": "kenney/topdown-shooter/tiles/tile_100.png"
+    },
+    {
+      "name": "tile/101",
+      "src": "kenney/topdown-shooter/tiles/tile_101.png"
+    },
+    {
+      "name": "tile/12",
+      "src": "kenney/topdown-shooter/tiles/tile_12.png"
+    },
+    {
+      "name": "tile/134",
+      "src": "kenney/topdown-shooter/tiles/tile_134.png"
+    },
+    {
+      "name": "tile/181",
+      "src": "kenney/topdown-shooter/tiles/tile_181.png"
+    },
+    {
+      "name": "tile/182",
+      "src": "kenney/topdown-shooter/tiles/tile_182.png"
+    },
+    {
+      "name": "tile/183",
+      "src": "kenney/topdown-shooter/tiles/tile_183.png"
+    },
+    {
+      "name": "tile/184",
+      "src": "kenney/topdown-shooter/tiles/tile_184.png"
+    },
+    {
+      "name": "tile/185",
+      "src": "kenney/topdown-shooter/tiles/tile_185.png"
+    },
+    {
+      "name": "tile/186",
+      "src": "kenney/topdown-shooter/tiles/tile_186.png"
+    },
+    {
+      "name": "tile/210",
+      "src": "kenney/topdown-shooter/tiles/tile_210.png"
+    },
+    {
+      "name": "tile/294",
+      "src": "kenney/topdown-shooter/tiles/tile_294.png"
+    },
+    {
+      "name": "tile/295",
+      "src": "kenney/topdown-shooter/tiles/tile_295.png"
+    },
+    {
+      "name": "tile/296",
+      "src": "kenney/topdown-shooter/tiles/tile_296.png"
+    },
+    {
+      "name": "tile/297",
+      "src": "kenney/topdown-shooter/tiles/tile_297.png"
+    },
+    {
+      "name": "tile/323",
+      "src": "kenney/topdown-shooter/tiles/tile_323.png"
+    },
+    {
+      "name": "tile/324",
+      "src": "kenney/topdown-shooter/tiles/tile_324.png"
+    },
+    {
+      "name": "tile/343",
+      "src": "kenney/topdown-shooter/tiles/tile_343.png"
+    },
+    {
+      "name": "tile/344",
+      "src": "kenney/topdown-shooter/tiles/tile_344.png"
+    },
+    {
+      "name": "tile/345",
+      "src": "kenney/topdown-shooter/tiles/tile_345.png"
+    },
+    {
+      "name": "tile/346",
+      "src": "kenney/topdown-shooter/tiles/tile_346.png"
+    },
+    {
+      "name": "tile/347",
+      "src": "kenney/topdown-shooter/tiles/tile_347.png"
+    },
+    {
+      "name": "tile/348",
+      "src": "kenney/topdown-shooter/tiles/tile_348.png"
+    },
+    {
+      "name": "tile/370",
+      "src": "kenney/topdown-shooter/tiles/tile_370.png"
+    },
+    {
+      "name": "tile/371",
+      "src": "kenney/topdown-shooter/tiles/tile_371.png"
+    },
+    {
+      "name": "tile/372",
+      "src": "kenney/topdown-shooter/tiles/tile_372.png"
+    },
+    {
+      "name": "tile/373",
+      "src": "kenney/topdown-shooter/tiles/tile_373.png"
+    },
+    {
+      "name": "tile/374",
+      "src": "kenney/topdown-shooter/tiles/tile_374.png"
+    },
+    {
+      "name": "tile/375",
+      "src": "kenney/topdown-shooter/tiles/tile_375.png"
+    },
+    {
+      "name": "tile/42",
+      "src": "kenney/topdown-shooter/tiles/tile_42.png"
+    },
+    {
+      "name": "tile/424",
+      "src": "kenney/topdown-shooter/tiles/tile_424.png"
+    },
+    {
+      "name": "tile/425",
+      "src": "kenney/topdown-shooter/tiles/tile_425.png"
+    },
+    {
+      "name": "tile/426",
+      "src": "kenney/topdown-shooter/tiles/tile_426.png"
+    },
+    {
+      "name": "tile/427",
+      "src": "kenney/topdown-shooter/tiles/tile_427.png"
+    },
+    {
+      "name": "tile/428",
+      "src": "kenney/topdown-shooter/tiles/tile_428.png"
+    },
+    {
+      "name": "tile/429",
+      "src": "kenney/topdown-shooter/tiles/tile_429.png"
+    },
+    {
+      "name": "tile/43",
+      "src": "kenney/topdown-shooter/tiles/tile_43.png"
+    },
+    {
+      "name": "tile/44",
+      "src": "kenney/topdown-shooter/tiles/tile_44.png"
+    },
+    {
+      "name": "tile/447",
+      "src": "kenney/topdown-shooter/tiles/tile_447.png"
+    },
+    {
+      "name": "tile/448",
+      "src": "kenney/topdown-shooter/tiles/tile_448.png"
+    },
+    {
+      "name": "tile/449",
+      "src": "kenney/topdown-shooter/tiles/tile_449.png"
+    },
+    {
+      "name": "tile/45",
+      "src": "kenney/topdown-shooter/tiles/tile_45.png"
+    },
+    {
+      "name": "tile/450",
+      "src": "kenney/topdown-shooter/tiles/tile_450.png"
+    },
+    {
+      "name": "tile/451",
+      "src": "kenney/topdown-shooter/tiles/tile_451.png"
+    },
+    {
+      "name": "tile/452",
+      "src": "kenney/topdown-shooter/tiles/tile_452.png"
+    },
+    {
+      "name": "tile/453",
+      "src": "kenney/topdown-shooter/tiles/tile_453.png"
+    },
+    {
+      "name": "tile/454",
+      "src": "kenney/topdown-shooter/tiles/tile_454.png"
+    },
+    {
+      "name": "tile/455",
+      "src": "kenney/topdown-shooter/tiles/tile_455.png"
+    },
+    {
+      "name": "tile/456",
+      "src": "kenney/topdown-shooter/tiles/tile_456.png"
+    },
+    {
+      "name": "tile/457",
+      "src": "kenney/topdown-shooter/tiles/tile_457.png"
+    },
+    {
+      "name": "tile/46",
+      "src": "kenney/topdown-shooter/tiles/tile_46.png"
+    },
+    {
+      "name": "tile/47",
+      "src": "kenney/topdown-shooter/tiles/tile_47.png"
+    },
+    {
+      "name": "tile/474",
+      "src": "kenney/topdown-shooter/tiles/tile_474.png"
+    },
+    {
+      "name": "tile/475",
+      "src": "kenney/topdown-shooter/tiles/tile_475.png"
+    },
+    {
+      "name": "tile/476",
+      "src": "kenney/topdown-shooter/tiles/tile_476.png"
+    },
+    {
+      "name": "tile/477",
+      "src": "kenney/topdown-shooter/tiles/tile_477.png"
+    },
+    {
+      "name": "tile/478",
+      "src": "kenney/topdown-shooter/tiles/tile_478.png"
+    },
+    {
+      "name": "tile/479",
+      "src": "kenney/topdown-shooter/tiles/tile_479.png"
+    },
+    {
+      "name": "tile/501",
+      "src": "kenney/topdown-shooter/tiles/tile_501.png"
+    },
+    {
+      "name": "tile/502",
+      "src": "kenney/topdown-shooter/tiles/tile_502.png"
+    },
+    {
+      "name": "tile/503",
+      "src": "kenney/topdown-shooter/tiles/tile_503.png"
+    },
+    {
+      "name": "tile/504",
+      "src": "kenney/topdown-shooter/tiles/tile_504.png"
+    },
+    {
+      "name": "tile/505",
+      "src": "kenney/topdown-shooter/tiles/tile_505.png"
+    },
+    {
+      "name": "tile/506",
+      "src": "kenney/topdown-shooter/tiles/tile_506.png"
+    },
+    {
+      "name": "tile/528",
+      "src": "kenney/topdown-shooter/tiles/tile_528.png"
+    },
+    {
+      "name": "tile/529",
+      "src": "kenney/topdown-shooter/tiles/tile_529.png"
+    },
+    {
+      "name": "tile/530",
+      "src": "kenney/topdown-shooter/tiles/tile_530.png"
+    },
+    {
+      "name": "tile/531",
+      "src": "kenney/topdown-shooter/tiles/tile_531.png"
+    },
+    {
+      "name": "tile/532",
+      "src": "kenney/topdown-shooter/tiles/tile_532.png"
+    },
+    {
+      "name": "tile/533",
+      "src": "kenney/topdown-shooter/tiles/tile_533.png"
+    },
+    {
+      "name": "tile/534",
+      "src": "kenney/topdown-shooter/tiles/tile_534.png"
+    },
+    {
+      "name": "tile/535",
+      "src": "kenney/topdown-shooter/tiles/tile_535.png"
+    },
+    {
+      "name": "tile/536",
+      "src": "kenney/topdown-shooter/tiles/tile_536.png"
+    },
+    {
+      "name": "tile/537",
+      "src": "kenney/topdown-shooter/tiles/tile_537.png"
+    },
+    {
+      "name": "tile/69",
+      "src": "kenney/topdown-shooter/tiles/tile_69.png"
+    },
+    {
+      "name": "tile/70",
+      "src": "kenney/topdown-shooter/tiles/tile_70.png"
+    },
+    {
+      "name": "tile/96",
+      "src": "kenney/topdown-shooter/tiles/tile_96.png"
+    },
+    {
+      "name": "tile/97",
+      "src": "kenney/topdown-shooter/tiles/tile_97.png"
+    },
+    {
+      "name": "tile/98",
+      "src": "kenney/topdown-shooter/tiles/tile_98.png"
+    },
+    {
+      "name": "tile/99",
+      "src": "kenney/topdown-shooter/tiles/tile_99.png"
+    },
+    {
+      "name": "item/pot",
+      "src": "kenney/generic-items/genericItem_color_125.png",
+      "width": 48
+    },
+    {
+      "name": "item/badge",
+      "src": "kenney/generic-items/genericItem_color_149.png",
+      "width": 48
+    },
+    {
+      "name": "item/bell",
+      "src": "kenney/generic-items/genericItem_color_152.png",
+      "width": 48
+    },
+    {
+      "name": "item/wallet",
+      "src": "kenney/generic-items/genericItem_color_157.png",
+      "width": 48
+    },
+    {
+      "name": "item/cup",
+      "src": "kenney/generic-items/genericItem_color_003.png",
+      "width": 48
+    },
+    {
+      "name": "item/notebook",
+      "src": "kenney/generic-items/genericItem_color_034.png",
+      "width": 48
+    },
+    {
+      "name": "item/book",
+      "src": "kenney/generic-items/genericItem_color_035.png",
+      "width": 48
+    },
+    {
+      "name": "item/folder",
+      "src": "kenney/generic-items/genericItem_color_036.png",
+      "width": 48
+    },
+    {
+      "name": "item/clipboard",
+      "src": "kenney/generic-items/genericItem_color_037.png",
+      "width": 48
+    },
+    {
+      "name": "item/notepad",
+      "src": "kenney/generic-items/genericItem_color_038.png",
+      "width": 48
+    },
+    {
+      "name": "item/laptop",
+      "src": "kenney/generic-items/genericItem_color_050.png",
+      "width": 48
+    },
+    {
+      "name": "item/monitor",
+      "src": "kenney/generic-items/genericItem_color_052.png",
+      "width": 48
+    },
+    {
+      "name": "item/headphones",
+      "src": "kenney/generic-items/genericItem_color_084.png",
+      "width": 48
+    },
+    {
+      "name": "item/hourglass",
+      "src": "kenney/generic-items/genericItem_color_087.png",
+      "width": 48
+    },
+    {
+      "name": "splat/00",
+      "src": "kenney/splat-pack/splat00.png",
+      "width": 72,
+      "variants": "monsters",
+      "variantsOnly": true
+    },
+    {
+      "name": "splat/01",
+      "src": "kenney/splat-pack/splat01.png",
+      "width": 72,
+      "variants": "monsters",
+      "variantsOnly": true
+    },
+    {
+      "name": "splat/02",
+      "src": "kenney/splat-pack/splat02.png",
+      "width": 72,
+      "variants": "monsters",
+      "variantsOnly": true
+    },
+    {
+      "name": "splat/03",
+      "src": "kenney/splat-pack/splat03.png",
+      "width": 72,
+      "variants": "monsters",
+      "variantsOnly": true
+    },
+    {
+      "name": "splat/04",
+      "src": "kenney/splat-pack/splat04.png",
+      "width": 72,
+      "variants": "monsters",
+      "variantsOnly": true
+    },
+    {
+      "name": "splat/05",
+      "src": "kenney/splat-pack/splat05.png",
+      "width": 72,
+      "variants": "monsters",
+      "variantsOnly": true
+    },
+    {
+      "name": "splat/06",
+      "src": "kenney/splat-pack/splat06.png",
+      "width": 72,
+      "variants": "monsters",
+      "variantsOnly": true
+    },
+    {
+      "name": "splat/07",
+      "src": "kenney/splat-pack/splat07.png",
+      "width": 72,
+      "variants": "monsters",
+      "variantsOnly": true
+    },
+    {
+      "name": "puff/00",
+      "src": "kenney/smoke-particles/whitePuff00.png",
+      "width": 96
+    },
+    {
+      "name": "puff/06",
+      "src": "kenney/smoke-particles/whitePuff06.png",
+      "width": 96
+    },
+    {
+      "name": "puff/12",
+      "src": "kenney/smoke-particles/whitePuff12.png",
+      "width": 96
+    },
+    {
+      "name": "puff/18",
+      "src": "kenney/smoke-particles/whitePuff18.png",
+      "width": 96
+    },
+    {
+      "name": "puff/24",
+      "src": "kenney/smoke-particles/whitePuff24.png",
+      "width": 96
+    },
+    {
+      "name": "prop/crown",
+      "src": "props/crown.svg",
+      "width": 48
+    }
+  ],
+  "monsters": [
+    {
+      "name": "enemy/req",
+      "body": "body_whiteA",
+      "arm": "arm_whiteB",
+      "leg": "leg_whiteB",
+      "eye": "eye_cute_light",
+      "eyes": 2,
+      "mouth": "mouth_closed_happy",
+      "detail": "detail_white_antenna_small",
+      "tint": "#ffe14d",
+      "badge": {
+        "src": "props/sym-req.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#fff9c4"
+      },
+      "width": 46
+    },
+    {
+      "name": "enemy/cr",
+      "body": "body_whiteD",
+      "arm": "arm_whiteE",
+      "leg": "leg_whiteC",
+      "eye": "eye_angry_green",
+      "eyes": 2,
+      "mouth": "mouthF",
+      "detail": "detail_white_horn_small",
+      "tint": "#81c784",
+      "badge": {
+        "src": "props/sym-cr.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#e8f5e9"
+      },
+      "width": 44
+    },
+    {
+      "name": "enemy/story",
+      "body": "body_whiteB",
+      "arm": "arm_whiteB",
+      "leg": "leg_whiteD",
+      "eye": "eye_cute_light",
+      "eyes": 1,
+      "mouth": "mouthA",
+      "detail": "detail_white_ear_round",
+      "tint": "#7fd0f7",
+      "badge": {
+        "src": "props/sym-story.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#e1f5fe"
+      },
+      "width": 38
+    },
+    {
+      "name": "enemy/obj",
+      "body": "body_whiteC",
+      "arm": "arm_whiteA",
+      "leg": "leg_whiteA",
+      "eye": "eye_human",
+      "eyes": 2,
+      "mouth": "mouthE",
+      "detail": "detail_white_ear",
+      "tint": "#ffb74d",
+      "badge": {
+        "src": "props/sym-obj.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#fff3e0"
+      },
+      "width": 52
+    },
+    {
+      "name": "enemy/feat",
+      "body": "body_whiteF",
+      "arm": "arm_whiteC",
+      "leg": "leg_whiteE",
+      "eye": "eye_cute_dark",
+      "eyes": 2,
+      "mouth": "mouthJ",
+      "detail": "detail_white_antenna_large",
+      "tint": "#f06292",
+      "badge": {
+        "src": "props/sym-feat.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#fce4ec"
+      },
+      "width": 54
+    },
+    {
+      "name": "enemy/creep",
+      "body": "body_whiteE",
+      "arm": "arm_whiteD",
+      "leg": "leg_whiteB",
+      "eye": "eye_psycho_light",
+      "eyes": 3,
+      "mouth": "mouthH",
+      "detail": "detail_white_eye",
+      "tint": "#c0ca33",
+      "badge": {
+        "src": "props/sym-creep.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#f9fbe7"
+      },
+      "width": 44
+    },
+    {
+      "name": "enemy/debt",
+      "body": "body_whiteD",
+      "arm": "arm_whiteE",
+      "leg": "leg_whiteC",
+      "eye": "eye_psycho_dark",
+      "eyes": 2,
+      "mouth": "mouth_closed_teeth",
+      "detail": "detail_white_horn_large",
+      "tint": "#90a4ae",
+      "badge": {
+        "src": "props/sym-debt.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#eceff1"
+      },
+      "width": 50
+    },
+    {
+      "name": "enemy/boss",
+      "body": "body_whiteB",
+      "arm": "arm_whiteA",
+      "leg": "leg_whiteE",
+      "eye": "eye_angry_red",
+      "eyes": 2,
+      "mouth": "mouthI",
+      "detail": "detail_white_horn_large",
+      "tint": "#e57373",
+      "badge": {
+        "src": "props/sym-boss.svg",
+        "size": 62,
+        "dx": 0.36,
+        "dy": 0.8,
+        "rotate": -6,
+        "bg": "props/postit.svg",
+        "bgTint": "#ffebee"
+      },
+      "crown": {
+        "src": "props/crown.svg",
+        "size": 110
+      },
+      "width": 96
     }
   ]
 }

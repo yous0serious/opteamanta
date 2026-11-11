@@ -16,8 +16,14 @@ export const FX_PALETTE: Record<string, string> = {
   ...Object.fromEntries(Object.entries(INK).map(([k, v]) => [`ink-${k}`, v])),
 };
 
+/** Kräftigere Körperfarben der Monster (Spec office-makeover); auch für Bodenflecken. */
+export const MONSTER_COLORS: Record<string, string> = {
+  req: '#ffe14d', cr: '#81c784', story: '#7fd0f7', obj: '#ffb74d', feat: '#f06292', creep: '#c0ca33', debt: '#90a4ae', boss: '#e57373',
+};
+
 export const PALETTES: Record<string, Record<string, string>> = {
   enemies: colors(ENEMIES),
+  monsters: MONSTER_COLORS,
   towers: { ...colors(TOWERS), off: '#9e9e9e' },
   maps: Object.fromEntries(MAPS.map((m) => [m.id, toHex(hsl(m.hue, 65, 82))])),
   fx: FX_PALETTE,

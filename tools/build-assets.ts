@@ -3,6 +3,7 @@ import { extname, join } from 'node:path';
 import pack from 'free-tex-packer-core';
 import sharp from 'sharp';
 import { PALETTES, multiplyRgba } from './asset-variants';
+import { buildMonster, type MonsterRecipe } from './monsters';
 
 // Baut den Spiel-Atlas aus assets-src/manifest.json (ADR-0003). Aufruf: npm run assets
 interface FrameSpec {
@@ -24,6 +25,8 @@ interface Manifest {
   maxSize: number;
   padding: number;
   frames: FrameSpec[];
+  /** Zusammengesetzte Monster (tools/monsters.ts); Farbe aus PALETTES.monsters, falls nicht angegeben. */
+  monsters?: MonsterRecipe[];
 }
 
 const SRC = 'assets-src';
@@ -58,6 +61,10 @@ async function main(): Promise<void> {
     names.add(name);
     images.push({ path: name, contents });
   };
+  for (const r of manifest.monsters ?? []) {
+    const key = r.name.split('/').pop() ?? '';
+    for (const f of await buildMonster({ ...r, tint: r.tint ?? PALETTES.monsters?.[key] })) push(f.name, f.png);
+  }
   for (const frame of manifest.frames) {
     const png = await render(frame);
     if (!frame.variantsOnly) push(frame.name, png);
