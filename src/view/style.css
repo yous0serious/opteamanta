@@ -4,6 +4,8 @@
 body {
   margin: 0; color: var(--ink); font-family: system-ui, "Segoe UI", Arial, sans-serif; overflow: auto;
   background: #d9d4ca radial-gradient(circle at 20% 10%, #ece8e0 0, #d9d4ca 70%);
+  /* Freiraum unten: das fest positionierte Netlify-Badge (ca. 64 px hoch) soll keine Buttons verdecken. */
+  padding-bottom: 80px;
 }
 h1 { margin: 8px 0 0; text-align: center; font-family: var(--hand); font-size: 40px; color: #c62828; transform: rotate(-1deg); }
 .sub { text-align: center; color: #5b6570; font-size: 12px; margin: 2px 0 8px; }
