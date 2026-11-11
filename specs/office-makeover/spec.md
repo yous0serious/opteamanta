@@ -1,6 +1,6 @@
 # Spec: Büro-Neuauftritt und automatische Daily (Teil 4)
 
-**Status:** Approved
+**Status:** Done
 **Size:** L
 **Ticket:** –
 **Plan:** `.ai/specs/office-makeover/plan.md` (nach Freigabe) · **Ledger:** `.ai/specs/office-makeover/ledger.md`
