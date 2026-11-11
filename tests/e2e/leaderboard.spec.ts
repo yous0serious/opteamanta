@@ -121,7 +121,7 @@ test.describe('online build (mocked Supabase)', () => {
     await expect(items.nth(11).locator('.nk')).toHaveText('MeTeam');
     await expect(items.nth(11).locator('.sc')).toHaveText('5.000');
     await expect(items.nth(0).locator('.rk')).toHaveText('1.');
-    await expect(items.nth(0).locator('.wv')).toHaveText('🏁');
+    await expect(items.nth(0).locator('.wv')).toHaveText('Sieg');
     await expect(items.nth(1).locator('.wv')).toHaveText('W30');
     await expect(page.locator('#tk')).toContainText('+++ NEUER TAGESREKORD: Rekord-Rita mit 12.345 Punkten +++');
 

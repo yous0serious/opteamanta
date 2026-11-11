@@ -90,8 +90,14 @@ export class GameScene extends Phaser.Scene {
       renderer: () => (this.game.renderer.type === Phaser.WEBGL ? 'webgl' : 'canvas'),
       pile: () => this.pileView.pile.balls.map((b) => ({ x: Math.round(b.x), y: Math.round(b.y), type: b.color })),
       scene: () => this,
+      poses: () => [...this.towers.values()].map((v) => ({ id: v.tower.id, type: v.tower.type, level: v.tower.level, pose: v.currentPose })),
+      monsters: () => [...this.enemies.values()].map((v) => ({ id: v.enemy.id, type: v.enemy.type, frame: v.frameName, width: v.displayWidth })),
+      effects: () => ({ ...this.effectCounts }),
     };
   }
+
+  /** Zähler ausgelöster Effekte je Ereignistyp (Debug/E2E). */
+  private readonly effectCounts: Record<string, number> = {};
 
   create(): void {
     const webgl = this.game.renderer.type === Phaser.WEBGL;
@@ -238,10 +244,13 @@ export class GameScene extends Phaser.Scene {
     const fx = this.fx;
     const parts = this.parts;
     const game = this.ctl.game;
+    const key = e.type === 'fired' ? `fired:${e.tower.type}` : e.type;
+    this.effectCounts[key] = (this.effectCounts[key] ?? 0) + 1;
     switch (e.type) {
       case 'placed':
-        parts.burst(e.tower.x, e.tower.y, TOWERS[e.tower.type].color, 24, 150, 'circle');
-        fx.bumpShake(4);
+        parts.burst(e.tower.x, e.tower.y + 10, TOWERS[e.tower.type].color, 18, 150, 'circle');
+        this.puffs.explode(Math.max(1, Math.round(4 * this.settings.particleScale)), e.tower.x, e.tower.y + 14);
+        fx.bumpShake(3);
         break;
       case 'upgraded':
         parts.burst(e.tower.x, e.tower.y, INK.yellow, 26, 250, 'star');
@@ -249,8 +258,9 @@ export class GameScene extends Phaser.Scene {
         fx.text(e.tower.x, e.tower.y - 20, UPGRADE_TITLES[e.tower.type][e.tower.level] ?? '', INK.yellow, 16, 1.2);
         break;
       case 'sold':
-        parts.burst(e.tower.x, e.tower.y, INK.red, 24, 200, 'dirt');
-        fx.text(e.tower.x, e.tower.y, 'Wechselt ins Nachbarteam!', INK.red, 14);
+        this.puffs.explode(Math.max(1, Math.round(6 * this.settings.particleScale)), e.tower.x, e.tower.y);
+        parts.burst(e.tower.x, e.tower.y, INK.red, 14, 200, 'star');
+        fx.text(e.tower.x, e.tower.y - 30, 'Wechselt ins Nachbarteam!', INK.red, 14);
         break;
       case 'rejected': {
         const c = e.command;
@@ -291,18 +301,22 @@ export class GameScene extends Phaser.Scene {
         break;
       }
       case 'split':
+        this.puffs.explode(Math.max(1, Math.round(5 * this.settings.particleScale)), e.enemy.x, e.enemy.y);
+        parts.burst(e.enemy.x, e.enemy.y, ENEMIES.story.color, 14, 180, 'circle');
         fx.text(e.enemy.x, e.enemy.y + 16, 'Zerfällt in User Stories!', INK.green, 12, 1);
         break;
       case 'leaked': {
         const last = game.path[game.path.length - 1]!;
         fx.shake = 12;
         fx.flash = 0.25;
+        this.puffs.explode(Math.max(1, Math.round(6 * this.settings.particleScale)), Math.min(WIDTH - 20, last.x), last.y);
         fx.text(WIDTH - 120, last.y - 20, `${pick(LEAK)} -${e.damage}%`, INK.red, 16, 1.5);
         break;
       }
       case 'gameOver':
         parts.burst(WIDTH / 2, HEIGHT / 2, INK.red, 200, 600, 'circle');
         parts.burst(WIDTH / 2, HEIGHT / 2, INK.grey, 30, 120, 'smoke');
+        for (const v of this.towers.values()) v.despair();
         fx.shake = 40;
         if (this.ctx.filters && !this.desat) {
           this.desat = this.cameras.main.filters.internal.addColorMatrix();
@@ -318,6 +332,7 @@ export class GameScene extends Phaser.Scene {
       }
       case 'victory': {
         this.banner.hide();
+        for (const v of this.towers.values()) v.cheer(600);
         const colors = [INK.green, INK.yellow, INK.pink, INK.cyan, TOWERS.dev.color, TOWERS.ppl.color];
         for (let i = 0; i < 8; i++) {
           const x = 120 + i * 100;
@@ -327,9 +342,13 @@ export class GameScene extends Phaser.Scene {
         break;
       }
       case 'jammed':
-        fx.text(e.enemy.x, e.enemy.y - 24, pick(JAM), INK.grey, 12, 1.2);
+        fx.text(e.enemy.x, e.enemy.y - 34, pick(JAM), INK.grey, 12, 1.2);
         fx.ring(e.enemy.x, e.enemy.y, e.radius, INK.grey);
-        parts.burst(e.enemy.x, e.enemy.y, INK.grey, 8, 60, 'smoke');
+        parts.burst(e.enemy.x, e.enemy.y, INK.grey, 10, 70, 'smoke');
+        for (const id of e.towerIds) {
+          const t = game.towerById(id);
+          if (t) parts.burst(t.x, t.y - 20, INK.grey, 5, 50, 'smoke');
+        }
         break;
       case 'absent':
         fx.text(e.tower.x, e.tower.y - 22, pick(ABSENT), INK.cyan, 12, 1);
@@ -344,7 +363,9 @@ export class GameScene extends Phaser.Scene {
         if (e.enemyId !== null) parts.burst(e.shot.tx, e.shot.ty, TOWERS[e.shot.towerType].color, 4, 100, 'spark');
         break;
       case 'pushed':
-        fx.text(e.enemy.x, e.enemy.y - 18, e.enemy.type === 'boss' ? 'Hmm, nochmal schätzen…' : 'Zurück ins Refinement!', INK.purple, 12, 1);
+        fx.ring(e.enemy.x, e.enemy.y, 26, INK.purple);
+        parts.burst(e.enemy.x, e.enemy.y, TOWERS.scrum.color, 8, 160, 'spark');
+        fx.text(e.enemy.x, e.enemy.y - 30, e.enemy.type === 'boss' ? 'Hmm, nochmal schätzen…' : 'Zurück ins Refinement!', INK.purple, 12, 1);
         break;
       default:
         break;
@@ -514,6 +535,7 @@ export class GameScene extends Phaser.Scene {
       }
       const target = t.beam && t.targetId !== null ? byId.get(t.targetId) : undefined;
       if (target) {
+        this.effectCounts.beam = (this.effectCounts.beam ?? 0) + 1;
         const sx = t.x;
         const sy = t.y - 8;
         const tx = target.x;

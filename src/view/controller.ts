@@ -11,6 +11,12 @@ export interface DebugApi {
   pile: () => Array<{ x: number; y: number; type: string }>;
   /** Nur Debug: Zugriff auf die Phaser-Szene. */
   scene?: () => unknown;
+  /** Aktuelle Pose je Arbeitsplatz (Spec office-makeover AC-4). */
+  poses?: () => Array<{ id: number; type: string; level: number; pose: string }>;
+  /** Sichtbare Monster mit aktuellem Frame und Anzeigebreite (Spec office-makeover AC-5). */
+  monsters?: () => Array<{ id: number; type: string; frame: string; width: number }>;
+  /** Anzahl ausgelöster Effekte je Ereignistyp (Spec office-makeover AC-6). */
+  effects?: () => Record<string, number>;
 }
 
 /** Höchstens so viele Ticks pro Frame (schützt vor Endlosschleifen nach Tab-Wechsel). */

@@ -40,6 +40,7 @@ export class WorkstationView {
   private fireT = 0;
   private fireIdx = 0;
   private cheerT = 0;
+  private despairT = 0;
   private typeT = 0;
   private popT = 0;
   private appearT = 0.25;
@@ -74,6 +75,11 @@ export class WorkstationView {
     return this.tower.y + FEET_Y;
   }
 
+  /** Aktuelle Pose (Debug/E2E). */
+  get currentPose(): string {
+    return this.pose;
+  }
+
   fire(): void {
     this.fireT = 0.22;
     this.fireIdx = (this.fireIdx + 1) % POSES[this.tower.type].fire.length;
@@ -86,6 +92,13 @@ export class WorkstationView {
 
   cheer(seconds: number): void {
     this.cheerT = Math.max(this.cheerT, seconds);
+    this.despairT = 0;
+  }
+
+  /** Burnout: alle lassen die Köpfe hängen (bis zum Neustart). */
+  despair(): void {
+    this.despairT = 1e9;
+    this.cheerT = 0;
   }
 
   private setPose(p: string): void {
@@ -103,7 +116,7 @@ export class WorkstationView {
 
     // Pose wählen: Ausfall > Jubel > Angriff/Strahl > Ruhe
     let pose = POSES[t.type].idle;
-    if (off) pose = 'hurt';
+    if (off || this.despairT > 0) pose = 'hurt';
     else if (this.cheerT > 0) pose = CHEER[Math.floor(this.cheerT * 6) % 2]!;
     else if (t.beam) pose = Math.floor(this.typeT * 8) % 2 ? 'interact' : 'hold';
     else if (this.fireT > 0) pose = POSES[t.type].fire[this.fireIdx]!;

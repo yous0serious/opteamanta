@@ -96,12 +96,18 @@ test.describe('visual overhaul', () => {
     // Ladebildschirm ist Canvas-Text; nach Ready darf die Preload-Szene nicht mehr aktiv sein.
     const active = await page.evaluate(() => (window as unknown as W).__bd.debug.scene().scene.isActive('preload'));
     expect(active).toBe(false);
+    // Interne Auflösung bleibt 960 × 600; die Anzeige skaliert seit Spec office-makeover (AC-7) mit dem Fenster.
+    const res = await page.evaluate(() => {
+      const c = document.querySelector('#game canvas') as HTMLCanvasElement;
+      return { w: c.width, h: c.height };
+    });
+    expect(res).toEqual({ w: 960, h: 600 });
     const canvas = await page.locator('#game canvas').boundingBox();
     const box = await page.locator('#game').boundingBox();
-    expect(canvas?.width).toBe(960);
-    expect(canvas?.height).toBe(600);
-    expect(box?.width).toBe(960);
-    expect(box?.height).toBe(600);
+    expect(canvas && box).toBeTruthy();
+    expect(Math.abs(canvas!.width / canvas!.height - 1.6)).toBeLessThan(0.01);
+    expect(Math.abs(canvas!.width - box!.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(canvas!.height - box!.height)).toBeLessThanOrEqual(1);
   });
 
   test('AC-13 screenshots', async ({ page }) => {

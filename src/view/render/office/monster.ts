@@ -77,6 +77,16 @@ export class MonsterView {
     return this.enemy.y + FEET;
   }
 
+  /** Aktueller Frame (Debug/E2E). */
+  get frameName(): string {
+    return this.body.frame.name;
+  }
+
+  /** Angezeigte Breite in px (Debug/E2E). */
+  get displayWidth(): number {
+    return Math.round(this.body.displayWidth);
+  }
+
   update(dt: number, time: number): void {
     const e = this.enemy;
     if (e.hp < this.lastHp - 1e-9) this.hitT = 0.09;
