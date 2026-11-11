@@ -17,6 +17,8 @@ export interface DebugApi {
   monsters?: () => Array<{ id: number; type: string; frame: string; width: number }>;
   /** Anzahl ausgelöster Effekte je Ereignistyp (Spec office-makeover AC-6). */
   effects?: () => Record<string, number>;
+  /** Zustand der Audio-Engine (Spec season-2 AC-10). */
+  audio?: () => unknown;
 }
 
 /** Höchstens so viele Ticks pro Frame (schützt vor Endlosschleifen nach Tab-Wechsel). */

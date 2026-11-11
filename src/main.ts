@@ -33,7 +33,7 @@ const hud = new Hud(ctl, sound);
 installKeyboard(ctl, sound);
 
 const scene = new GameScene(ctl, sound, settings);
-ctl.debug = scene.debugApi();
+ctl.debug = { ...scene.debugApi(), audio: () => sound.status() };
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
