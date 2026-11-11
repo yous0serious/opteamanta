@@ -3,6 +3,7 @@ import { extname, join } from 'node:path';
 import pack from 'free-tex-packer-core';
 import sharp from 'sharp';
 import { PALETTES, multiplyRgba } from './asset-variants';
+import { buildCharacterPose, type CharacterRecipe, type HeadAnchor } from './characters';
 import { buildMonster, type MonsterRecipe } from './monsters';
 
 // Baut den Spiel-Atlas aus assets-src/manifest.json (ADR-0003). Aufruf: npm run assets
@@ -33,6 +34,14 @@ interface Manifest {
   frames: FrameSpec[];
   /** Zusammengesetzte Monster (tools/monsters.ts); Farbe aus PALETTES.monsters, falls nicht angegeben. */
   monsters?: MonsterRecipe[];
+  /** Neue Rollen und Statisten aus vorhandenen Posen (tools/characters.ts, Spec season-2). */
+  characters?: {
+    poses: string[];
+    crop: { left: number; top: number; width: number; height: number };
+    width: number;
+    anchors: Record<string, HeadAnchor>;
+    recipes: CharacterRecipe[];
+  };
 }
 
 const SRC = 'assets-src';
@@ -75,6 +84,20 @@ async function main(): Promise<void> {
     names.add(name);
     images.push({ path: name, contents });
   };
+  const chars = manifest.characters;
+  for (const r of chars?.recipes ?? []) {
+    const anchor = chars!.anchors[r.base]!;
+    for (const pose of r.poses ?? chars!.poses) {
+      const png = await buildCharacterPose(r, pose, anchor);
+      push(`char/${r.role}/${pose}`, await sharp(png).extract(chars!.crop).resize({ width: r.width ?? chars!.width }).png().toBuffer());
+      if (pose === 'idle' && r.portrait) {
+        // Porträt: Kopfbereich der Ruhepose (inkl. Mütze) für die Turmkarten
+        const top = Math.max(0, anchor.top - 30);
+        const crop = { left: Math.max(0, anchor.cx - 64), top, width: 128, height: Math.min(256 - top, anchor.chin - top + 12) };
+        push(`head/${r.role}`, await sharp(png).extract(crop).resize({ width: 56 }).png().toBuffer());
+      }
+    }
+  }
   for (const r of manifest.monsters ?? []) {
     const key = r.name.split('/').pop() ?? '';
     for (const f of await buildMonster({ ...r, tint: r.tint ?? PALETTES.monsters?.[key] })) push(f.name, f.png);

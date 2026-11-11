@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- SP-Münze (eigenes Werk) -->
+  <circle cx="24" cy="25" r="20" fill="#f57f17"/>
+  <circle cx="24" cy="23" r="20" fill="#ffca28"/>
+  <circle cx="24" cy="23" r="15" fill="#ffb300"/>
+  <text x="24" y="29.5" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#e65100">SP</text>
+  <path d="M12 15 Q16 9 22 8" stroke="#fff8e1" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>

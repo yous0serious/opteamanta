@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="96" viewBox="0 0 40 96">
+  <!-- Krawatte (Vorstand), eigenes Werk -->
+  <path d="M12 4 L28 4 L24 16 L16 16 Z" fill="#b71c1c"/>
+  <path d="M16 16 L24 16 L32 76 L20 92 L8 76 Z" fill="#d32f2f"/>
+  <path d="M14 34 L27 30 M12 52 L29 46 M11 68 L30 62" stroke="#ef9a9a" stroke-width="3"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="64" viewBox="0 0 120 64">
+  <!-- Schaffnermütze (RTE), eigenes Werk -->
+  <path d="M14 40 Q14 8 60 6 Q106 8 106 40 Z" fill="#1a3a5c"/>
+  <path d="M20 34 Q22 14 60 12 Q98 14 100 34 Z" fill="#244a73"/>
+  <rect x="12" y="36" width="96" height="10" rx="3" fill="#0f2740"/>
+  <path d="M10 46 Q60 62 110 46 L106 54 Q60 66 14 54 Z" fill="#0b1d30"/>
+  <rect x="12" y="38" width="96" height="4" fill="#ffca28"/>
+  <circle cx="60" cy="24" r="8" fill="#ffca28" stroke="#f57f17" stroke-width="2"/>
+  <path d="M55 24 L65 24 M60 19 L60 29" stroke="#8d6e00" stroke-width="2"/>
+</svg>

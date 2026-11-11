@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="36" viewBox="0 0 72 36">
+  <!-- Fliege (RTO), eigenes Werk -->
+  <path d="M4 4 L32 14 L32 22 L4 32 Q0 18 4 4 Z" fill="#ffb300" stroke="#e65100" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M68 4 L40 14 L40 22 L68 32 Q72 18 68 4 Z" fill="#ffb300" stroke="#e65100" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="30" y="11" width="12" height="14" rx="3" fill="#ffca28" stroke="#e65100" stroke-width="3"/>
+</svg>

@@ -1533,6 +1533,52 @@
       "name": "deco/cabinet",
       "src": "props/cabinet.svg",
       "width": 80
+    },
+    {
+      "name": "sym/meeting",
+      "src": "props/sym-meeting.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/hotfix",
+      "src": "props/sym-hotfix.svg",
+      "width": 48
+    },
+    {
+      "name": "prop/coin",
+      "src": "props/coin.svg",
+      "width": 32
+    },
+    {
+      "name": "prop/ice",
+      "src": "props/ice.svg",
+      "width": 40
+    },
+    {
+      "name": "prop/shredder",
+      "src": "props/shredder.svg",
+      "width": 64
+    },
+    {
+      "name": "prop/lamp",
+      "src": "props/lamp.svg",
+      "width": 32
+    },
+    {
+      "name": "prop/bubble",
+      "src": "props/bubble.svg",
+      "width": 96
+    },
+    {
+      "name": "prop/blueprint",
+      "src": "props/blueprint.svg",
+      "width": 40
+    },
+    {
+      "name": "prop/glow",
+      "src": "props/glow.svg",
+      "width": 64,
+      "variants": "towers"
     }
   ],
   "monsters": [
@@ -1707,6 +1753,318 @@
         "size": 110
       },
       "width": 96
+    },
+    {
+      "name": "enemy/meeting",
+      "body": "body_whiteC",
+      "arm": "arm_whiteB",
+      "leg": "leg_whiteD",
+      "eye": "eye_human",
+      "eyes": 2,
+      "mouth": "mouth_closed_sad",
+      "detail": "detail_white_ear_round",
+      "badge": {
+        "src": "props/sym-meeting.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#e3f2fd"
+      },
+      "width": 46
+    },
+    {
+      "name": "enemy/hotfix",
+      "body": "body_whiteE",
+      "arm": "arm_whiteE",
+      "leg": "leg_whiteC",
+      "eye": "eye_angry_red",
+      "eyes": 2,
+      "mouth": "mouth_closed_fangs",
+      "detail": "detail_white_horn_small",
+      "badge": {
+        "src": "props/sym-hotfix.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#fbe9e7"
+      },
+      "width": 38
     }
-  ]
+  ],
+  "characters": {
+    "poses": [
+      "idle",
+      "attack0",
+      "attack1",
+      "attack2",
+      "interact",
+      "talk",
+      "think",
+      "cheer0",
+      "cheer1",
+      "hold",
+      "show",
+      "hurt",
+      "kick",
+      "wide"
+    ],
+    "crop": {
+      "left": 0,
+      "top": 28,
+      "width": 192,
+      "height": 228
+    },
+    "width": 84,
+    "anchors": {
+      "dualo": {
+        "cx": 100,
+        "top": 64,
+        "eyes": 134,
+        "chin": 160
+      },
+      "analyst": {
+        "cx": 97,
+        "top": 62,
+        "eyes": 133,
+        "chin": 158
+      },
+      "dev": {
+        "cx": 96,
+        "top": 64,
+        "eyes": 128,
+        "chin": 160
+      },
+      "ppl": {
+        "cx": 98,
+        "top": 68,
+        "eyes": 131,
+        "chin": 162
+      }
+    },
+    "recipes": [
+      {
+        "role": "rte",
+        "base": "analyst",
+        "recolor": [
+          {
+            "hue": [
+              188,
+              215
+            ],
+            "minSat": 0.2,
+            "to": "#00897b",
+            "refLight": 0.62
+          }
+        ],
+        "accessories": [
+          {
+            "src": "props/acc-cap.svg",
+            "anchor": "top",
+            "width": 118,
+            "dy": 12
+          }
+        ],
+        "portrait": true
+      },
+      {
+        "role": "rta",
+        "base": "dualo",
+        "recolor": [
+          {
+            "hue": [
+              135,
+              165
+            ],
+            "minSat": 0.3,
+            "to": "#3949ab",
+            "refLight": 0.5
+          }
+        ],
+        "accessories": [
+          {
+            "src": "props/acc-glasses.svg",
+            "anchor": "eyes",
+            "width": 100,
+            "dy": 2
+          }
+        ],
+        "portrait": true
+      },
+      {
+        "role": "rto",
+        "base": "dev",
+        "recolor": [
+          {
+            "hue": [
+              135,
+              165
+            ],
+            "minSat": 0.3,
+            "to": "#c62828",
+            "refLight": 0.5
+          }
+        ],
+        "accessories": [
+          {
+            "src": "props/acc-bowtie.svg",
+            "anchor": "chin",
+            "width": 52,
+            "dy": 4
+          }
+        ],
+        "portrait": true
+      },
+      {
+        "role": "board",
+        "base": "ppl",
+        "recolor": [
+          {
+            "hue": [
+              22,
+              36
+            ],
+            "minSat": 0.55,
+            "to": "#455a64",
+            "refLight": 0.62
+          },
+          {
+            "hue": [
+              228,
+              250
+            ],
+            "minSat": 0.3,
+            "to": "#263238",
+            "refLight": 0.5
+          }
+        ],
+        "accessories": [
+          {
+            "src": "props/acc-tie.svg",
+            "anchor": "chin",
+            "width": 26,
+            "dy": 6
+          },
+          {
+            "src": "props/acc-sunglasses.svg",
+            "anchor": "eyes",
+            "width": 104,
+            "dy": 0
+          }
+        ],
+        "portrait": true
+      },
+      {
+        "role": "npc1",
+        "base": "dev",
+        "recolor": [
+          {
+            "hue": [
+              135,
+              165
+            ],
+            "minSat": 0.3,
+            "to": "#ef6c00",
+            "refLight": 0.5
+          }
+        ],
+        "accessories": [],
+        "poses": [
+          "walk0",
+          "walk1",
+          "walk2",
+          "walk3",
+          "walk4",
+          "walk5",
+          "walk6",
+          "walk7"
+        ],
+        "width": 64
+      },
+      {
+        "role": "npc2",
+        "base": "ppl",
+        "recolor": [
+          {
+            "hue": [
+              22,
+              36
+            ],
+            "minSat": 0.55,
+            "to": "#0288d1",
+            "refLight": 0.62
+          }
+        ],
+        "accessories": [],
+        "poses": [
+          "walk0",
+          "walk1",
+          "walk2",
+          "walk3",
+          "walk4",
+          "walk5",
+          "walk6",
+          "walk7"
+        ],
+        "width": 64
+      },
+      {
+        "role": "npc3",
+        "base": "dualo",
+        "recolor": [
+          {
+            "hue": [
+              135,
+              165
+            ],
+            "minSat": 0.3,
+            "to": "#ec407a",
+            "refLight": 0.5
+          }
+        ],
+        "accessories": [],
+        "poses": [
+          "walk0",
+          "walk1",
+          "walk2",
+          "walk3",
+          "walk4",
+          "walk5",
+          "walk6",
+          "walk7"
+        ],
+        "width": 64
+      },
+      {
+        "role": "npc4",
+        "base": "analyst",
+        "recolor": [
+          {
+            "hue": [
+              188,
+              215
+            ],
+            "minSat": 0.2,
+            "to": "#fbc02d",
+            "refLight": 0.62
+          }
+        ],
+        "accessories": [],
+        "poses": [
+          "walk0",
+          "walk1",
+          "walk2",
+          "walk3",
+          "walk4",
+          "walk5",
+          "walk6",
+          "walk7"
+        ],
+        "width": 64
+      }
+    ]
+  }
 }

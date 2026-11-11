@@ -19,6 +19,7 @@ export const FX_PALETTE: Record<string, string> = {
 /** Kräftigere Körperfarben der Monster (Spec office-makeover); auch für Bodenflecken. */
 export const MONSTER_COLORS: Record<string, string> = {
   req: '#ffe14d', cr: '#81c784', story: '#7fd0f7', obj: '#ffb74d', feat: '#f06292', creep: '#c0ca33', debt: '#90a4ae', boss: '#e57373',
+  meeting: '#64b5f6', hotfix: '#ff7043',
 };
 
 export const PALETTES: Record<string, Record<string, string>> = {

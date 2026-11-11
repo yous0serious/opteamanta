@@ -1,0 +1,54 @@
+{
+  "music": {
+    "music-planning": {
+      "file": "music/music-planning.mp3",
+      "loop": true
+    },
+    "music-wave": {
+      "file": "music/music-wave.mp3",
+      "loop": true
+    },
+    "music-boss": {
+      "file": "music/music-boss.mp3",
+      "loop": true
+    },
+    "jingle-victory": {
+      "file": "music/jingle-victory.mp3",
+      "loop": false
+    },
+    "jingle-gameover": {
+      "file": "music/jingle-gameover.mp3",
+      "loop": false
+    },
+    "jingle-wave": {
+      "file": "music/jingle-wave.mp3",
+      "loop": false
+    },
+    "jingle-boss": {
+      "file": "music/jingle-boss.mp3",
+      "loop": false
+    }
+  },
+  "sfx": {
+    "click": "sfx/click.mp3",
+    "select": "sfx/select.mp3",
+    "place": "sfx/place.mp3",
+    "upgrade": "sfx/upgrade.mp3",
+    "sell": "sfx/sell.mp3",
+    "coin": "sfx/coin.mp3",
+    "hit": "sfx/hit.mp3",
+    "kill": "sfx/kill.mp3",
+    "split": "sfx/split.mp3",
+    "boss": "sfx/boss.mp3",
+    "leak": "sfx/leak.mp3",
+    "throw": "sfx/throw.mp3",
+    "sync": "sfx/sync.mp3",
+    "freeze": "sfx/freeze.mp3",
+    "axe": "sfx/axe.mp3",
+    "typing": "sfx/typing.mp3",
+    "combo": "sfx/combo.mp3",
+    "applause": "sfx/applause.mp3",
+    "jam": "sfx/jam.mp3",
+    "businessValue": "sfx/businessValue.mp3"
+  }
+}

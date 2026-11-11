@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Meeting-Einladung: Kalenderblatt (eigenes Werk) -->
+  <rect x="7" y="10" width="34" height="31" rx="4" fill="#ffffff" stroke="#2b3440" stroke-width="3"/>
+  <rect x="7" y="10" width="34" height="9" rx="3" fill="#1e88e5" stroke="#2b3440" stroke-width="3"/>
+  <path d="M15 6 L15 14 M33 6 L33 14" stroke="#2b3440" stroke-width="3.2" stroke-linecap="round"/>
+  <g fill="#2b3440"><rect x="13" y="24" width="5" height="4" rx="1"/><rect x="21.5" y="24" width="5" height="4" rx="1"/><rect x="30" y="24" width="5" height="4" rx="1"/><rect x="13" y="31" width="5" height="4" rx="1"/></g>
+  <rect x="21.5" y="31" width="5" height="4" rx="1" fill="#e53935"/>
+</svg>
