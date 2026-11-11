@@ -36,15 +36,31 @@ npm run dev        # http://localhost:5173
 
 **Modi:** *Challenge* (Standard) – 30 Wellen, danach „RELEASE ERFOLGREICH!“ mit Moral-Bonus (Moral × 100);
 *Endlos* – bis zum Burnout. Wahl in der Seitenleiste vor dem ersten Sprint oder per `?mode=endless`.
-Spielversion 0.2.0 (Balancing siehe `specs/balancing-challenge/spec.md`, Werte in `src/sim/data/balance.ts`).
+Spielversion 0.3.0 – **Saison 2** (Spec `specs/season-2/spec.md`, Werte in `src/sim/data/`).
+
+| Rolle | Taste | Kosten | Wirkung |
+|---|---|---|---|
+| Dualo | 1 | 30 | Wirft Kaffeetassen; fehlt manchmal (Klausurphase) |
+| Business Analyst | 2 | 70 | Rückfragen verlangsamen Tickets |
+| Entwickler | 3 | 120 | Dauerstrahl aus Code |
+| PPL | 4 | 150 | Flächenschaden, +25 % für Teammitglieder in der Aura |
+| Scrum Master | 5 | 110 | Schickt Tickets zurück ins Refinement |
+| RTE | 6 | 140 | Alle 10 s PI-Sync: 4 s lang 30 % schneller, löst Tech-Debt-Störungen |
+| RTA | 7 | 130 | Architektur-Runway: +25 % Schaden im Bereich, Tech Debt doppelt |
+| RTO | 8 | 100 | Business Value: 15 SP (+10 je Stufe) pro Sprint-Ende |
+| Vorstand | 9 | 500 | Max. 1; alle 20 s Budget-Freeze bzw. „Projekt eingestampft“ |
 
 | Eingabe | Aktion |
 |---|---|
-| `1`–`5` / Buttons | Turm wählen |
-| Klick aufs Feld | Turm platzieren bzw. vorhandenen Turm auswählen |
-| `U` / `S` | Upgrade / Verkaufen (ausgewählter Turm) |
-| Leertaste / grüner Button | Nächster Sprint, nach Game Over neu starten |
+| `1`–`9` / Karten | Rolle wählen |
+| Klick aufs Feld | Platzieren bzw. vorhandenen Arbeitsplatz auswählen |
+| `U` / `S` | Upgrade / Abgeben (ausgewählter Arbeitsplatz) |
+| Leertaste / großer Button | Nächster Sprint, nach Spielende neu starten |
 | `Esc` / Rechtsklick | Auswahl aufheben |
+
+**Einstellungen** (Seitenleiste): Effektstufe *Maximal* (Combos, Zeitlupe, Kamerafahrten), *Normal* (ohne Zeitlupe/Zoom),
+*Ruhig* (ohne Wackeln, Combos, Animationen; Standard bei `prefers-reduced-motion`), Lautstärke für Musik und Effekte.
+Nach Spielende teilt „Teilen“ das Ergebnis als Text und Bildkarte.
 
 ### URL-Parameter
 
@@ -54,7 +70,7 @@ Spielversion 0.2.0 (Balancing siehe `specs/balancing-challenge/spec.md`, Werte i
 | `map=spaghetti\|waterfall\|release-train\|matrix` | Karte erzwingen (sonst aus dem Seed) |
 | `speed=1…10` | Start-Tempo (über den Button nur 1–3) |
 | `mode=challenge\|endless` | Spielmodus (Standard `challenge`) |
-| `fx=high\|low` | Effektstufe: `high` (Standard) mit Schatten, Glow, Vignette; `low` ohne Filter, halbe Partikel |
+| `fx=max\|normal\|calm` (`high` = max, `low` = calm) | Effektstufe (überschreibt die gespeicherte Wahl) |
 | `bench=1` | Performance-Szenario (299 Türme, 150 Gegner); Ergebnis nach ~12 s im Info-Panel und in der Konsole |
 | `debug=1` | Controller als `window.__bd` (im Dev-Server immer), inkl. `window.__bd.debug` |
 
@@ -136,6 +152,11 @@ Look „Cartoon-Büro“ (Spec `office-makeover`, ADR-0005), ausschließlich CC0
   (eigene SVGs: Pflanze, Wasserspender, Kaffeemaschine, Drucker, Aktenschrank).
 - **Effekte:** Kenney „Particle Pack“, „Smoke Particles“, „Splat Pack“ (Bodenflecken), „Generic Items“ (Geschosse).
 - **Oberfläche:** Schriften Caveat und Nunito (OFL-1.1), Icons als eigene SVGs. Lizenzen: `public/assets/CREDITS.md`.
+- **Saison-2-Figuren:** RTE, RTA, RTO, Vorstand und Statisten entstehen beim Asset-Build aus den Kenney-Figuren
+  (Umfärben + eigenes Zubehör, `tools/characters.ts`; Kopfposition je Pose per Template-Matching).
+- **Audio (ADR-0006):** CC0-Musik von OpenGameArt (Planung: „Two Left Socks“, Welle: „Raspberry Jam“,
+  Boss: „Hard Boss Battle 1“), Kenney-Jingles und -Soundeffekte, Telefon und Drucker prozedural (WebAudio).
+  Quellen und Lizenzbelege: `assets-src/audio/SOURCES.md`, `public/assets/CREDITS.md`; Budget ≤ 8 MB.
 - Farben werden beim Build vorgefärbt bzw. Silhouetten vorgerendert, damit das Spiel auch im Canvas-Renderer (ohne
   WebGL) vollständig aussieht; mit WebGL und `fx=high` kommt ein weicher Schatten dazu. Keine abdunkelnden Filter.
 - Bewegungsreduktion: Bei `prefers-reduced-motion: reduce` entfallen Wackeln, Hitstop, Lauf- und Atemanimationen.
