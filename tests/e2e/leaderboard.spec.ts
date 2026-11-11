@@ -2,7 +2,6 @@ import { test, expect, type Page } from '@playwright/test';
 import { Game } from '../../src/sim/index';
 import { SESSION_ID, SUBMISSION_ID, SupabaseMock, USER_ID, type MockBoardRow } from './fixtures/supabase-mock';
 
-const OUT = '.tmp/evidence';
 const SEED = 1;
 /** Today in Europe/Berlin (the client only shows the daily rank for today's challenge). */
 const TODAY = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
@@ -61,9 +60,14 @@ async function open(page: Page, query = 'debug=1&speed=10'): Promise<void> {
   await expect(page.locator('#money')).not.toBeEmpty();
 }
 
-async function startDaily(page: Page): Promise<void> {
-  await page.locator('#daily').click();
-  await expect(page.locator('#lb-status')).toContainText(`📅 Daily ${TODAY_D}.${TODAY_M}.`);
+const NAME_RE =
+  /^(Agile|Lean|Swift|Bold|Rapid|Smart|Lucky|Happy|Brave|Quick|Calm|Epic|Mega|Turbo|Super|Hyper|Witty|Jolly|Fancy|Zen) (Otter|Panda|Koala|Lynx|Fox|Owl|Yak|Gnu|Llama|Bison|Moose|Eagle|Shark|Whale|Tiger|Hippo|Sloth|Squid|Gecko|Lemur) \d{4}$/;
+
+/** Daily starts by itself after boot (AC-1). */
+async function expectDailyRunning(page: Page): Promise<void> {
+  await expect(page.locator('#lb-status')).toContainText(`Daily ${TODAY_D}.${TODAY_M}.`);
+  await expect(page.locator('#map')).toContainText('Daily');
+  await expect(page.locator('#play-kind button[data-kind=daily]')).toHaveClass(/active/);
 }
 
 async function playToBurnout(page: Page): Promise<void> {
@@ -85,12 +89,12 @@ test.describe('offline build', () => {
     const hosts = new Set<string>();
     page.on('request', (r) => {
       const u = new URL(r.url());
-      // data:/blob: (Phaser-Texturen) sind lokal; geprüft werden nur Netzwerk-Requests
       if (u.protocol === 'http:' || u.protocol === 'https:') hosts.add(u.hostname);
     });
     await open(page, 'seed=7&map=waterfall');
     await expect(page.locator('#lb-status')).toHaveText('Bestenliste offline');
-    await expect(page.locator('#daily')).toBeHidden();
+    await expect(page.locator('#play-kind')).toBeHidden();
+    await expect(page.locator('#team-name')).toBeHidden();
     await expect(page.locator('#lb-tabs')).toBeHidden();
     expect([...hosts].filter((h) => h !== 'localhost')).toEqual([]);
     expect(errors).toEqual([]);
@@ -151,145 +155,209 @@ test.describe('online build (mocked Supabase)', () => {
     expect(errors).toEqual([]);
   });
 
-  test('4 full daily flow: dialog, validation, taken, submit, verified', async ({ page }) => {
-    test.setTimeout(180_000);
+  test('4 boot: generated team name, auto daily, one start-run', async ({ page }) => {
+    const errors = collectErrors(page);
+    const mock = await setup(page);
+    await open(page);
+    await expectDailyRunning(page);
+    const gets = mock.find('GET', '/rest/v1/profiles');
+    expect(gets[0]!.query.get('select')).toBe('nickname');
+    expect(gets[0]!.query.get('user_id')).toBe(`eq.${USER_ID}`);
+    const posts = mock.find('POST', '/rest/v1/profiles');
+    expect(posts).toHaveLength(1);
+    expect(posts[0]!.query.get('on_conflict')).toBe('user_id');
+    const name = (posts[0]!.body as { nickname: string }).nickname;
+    expect(name).toMatch(NAME_RE);
+    expect(posts[0]!.body).toMatchObject({ user_id: USER_ID });
+    await expect(page.locator('#team-name')).toBeVisible();
+    await expect(page.locator('#team-name')).toHaveText(`Team: ${name}`);
+    expect(mock.find('POST', '/functions/v1/start-run')).toHaveLength(1);
+    const daily = await page.evaluate(() => (window as unknown as BdWindow).__bd.daily);
+    expect(daily?.seed).toBe(SEED);
+    expect(daily?.sessionId).toBe(SESSION_ID);
+    expect(errors).toEqual([]);
+  });
+
+  test('5 name collision retries with a new name', async ({ page }) => {
     const errors = collectErrors(page, [409]);
     const mock = await setup(page, (m) => {
       m.config.profileResults = [
         { status: 409, body: { code: '23505', message: 'duplicate key', details: '', hint: '' } },
+        { status: 409, body: { code: '23505', message: 'duplicate key', details: '', hint: '' } },
         { status: 201 },
       ];
-      m.config.submission = { status: 'verified', reason: null, score: 4242 };
     });
     await open(page);
-    await startDaily(page);
-    await expect(page.locator('#map')).toContainText('· 📅 Daily');
-    const bd = await page.evaluate(() => {
-      const w = window as unknown as BdWindow;
-      return { seed: w.__bd.game.state.seed, daily: w.__bd.daily };
+    await expectDailyRunning(page);
+    const posts = mock.find('POST', '/rest/v1/profiles');
+    expect(posts).toHaveLength(3);
+    for (const p of posts) expect((p.body as { nickname: string }).nickname).toMatch(NAME_RE);
+    const last = (posts[2]!.body as { nickname: string }).nickname;
+    await expect(page.locator('#team-name')).toHaveText(`Team: ${last}`);
+    expect(errors).toEqual([]);
+  });
+
+  test('6 existing profile: no upsert, name shown', async ({ page }) => {
+    const errors = collectErrors(page);
+    const mock = await setup(page, (m) => {
+      m.config.nickname = 'Team Kanban';
     });
-    expect(bd.seed).toBe(SEED);
-    expect(bd.daily?.sessionId).toBe(SESSION_ID);
-
-    await playToBurnout(page);
-    const dlg = page.locator('dialog#nick');
-    await expect(dlg).toBeVisible();
-    await expect(dlg.locator('h2')).toHaveText('Wie heißt dein Team?');
-    await expect(page.locator('#nick-cancel')).toHaveText('Später');
-
-    await page.locator('#nick-input').fill('x!');
-    await page.locator('#nick-ok').click();
-    await expect(page.locator('#nick-msg')).toContainText('Ungültig');
+    await open(page);
+    await expectDailyRunning(page);
+    await expect(page.locator('#team-name')).toHaveText('Team: Team Kanban');
     expect(mock.find('POST', '/rest/v1/profiles')).toHaveLength(0);
+    expect(errors).toEqual([]);
+  });
 
-    await page.locator('#nick-input').fill('Team Kanban');
-    await page.locator('#nick-ok').click();
-    await expect(page.locator('#nick-msg')).toContainText('Name schon vergeben');
-    await expect(dlg).toBeVisible();
-
-    // After the verified answer the leaderboard contains the own row.
-    mock.config.board.day = [...topTen(), row(14, 'Team Kanban', 4242, true)];
-    await page.locator('#nick-ok').click();
-    await expect(dlg).toHaveCount(0);
-
+  test('7 game end submits without dialog, verified with daily rank', async ({ page }) => {
+    test.setTimeout(180_000);
+    const errors = collectErrors(page);
+    const mock = await setup(page, (m) => {
+      m.config.board.day = [...topTen(), row(14, 'MeTeam', 4242, true)];
+    });
+    await open(page);
+    await expectDailyRunning(page);
+    await playToBurnout(page);
+    await expect(page.locator('#lb-status')).toContainText('⏳ Wird geprüft…');
     await expect(page.locator('#lb-status')).toContainText('✅ Geprüft: Score 4242 · Tagesrang 14', { timeout: 20_000 });
-    const profilePosts = mock.find('POST', '/rest/v1/profiles');
-    expect(profilePosts).toHaveLength(2);
-    expect(profilePosts[1]!.query.get('on_conflict')).toBe('user_id');
-    expect(profilePosts[1]!.body).toMatchObject({ user_id: USER_ID, nickname: 'Team Kanban' });
-
+    await expect(page.locator('dialog#nick')).toHaveCount(0);
     const submits = mock.find('POST', '/functions/v1/submit-run');
     expect(submits).toHaveLength(1);
     const sb = submits[0]!.body as { sessionId: string; replay: { seed: number } };
     expect(sb.sessionId).toBe(SESSION_ID);
     expect(sb.replay.seed).toBe(SEED);
-    const poll = mock.find('GET', '/rest/v1/submissions')[0]!;
-    expect(poll.query.get('id')).toBe(`eq.${SUBMISSION_ID}`);
-    await page.screenshot({ path: `${OUT}/lb-e2e-verified.png` });
+    expect(mock.find('GET', '/rest/v1/submissions')[0]!.query.get('id')).toBe(`eq.${SUBMISSION_ID}`);
     expect(errors).toEqual([]);
   });
 
-  test('5 rejected submission', async ({ page }) => {
+  test('8 rejected submission', async ({ page }) => {
     test.setTimeout(180_000);
     const errors = collectErrors(page);
     await setup(page, (m) => {
-      m.config.nickname = 'Team Kanban';
       m.config.submission = { status: 'rejected', reason: 'Ergebnis stimmt nicht', score: null };
     });
     await open(page);
-    await startDaily(page);
+    await expectDailyRunning(page);
     await playToBurnout(page);
     await expect(page.locator('#lb-status')).toContainText('❌ Abgelehnt: Ergebnis stimmt nicht', { timeout: 20_000 });
-    expect(errors).toEqual([]);
-  });
-
-  test('6 start-run 429 shows rate limit', async ({ page }) => {
-    const errors = collectErrors(page, [429]);
-    await setup(page, (m) => {
-      m.config.startRun = { status: 429, body: { error: 'rate_limited' } };
-    });
-    await open(page);
-    await page.locator('#daily').click();
-    await expect(page.locator('#lb-status')).toHaveText('⚠️ Daily nicht verfügbar: Tageslimit erreicht (30 Läufe)');
-    expect(errors).toEqual([]);
-  });
-
-  test('7 "Später" leaves a retry button that reopens the dialog', async ({ page }) => {
-    test.setTimeout(180_000);
-    const errors = collectErrors(page);
-    const mock = await setup(page);
-    await open(page);
-    await startDaily(page);
-    await playToBurnout(page);
-    await expect(page.locator('dialog#nick')).toBeVisible();
-    await page.locator('#nick-cancel').click();
     await expect(page.locator('dialog#nick')).toHaveCount(0);
-    await expect(page.locator('#lb-status')).toContainText('Nicht eingereicht – ohne Teamnamen keine Bestenliste.');
-    await expect(page.locator('#lb-action')).toHaveText('📤 Einreichen');
-    expect(mock.find('POST', '/functions/v1/submit-run')).toHaveLength(0);
-    await page.locator('#lb-action').click();
-    await expect(page.locator('dialog#nick')).toBeVisible();
     expect(errors).toEqual([]);
   });
 
-  test('8 submit 500 shows error and retry succeeds', async ({ page }) => {
+  test('9 submit 500 shows error and retry succeeds', async ({ page }) => {
     test.setTimeout(180_000);
     const errors = collectErrors(page, [500]);
     const mock = await setup(page, (m) => {
-      m.config.nickname = 'Team Kanban';
       m.config.submitResults = [
         { status: 500, body: { error: 'internal' } },
         { status: 202, body: { submissionId: SUBMISSION_ID, status: 'pending' } },
       ];
     });
     await open(page);
-    await startDaily(page);
+    await expectDailyRunning(page);
     await playToBurnout(page);
     await expect(page.locator('#lb-status')).toContainText('⚠️ Einreichen fehlgeschlagen');
-    await expect(page.locator('#lb-action')).toBeVisible();
+    await expect(page.locator('#lb-action')).toHaveText('Erneut einreichen');
     await page.locator('#lb-action').click();
     await expect(page.locator('#lb-status')).toContainText('✅ Geprüft: Score 4242', { timeout: 20_000 });
     expect(mock.find('POST', '/functions/v1/submit-run')).toHaveLength(2);
     expect(errors).toEqual([]);
   });
 
-  test('9 existing profile submits without dialog', async ({ page }) => {
+  test('10 Space and #big after game end start a new daily', async ({ page }) => {
     test.setTimeout(180_000);
     const errors = collectErrors(page);
+    const mock = await setup(page);
+    await open(page);
+    await expectDailyRunning(page);
+    await playToBurnout(page);
+    expect(mock.find('POST', '/functions/v1/start-run')).toHaveLength(1);
+    await page.keyboard.press(' ');
+    await expect.poll(() => mock.find('POST', '/functions/v1/start-run').length).toBe(2);
+    await expect(page.locator('#big')).not.toContainText('NEU');
+    await expectDailyRunning(page);
+    await playToBurnout(page);
+    await page.locator('#big').click();
+    await expect.poll(() => mock.find('POST', '/functions/v1/start-run').length).toBe(3);
+    await expect(page.locator('#big')).not.toContainText('NEU');
+    expect(errors).toEqual([]);
+  });
+
+  test('11 free play: no daily, no submit, switch back to daily', async ({ page }) => {
+    test.setTimeout(180_000);
+    const errors = collectErrors(page);
+    const mock = await setup(page);
+    let confirms = 0;
+    page.on('dialog', (d) => {
+      confirms++;
+      void d.accept();
+    });
+    await open(page);
+    await expectDailyRunning(page);
+    // start a wave so that a running game exists -> confirm appears
+    await page.keyboard.press(' ');
+    await expect(page.locator('#big')).not.toContainText('NEU');
+    await page.locator('#play-kind button[data-kind=free]').click();
+    expect(confirms).toBe(1);
+    await expect(page.locator('#play-kind button[data-kind=free]')).toHaveClass(/active/);
+    await expect(page.locator('#lb-status')).toHaveText('Freies Spiel – Ergebnisse zählen nicht für die Bestenliste.');
+    expect(await page.evaluate(() => (window as unknown as BdWindow).__bd.daily)).toBeNull();
+    await playToBurnout(page);
+    await page.waitForTimeout(500); // negative check: give a wrongly triggered submit time to appear
+    expect(mock.find('POST', '/functions/v1/submit-run')).toHaveLength(0);
+    expect(mock.find('POST', '/functions/v1/start-run')).toHaveLength(1);
+    await page.locator('#play-kind button[data-kind=daily]').click();
+    await expect.poll(() => mock.find('POST', '/functions/v1/start-run').length).toBe(2);
+    await expectDailyRunning(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('12 start-run 429 falls back to free play with retry', async ({ page }) => {
+    const errors = collectErrors(page, [429]);
+    await setup(page, (m) => {
+      m.config.startRun = { status: 429, body: { error: 'rate_limited' } };
+    });
+    await open(page);
+    const status = page.locator('#lb-status');
+    await expect(status).toContainText('Daily nicht verfügbar: Tageslimit erreicht (30 Läufe)');
+    await expect(status).toContainText('freies Spiel');
+    await expect(page.locator('#play-kind button[data-kind=free]')).toHaveClass(/active/);
+    await expect(page.locator('#lb-action')).toHaveText('Daily erneut versuchen');
+    expect(errors).toEqual([]);
+  });
+
+  test('13 team name dialog: prefilled, invalid, taken, success', async ({ page }) => {
+    const errors = collectErrors(page, [409]);
     const mock = await setup(page, (m) => {
       m.config.nickname = 'Team Kanban';
     });
     await open(page);
-    await startDaily(page);
-    await playToBurnout(page);
-    await expect(page.locator('#lb-status')).toContainText('✅ Geprüft: Score 4242', { timeout: 20_000 });
-    await expect(page.locator('dialog#nick')).toHaveCount(0);
+    await expectDailyRunning(page);
+    await page.locator('#team-name').click();
+    const dlg = page.locator('dialog#nick');
+    await expect(dlg).toBeVisible();
+    await expect(dlg.locator('h2')).toHaveText('Teamname ändern');
+    await expect(page.locator('#nick-input')).toHaveValue('Team Kanban');
+    await expect(page.locator('#nick-ok')).toHaveText('Speichern');
+    await expect(page.locator('#nick-cancel')).toHaveText('Abbrechen');
+
+    await page.locator('#nick-input').fill('x!');
+    await page.locator('#nick-ok').click();
+    await expect(page.locator('#nick-msg')).toContainText('Ungültig');
     expect(mock.find('POST', '/rest/v1/profiles')).toHaveLength(0);
-    const get = mock.find('GET', '/rest/v1/profiles')[0]!;
-    expect(get.query.get('user_id')).toBe(`eq.${USER_ID}`);
-    // postgrest-js maybeSingle(): no Accept override (`*/*`), list response ([] or one row), cardinality checked client-side.
-    expect(get.headers['accept']).toBe('*/*');
-    expect(mock.find('POST', '/functions/v1/submit-run')).toHaveLength(1);
+
+    mock.config.profileResults = [{ status: 409, body: { code: '23505', message: 'duplicate key', details: '', hint: '' } }];
+    await page.locator('#nick-input').fill('Team Scrum');
+    await page.locator('#nick-ok').click();
+    await expect(page.locator('#nick-msg')).toContainText('Name schon vergeben');
+    await expect(dlg).toBeVisible();
+
+    mock.config.profileResults = [{ status: 201 }];
+    await page.locator('#nick-ok').click();
+    await expect(dlg).toHaveCount(0);
+    await expect(page.locator('#team-name')).toHaveText('Team: Team Scrum');
+    const posts = mock.find('POST', '/rest/v1/profiles');
+    expect(posts.at(-1)!.body).toMatchObject({ user_id: USER_ID, nickname: 'Team Scrum' });
     expect(errors).toEqual([]);
   });
 });
