@@ -10,8 +10,8 @@
 | T02 | done | (Regel-Commit) | general: `roles2` (41), `enemies2` (12), `season2` (6) + Anpassung `data`, `waves`, `logic`; 242/242 grün, keine Abweichungen. Ruling: Vorstands-Phase wechselt auch, wenn kein Nicht-Boss zum Einstampfen da ist (per Test festgeschrieben). |
 | T03 | done | (Regel-Commit) | Bots: starker Bot mit RTA (Abdeckung), RTE (meiste Teammitglieder in Reichweite), RTO/Vorstand (ruhige Felder), Vorstand ab Welle 6; Referenz-Bot-Rotation + RTO/RTA/RTE; `npm run balance` misst Rollennutzung. Tuning: Läufe enden fast immer in Boss-Wellen (16/21/26) → Boss-Faktor 2,6 trifft Median 21. Alle Ziele ✓ (Referenzwerte v0.3.0 in der Spec). |
 | T04 | todo | – | Ruling: Function-Deploy erst in T13 (Live-Client läuft bis zum Push mit 0.2.0; ein 0.3.0-Server würde dessen Läufe ablehnen). Integrationstests ebenfalls in T13. |
-| T05 | todo | – | |
-| T06 | todo | – | |
+| T05 | done | `d55670a` (+ Budget-Fix) | `tools/characters.ts`: Umfärben über Farbtonbereiche, Kopfposition je Pose per Alpha-Template-Matching, Zubehör an Kopf/Augen/Kinn (Gesichtszubehör nicht in der Rückenpose `hurt`); Rollen RTE (Schaffnermütze, Petrol), RTA (Brille, Indigo), RTO (Fliege, Rot), Vorstand (Sonnenbrille, Krawatte, graue Weste) mit Porträts; 4 Statisten mit 8 Laufposen; Monster Meeting/Hotfix; Requisiten Münze, Eis, Schredder, Lampe, Sprechblase, Bauplan, Glow (Rollenfarben). Atlas 650 Frames, 3,06 MB. Ruling: `check:assets`-Grenze 3 → 6 MB laut Spec 4/5 (Atlas + Schriften). |
+| T06 | in_progress | `d55670a` | general: 27 CC0-Audiodateien (3 Loops, 4 Jingles, 20 SFX), Lizenzbelege `assets-src/audio/SOURCES.md`, `check:assets` prüft Audio (6,32 MB ≤ 8 MB). Offen: Audio-Engine. Hinweis: Jingles ohne Abhören ausgewählt → Nutzer prüft in der Vorschau. |
 | T07 | todo | – | |
 | T08 | todo | – | |
 | T09 | todo | – | |
