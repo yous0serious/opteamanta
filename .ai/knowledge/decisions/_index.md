@@ -6,3 +6,4 @@
 | [0002](0002-deterministic-sim-replays.md) | Deterministische Simulation mit Replays | proposed | 2026-11-10 |
 | [0003](0003-asset-sources-and-pipeline.md) | Asset-Quellen und Asset-Pipeline | proposed | 2026-11-10 |
 | [0004](0004-leaderboard-architecture.md) | Architektur der Bestenliste | proposed | 2026-11-10 |
+| [0005](0005-office-art-direction.md) | Grafikrichtung „Cartoon-Büro“ | proposed | 2026-11-11 |
