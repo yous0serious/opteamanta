@@ -44,6 +44,8 @@ export class WorkstationView {
   private readonly levelItem: Phaser.GameObjects.Image;
   private readonly extra: Phaser.GameObjects.Image;
   private readonly zzz: Phaser.GameObjects.Image;
+  private readonly lamp: Phaser.GameObjects.Image;
+  private readonly lampGlow: Phaser.GameObjects.Image;
   private readonly stars: Phaser.GameObjects.Image[] = [];
   private drawnLevel = 0;
   private pose = '';
@@ -53,7 +55,7 @@ export class WorkstationView {
   private despairT = 0;
   private typeT = 0;
   private popT = 0;
-  private appearT = 0.25;
+  private appearT = 0.35;
   private readonly phase = Math.random() * Math.PI * 2;
   private facing = 1;
 
@@ -76,7 +78,10 @@ export class WorkstationView {
     this.extra = s.add.image(16, FEET_Y - 7, ATLAS, 'item/cup').setOrigin(0.5, 1).setVisible(false);
     this.extra.setScale(8 / this.extra.width);
     this.zzz = s.add.image(14, -42, ATLAS, 'ui/zzz').setDisplaySize(16, 16).setVisible(false);
-    this.root = s.add.container(tower.x, tower.y, [this.mat, shadow, this.char, desk, roleItem, this.levelItem, this.extra, this.zzz]);
+    // Abendlampe (Büroleben ab Welle 20, Spec season-2 AC-8)
+    this.lampGlow = s.add.image(-14, FEET_Y - 10, ATLAS, 'prop/glow/ppl').setBlendMode(Phaser.BlendModes.ADD).setDisplaySize(46, 30).setAlpha(0.55).setVisible(false);
+    this.lamp = s.add.image(-16, FEET_Y - 6, ATLAS, 'prop/lamp').setOrigin(0.5, 1).setDisplaySize(12, 14).setVisible(false);
+    this.root = s.add.container(tower.x, tower.y, [this.lampGlow, this.mat, shadow, this.char, desk, roleItem, this.levelItem, this.extra, this.lamp, this.zzz]);
     if (ctx.reducedMotion) this.appearT = 0;
   }
 
@@ -103,6 +108,13 @@ export class WorkstationView {
   cheer(seconds: number): void {
     this.cheerT = Math.max(this.cheerT, seconds);
     this.despairT = 0;
+  }
+
+  /** Schreibtischlampe an/aus (Abend). */
+  setLamp(on: boolean): void {
+    if (this.lamp.visible === on) return;
+    this.lamp.setVisible(on);
+    this.lampGlow.setVisible(on);
   }
 
   /** Burnout: alle lassen die Köpfe hängen (bis zum Neustart). */
@@ -137,12 +149,16 @@ export class WorkstationView {
     if (target && !off) this.facing = target.x < t.x - 2 ? -1 : target.x > t.x + 2 ? 1 : this.facing;
     this.char.setFlipX(this.facing < 0);
 
-    // Erscheinen, Upgrade-Pop, Atmen
+    // Erscheinen (Drop-in von oben), Upgrade-Pop, Atmen
     let k = 1;
+    let drop = 0;
     if (this.appearT > 0) {
       this.appearT -= dt;
-      k = Phaser.Math.Easing.Back.Out(1 - Math.max(0, this.appearT) / 0.25);
+      const p = 1 - Math.max(0, this.appearT) / 0.35;
+      drop = -70 * (1 - Phaser.Math.Easing.Bounce.Out(p));
+      k = 0.85 + 0.15 * p;
     }
+    this.char.y = FEET_Y + drop;
     if (this.popT > 0) {
       this.popT -= dt;
       k *= 1 + 0.25 * Math.sin((Math.max(0, this.popT) / 0.3) * Math.PI);

@@ -29,6 +29,19 @@ export const JAM = ['Legacy-Code!', 'Workaround von 2009!', 'Keine Doku!', 'Läu
 export const ABSENT = ['Klausurphase!', 'Uni-Woche!', 'Bachelorarbeit…', 'Mensa!'];
 export const SPRINTS = ['Typklassen-Update', 'Wechselsaison (30.11.!)', 'Hagelsaison', 'Regionalklassen-Chaos', 'Tarifreform', 'Glatteis-Montag', 'Audit-Vorbereitung'];
 
+/** Sprechblasen-Sprüche der Teammitglieder (Büroleben, Spec season-2 AC-8). */
+export const CHATTER: Record<TowerType, readonly string[]> = {
+  dualo: ['Wo ist die Kaffeemaschine?', 'Klausur nächste Woche…', 'Kann ich das machen?'],
+  analyst: ['Was heißt „schnell“?', 'Ist das in Scope?', 'Gibt es dazu eine Story?'],
+  dev: ['Works on my machine!', 'Nur noch ein Commit…', 'Wer hat den Build kaputt?'],
+  ppl: ['Wie geht es dir?', 'Priorität 1!', 'Klären wir im 1:1.'],
+  scrum: ['Timebox!', 'Impediment?', 'Daily in 5 Minuten!'],
+  rte: ['Der Zug fährt pünktlich!', 'ART-Sync um 10!', 'Alle einsteigen!'],
+  rta: ['Das skaliert nicht.', 'Erst das Zielbild!', 'Microservices!'],
+  rto: ['Business Value?', 'Was ist der ROI?', 'Das zahlt ein!'],
+  board: ['Wir müssen agiler werden.', 'Synergien!', 'Bis Q4 bitte.'],
+};
+
 export const UPGRADE_TITLES: Record<TowerType, readonly string[]> = {
   dualo: ['', '', '2. Semester!', 'Bachelor!', 'Übernommen!', 'JUNIOR-DEV!!!'],
   analyst: ['', '', 'Senior BA!', 'Lead BA!', 'Requirements-Guru!', 'ORAKEL!!!'],

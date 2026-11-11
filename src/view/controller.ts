@@ -38,6 +38,8 @@ export class Controller {
   selectedTowerId: number | null = null;
   /** Debug-Abfragen der Darstellung (nur für E2E/Entwicklung, über window.__bd). */
   debug: DebugApi | null = null;
+  /** Nur Darstellung: Zeitlupe (Spec season-2 AC-7) – ändert das Echtzeit-Tempo, nicht die Ticks/Ergebnisse. */
+  timeScale = 1;
   private acc = 0;
   private stopUntil = 0;
   private readonly simListeners = new Set<Listener<SimEvent>>();
@@ -121,7 +123,7 @@ export class Controller {
     if (this.over) return;
     // Hitstop: Darstellung „friert“ kurz ein; die Simulation pausiert nur in Echtzeit, Ticks bleiben gleich.
     if (performance.now() < this.stopUntil) return;
-    this.acc += Math.min(realDtSec, MAX_FRAME_DT) * this.speed;
+    this.acc += Math.min(realDtSec, MAX_FRAME_DT) * this.speed * this.timeScale;
     let steps = 0;
     while (this.acc >= DT && steps < MAX_STEPS_PER_FRAME) {
       this.acc -= DT;

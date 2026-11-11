@@ -38,7 +38,7 @@ export function createLayers(scene: Phaser.Scene, fx: FxSettings): Layers {
   const active: Named[] = [];
   // Filter gibt es nur im WebGL-Renderer (Canvas-Fallback: Ruling R-4 Spec visual-overhaul).
   const webgl = scene.game.renderer.type === Phaser.WEBGL;
-  if (fx.level === 'high' && webgl) {
+  if (fx.level !== 'calm' && webgl) {
     layers.actors.enableFilters();
     layers.actors.filters?.internal.addShadow(1, 1.5, 0.1, 1, 0x000000, 6, 0.25);
     active.push({ name: 'Shadow', layer: 'actors' });

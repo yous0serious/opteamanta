@@ -17,11 +17,11 @@ export class Particles {
   constructor(
     private readonly scene: Phaser.Scene,
     private readonly layer: Phaser.GameObjects.Container,
-    private readonly scale: number,
+    private readonly scale: () => number,
   ) {}
 
   burst(x: number, y: number, color: string, count = 20, power = 200, family: Family = 'circle'): void {
-    const n = Math.max(1, Math.round(count * this.scale));
+    const n = Math.max(1, Math.round(count * this.scale()));
     const bucket = power <= 120 ? 100 : power <= 280 ? 250 : 500;
     this.emitter(family, fxKey(color), bucket).explode(n, x, y);
   }

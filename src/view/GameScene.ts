@@ -11,6 +11,8 @@ import { dashedCircle, hex } from './render/draw';
 import { Effects } from './render/effects';
 import type { ViewCtx } from './render/entities';
 import { Decals } from './render/office/decals';
+import { Juice } from './render/office/juice';
+import { OfficeLife } from './render/office/life';
 import { Season2Fx } from './render/office/season2fx';
 import { OfficeFloor } from './render/office/floor';
 import { MONSTER_W, MonsterView, createMonsterAnims } from './render/office/monster';
@@ -47,6 +49,8 @@ export class GameScene extends Phaser.Scene {
   private ctx!: ViewCtx;
   private decals!: Decals;
   private s2!: Season2Fx;
+  private juice!: Juice;
+  private life!: OfficeLife;
   private puffs!: Phaser.GameObjects.Particles.ParticleEmitter;
   private under!: Phaser.GameObjects.Graphics;
   private beams!: Phaser.GameObjects.Graphics;
@@ -95,7 +99,11 @@ export class GameScene extends Phaser.Scene {
       scene: () => this,
       poses: () => [...this.towers.values()].map((v) => ({ id: v.tower.id, type: v.tower.type, level: v.tower.level, pose: v.currentPose })),
       monsters: () => [...this.enemies.values()].map((v) => ({ id: v.enemy.id, type: v.enemy.type, frame: v.frameName, width: v.displayWidth })),
-      effects: () => ({ ...this.effectCounts }),
+      effects: () => ({
+        ...this.effectCounts,
+        ...Object.fromEntries(Object.entries(this.juice.counters).map(([k, v]) => [`juice:${k}`, v])),
+        ...Object.fromEntries(Object.entries(this.life.counters).map(([k, v]) => [`life:${k}`, v])),
+      }),
     };
   }
 
@@ -104,11 +112,15 @@ export class GameScene extends Phaser.Scene {
 
   create(): void {
     const webgl = this.game.renderer.type === Phaser.WEBGL;
-    this.ctx = { scene: this, webgl, filters: webgl && this.settings.level === 'high', reducedMotion: this.settings.reducedMotion };
+    const settings = this.settings;
+    // Live-Werte: ein Wechsel der Effektstufe wirkt sofort
+    this.ctx = { scene: this, webgl, get filters() { return webgl && settings.level !== 'calm'; }, get reducedMotion() { return settings.reducedMotion; } };
     this.layers = createLayers(this, this.settings);
     createMonsterAnims(this);
     this.decals = new Decals(this, this.layers.decals);
     this.s2 = new Season2Fx(this, this.layers.under, this.layers.texts, this.settings.reducedMotion);
+    this.juice = new Juice(this, this.layers.texts, this.ctl, this.settings, (k, v, r) => this.sfx.play(k, v, r));
+    this.life = new OfficeLife(this, this.layers.actors, this.layers.texts, this.settings);
     this.under = this.add.graphics();
     this.layers.under.add(this.under);
 
@@ -128,7 +140,7 @@ export class GameScene extends Phaser.Scene {
     });
     this.layers.shots.add(this.codeFx);
 
-    this.parts = new Particles(this, this.layers.particles, this.settings.particleScale);
+    this.parts = new Particles(this, this.layers.particles, () => this.settings.particleScale);
     this.puffs = this.add.particles(0, 0, ATLAS, {
       frame: ['puff/00', 'puff/06', 'puff/12', 'puff/18'], emitting: false, lifespan: { min: 380, max: 700 },
       speed: { min: 15, max: 70 }, scale: { start: 0.22, end: 0.5 }, alpha: { start: 0.85, end: 0 }, rotate: { min: 0, max: 360 },
@@ -203,6 +215,8 @@ export class GameScene extends Phaser.Scene {
     this.puffs.killAll();
     this.decals.clear();
     this.s2.reset();
+    this.juice.reset();
+    this.life.reset();
     this.banner.hide();
     if (this.desat) {
       this.cameras.main.filters.internal.remove(this.desat);
@@ -260,7 +274,11 @@ export class GameScene extends Phaser.Scene {
       case 'upgraded':
         parts.burst(e.tower.x, e.tower.y, INK.yellow, 26, 250, 'star');
         this.towers.get(e.tower.id)?.upgrade();
-        fx.text(e.tower.x, e.tower.y - 20, UPGRADE_TITLES[e.tower.type][e.tower.level] ?? '', INK.yellow, 16, 1.2);
+        this.juice.promote(e.tower);
+        fx.text(e.tower.x, e.tower.y - 40, UPGRADE_TITLES[e.tower.type][e.tower.level] ?? '', INK.yellow, 16, 1.2);
+        break;
+      case 'spawned':
+        if (ENEMIES[e.enemy.type].boss) this.juice.bossIntro(e.enemy);
         break;
       case 'sold':
         this.puffs.explode(Math.max(1, Math.round(6 * this.settings.particleScale)), e.tower.x, e.tower.y);
@@ -295,6 +313,7 @@ export class GameScene extends Phaser.Scene {
         parts.burst(e.enemy.x, e.enemy.y, color, boss ? 90 : 14, boss ? 400 : 200, 'circle');
         parts.burst(e.enemy.x, e.enemy.y, INK.yellow, boss ? 30 : 4, boss ? 300 : 160, 'star');
         this.decals.splat(e.enemy.x, e.enemy.y, e.enemy.type, MONSTER_W[e.enemy.type] * 1.3);
+        this.juice.kill(e.enemy, this.time_);
         if (boss || Math.random() < 0.3) fx.text(e.enemy.x, e.enemy.y - 24, pick(KILL), INK.neutral, 13, 1);
         this.flyToPile(e.enemy);
         if (boss) {
@@ -331,6 +350,7 @@ export class GameScene extends Phaser.Scene {
         break;
       case 'waveCleared': {
         this.banner.show(`SPRINT-REVIEW BESTANDEN! Kapazität +${e.bonus} SP`, INK.green, 22, 1.6, 0xc8e6c9);
+        this.life.print(this.board);
         let i = 0;
         for (const v of this.towers.values()) this.time.delayedCall((i++ % 12) * 40, () => v.cheer(1.1));
         break;
@@ -457,6 +477,8 @@ export class GameScene extends Phaser.Scene {
     this.board.update(this.time_, dt);
     this.decals.update(dt);
     this.s2.update(dt, this.time_, this.ctl.game);
+    this.juice.update(s.enemies, this.time_);
+    this.life.update(dt, this.time_, this.ctl.game, this.board, this.towers, this.s2);
     this.banner.update(dt);
     this.syncEntities(dt);
     this.drawUnder();

@@ -29,6 +29,8 @@ button { font-family: var(--text); }
   border-radius: 999px; padding: 5px 12px 5px 8px; box-shadow: var(--shadow); font-size: 14px; white-space: nowrap;
 }
 .chip b { font-weight: 800; font-size: 15px; }
+.chip.bump { animation: bump .28s ease-out; }
+@keyframes bump { 30% { transform: scale(1.12) rotate(-2deg); } 100% { transform: scale(1); } }
 .chip small { color: var(--muted); font-weight: 700; }
 .chip-moral .meter { width: 54px; height: 6px; border-radius: 3px; background: #eceff1; overflow: hidden; }
 .chip-moral .meter span { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ef5350, #ffca28 50%, #66bb6a); background-size: 54px 6px; border-radius: 3px; transition: width .3s; }

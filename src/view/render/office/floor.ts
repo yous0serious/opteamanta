@@ -204,6 +204,16 @@ export class OfficeFloor {
   }
 
   /** Arbeitsplatz gesetzt/entfernt: Deko der Zelle aus-/einblenden. */
+  /** Sichtbare Deko eines Typs (z. B. `deco/coffee`) für Büroleben-Effekte. */
+  decorOf(frame: string): Array<{ x: number; y: number; top: number }> {
+    const out: Array<{ x: number; y: number; top: number }> = [];
+    for (const imgs of this.decor.values()) {
+      const img = imgs[0];
+      if (img && img.frame.name === frame && img.alpha > 0.5) out.push({ x: img.x, y: img.y, top: img.y - img.displayHeight });
+    }
+    return out;
+  }
+
   setOccupied(cx: number, cy: number, occupied: boolean): void {
     const imgs = this.decor.get(`${cx},${cy}`);
     if (!imgs) return;

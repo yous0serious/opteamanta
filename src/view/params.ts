@@ -6,14 +6,15 @@ export interface Params {
   speed: number;
   debug: boolean;
   /** Effektstufe (Spec visual-overhaul): high = Filter an, low = keine Filter, halbe Partikel. */
-  fx: 'high' | 'low';
+  /** Effektstufe aus der URL (high|low|max|normal|calm), null = nicht gesetzt (Spec season-2 AC-9). */
+  fx: string | null;
   /** Performance-Szenario (Spec visual-overhaul AC-12). */
   bench: boolean;
   /** Spielmodus (Spec balancing-challenge): challenge (Standard) oder endless. */
   mode: GameMode;
 }
 
-/** URL-Parameter: seed=<uint32>, map=<MapId>, speed=1..10, mode=challenge|endless, debug=1, fx=high|low, bench=1 */
+/** URL-Parameter: seed=<uint32>, map=<MapId>, speed=1..10, mode=challenge|endless, debug=1, fx=high|low|max|normal|calm, bench=1 */
 export function readParams(search: string = location.search): Params {
   const q = new URLSearchParams(search);
   const seedRaw = q.get('seed');
@@ -23,7 +24,8 @@ export function readParams(search: string = location.search): Params {
   const mapId = MAPS.some((m) => m.id === mapRaw) ? (mapRaw as MapId) : undefined;
   const speedNum = Number(q.get('speed') ?? '1');
   const speed = Number.isInteger(speedNum) && speedNum >= 1 && speedNum <= 10 ? speedNum : 1;
-  const fx = q.get('fx') === 'low' ? 'low' : 'high';
+  const fxRaw = q.get('fx');
+  const fx = fxRaw && ['high', 'low', 'max', 'normal', 'calm'].includes(fxRaw) ? fxRaw : null;
   const mode: GameMode = q.get('mode') === 'endless' ? 'endless' : 'challenge';
   return { seed, mapId, speed, debug: q.get('debug') === '1', fx, bench: q.get('bench') === '1', mode };
 }
