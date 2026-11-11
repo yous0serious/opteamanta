@@ -6,6 +6,8 @@ import type { Controller } from './controller';
 export function installKeyboard(ctl: Controller, sound: SoundEngine): void {
   window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    // Offene Dialoge (Einstellungen, Teamname) fangen die Tastatur ab
+    if (document.querySelector('dialog[open]')) return;
     const k = e.key.toLowerCase();
     if (k.length === 1 && k >= '1' && k <= '9' && TOWER_ORDER[Number(k) - 1]) {
       sound.start();

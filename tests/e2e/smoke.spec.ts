@@ -156,11 +156,13 @@ test.describe('smoke', () => {
   test('8 mode switch before first sprint, locked afterwards', async ({ page }) => {
     const errors = collectErrors(page);
     await startPort(page, 'seed=7&map=waterfall&debug=1&speed=10');
+    await page.locator('#open-settings').click();
     await expect(page.locator('#mode button[data-mode=challenge]')).toHaveClass(/active/);
     await page.locator('#mode button[data-mode=endless]').click();
     await expect(page.locator('#mode button[data-mode=endless]')).toHaveClass(/active/);
     expect(await page.evaluate(() => (window as unknown as { __bd: { game: { state: { mode: string; seed: number } } } }).__bd.game.state.mode)).toBe('endless');
     await page.locator('#mode button[data-mode=challenge]').click();
+    await page.locator('#settings-close').click();
     await page.keyboard.press(' ');
     await expect(page.locator('#mode button[data-mode=endless]')).toBeDisabled();
     await expect(page.locator('#wave')).toContainText('Welle 1/30');

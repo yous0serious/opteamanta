@@ -61,6 +61,11 @@ export class LeaderboardPanel implements DailyUi {
     $('team-name').addEventListener('click', () => {
       void askNickname((name) => flow.rename(name), flow.name ?? '');
     });
+    // Teamname auch im Einstellungen-Popup ändern
+    $('rename').addEventListener('click', () => {
+      $<HTMLDialogElement>('settings-dialog').close();
+      void askNickname((name) => flow.rename(name), flow.name ?? '');
+    });
     this.status('Lade Bestenliste…');
     void this.boot(flow);
   }
@@ -161,6 +166,7 @@ export class LeaderboardPanel implements DailyUi {
     const el = $('team-name');
     el.hidden = !name;
     el.textContent = name ? `Team: ${name}` : '';
+    $('settings-team').hidden = !name;
     shareState.team = name;
   }
 

@@ -12,8 +12,35 @@ const $ = <T extends HTMLElement = HTMLElement>(id: string): T => {
   return el as T;
 };
 
+/** Erklärung der Effektstufen im Einstellungen-Popup (Spec season-2 AC-9). */
+const FX_HINT: Record<FxLevel, string> = {
+  max: 'Alles an: Combos, Zeitlupe, Kamerafahrten beim Boss, Wackeln und Partikel.',
+  normal: 'Wie Maximal, aber ohne Zeitlupe und Kamerazoom.',
+  calm: 'Ohne Wackeln, Combos und Lauf-/Atemanimationen, halbe Partikel.',
+};
+
 const DEFAULT_INFO =
-  'Wähle ein Teammitglied (1–9) und klick auf einen freien Platz.<br><span class="muted">Klick auf einen Arbeitsplatz: Details · [U] Upgrade · [S] Abgeben · [Leertaste] nächster Sprint</span>';
+  'Rolle wählen (1–9), freien Platz anklicken.<br><span class="muted">Arbeitsplatz: [U] Upgrade · [S] Abgeben</span>';
+
+/** Kurznamen für die Turmkarten (einzeilig; voller Name im Tooltip und in der Infobox). */
+const CARD_NAME: Partial<Record<TowerType, string>> = { analyst: 'Analyst' };
+
+/** Wirkung der Unterstützungsrollen je Stufe für die Infobox (Werte wie in Spec season-2). */
+function supportInfo(type: TowerType, level: number): string {
+  const l = level - 1;
+  switch (type) {
+    case 'rte':
+      return `PI-Sync alle 10 s · ${(4 + 0.5 * l).toFixed(1).replace('.', ',')} s lang +30 % · Reichweite ${Math.floor(TOWERS.rte.range * (1 + 0.1 * l))}`;
+    case 'rta':
+      return `Runway: +${Math.round((0.25 + 0.05 * l) * 100)} % Schaden (Tech Debt doppelt) · Reichweite ${Math.floor(TOWERS.rta.range * (1 + 0.1 * l))}`;
+    case 'rto':
+      return `Business Value: +${15 + 10 * l} SP je Sprint-Ende`;
+    case 'board':
+      return `Fähigkeit alle ${20 - l} s: Budget-Freeze bzw. Projekt eingestampft`;
+    default:
+      return '';
+  }
+}
 
 /** DOM-Seitenleiste (Original Zeilen 45–60, ui() Zeilen 204–214). */
 export class Hud {
@@ -50,6 +77,21 @@ export class Hud {
     });
     $('replay').addEventListener('click', () => this.downloadReplay());
     $('share').addEventListener('click', () => void this.share());
+    // Einstellungen-Popup (Spec season-2 AC-9/AC-10)
+    const dialog = $<HTMLDialogElement>('settings-dialog');
+    $('open-settings').addEventListener('click', () => {
+      this.sound.start();
+      this.markDirty();
+      this.render();
+      dialog.showModal();
+    });
+    $('mute-check').addEventListener('change', () => {
+      if ($<HTMLInputElement>('mute-check').checked !== this.sound.muted) this.sound.toggleMute();
+      this.markDirty();
+    });
+    for (const b of document.querySelectorAll<HTMLButtonElement>('#speed-set button')) {
+      b.addEventListener('click', () => this.ctl.setSpeed(Number(b.dataset.speed)));
+    }
     // Einstellungen: Effektstufe und Lautstärken (Spec season-2 AC-9/AC-10)
     for (const b of document.querySelectorAll<HTMLButtonElement>('#fx-level button')) {
       b.addEventListener('click', () => {
@@ -104,8 +146,8 @@ export class Hud {
       const b = document.createElement('button');
       b.className = 'tw';
       b.dataset.t = type;
-      b.title = TOWER_BLURBS[type];
-      b.innerHTML = `<span class="pt"><span class="spr"></span></span><span class="nm">${def.name}</span><span class="ct"><i class="ico ico-coin"></i>${def.cost}</span><span class="key">${i + 1}</span>${def.limit ? `<span class="lim">max. ${def.limit}</span>` : ''}`;
+      b.title = `${TOWERS[type].name}: ${TOWER_BLURBS[type]}`;
+      b.innerHTML = `<span class="pt"><span class="spr"></span></span><span class="nm">${CARD_NAME[def.id] ?? def.name}</span><span class="ct"><i class="ico ico-coin"></i>${def.cost}</span><span class="key">${i + 1}</span>${def.limit ? `<span class="lim">max. ${def.limit}</span>` : ''}`;
       applySprite(b.querySelector<HTMLElement>('.spr')!, `head/${type}`, 32);
       box.append(b);
     });
@@ -134,8 +176,8 @@ export class Hud {
       b.classList.toggle('full', full);
       b.disabled = s.money < TOWERS[t].cost || full;
     }
-    $('spd').textContent = `Tempo x${speed}`;
-    $('mute').textContent = this.sound.muted ? 'Ton aus' : 'Ton an';
+    $('spd').textContent = `x${speed}`;
+    $('mute').textContent = this.sound.muted ? 'Stumm' : 'Ton';
     const big = $('big');
     big.textContent = s.won
       ? 'NEUES PROGRAMM'
@@ -150,6 +192,9 @@ export class Hud {
     $('replay').hidden = !s.over;
     $('share').hidden = !s.over;
     for (const b of document.querySelectorAll<HTMLButtonElement>('#fx-level button')) b.classList.toggle('active', b.dataset.fx === this.fx.level);
+    for (const b of document.querySelectorAll<HTMLButtonElement>('#speed-set button')) b.classList.toggle('active', Number(b.dataset.speed) === speed);
+    $<HTMLInputElement>('mute-check').checked = this.sound.muted;
+    $('fx-hint').textContent = FX_HINT[this.fx.level];
 
     let info = DEFAULT_INFO;
     const tower = selectedTowerId !== null ? game.towerById(selectedTowerId) : undefined;
@@ -157,10 +202,12 @@ export class Hud {
       const def = TOWERS[tower.type];
       const st = game.towerStats(tower);
       const up = game.upgradeCost(tower);
+      const stats = def.support
+        ? supportInfo(tower.type, tower.level)
+        : `Reichweite ${Math.floor(st.range)} · ${st.dps ? `DPS ${Math.floor(st.dps)}` : `Schaden ${Math.floor(st.dmg)}`}`;
       const push = tower.type === 'scrum' ? ` · Rückstoß ${Math.floor(def.push! * (1 + 0.2 * (tower.level - 1)))}` : '';
       info =
-        `<b>${def.name}</b> <span class="muted">Stufe ${tower.level}/5</span><br>Reichweite ${Math.floor(st.range)} · ` +
-        `${st.dps ? `DPS ${Math.floor(st.dps)}` : `Schaden ${Math.floor(st.dmg)}`}${push}${st.boosted ? '<br><span class="muted">PPL-Boost aktiv (+25 %)</span>' : ''}<br>` +
+        `<b>${def.name}</b> <span class="muted">Stufe ${tower.level}/5</span><br>${stats}${push}${st.boosted ? '<br><span class="muted">PPL-Boost aktiv (+25 %)</span>' : ''}<br>` +
         `<button data-action="upgrade">Upgrade (${up ?? 'max'}) [U]</button>` +
         `<button data-action="sell">Abgeben (+${game.sellValue(tower)}) [S]</button>`;
     } else if (selected) {

@@ -25,6 +25,11 @@
 - **R-1** Pakete A (Optik, Sound, Teilen) und B (neue Rollen/Gegner) zusammen als Saison 2 (Nutzerentscheidung); RTO = Release Train Owner (Nutzer), Rollen RTE, RTA, RTO, Vorstand; Gegner Meeting-Einladung, Hotfix; Effekte „Maximal + Schalter“; Musik Warteschleife + Funk + Boss; Teilen Text + Bildkarte.
 - **R-2** Audio-Mischlösung (ADR-0006) nach Recherche: CC0-Musik/-SFX, fehlende Büro-Geräusche prozedural.
 
+- **R-3** (Nutzer) Kein „Saison 2“-Label: Version 0.3.0 startet die Bestenliste ohnehin leer; Label entfernt.
+- **R-4** (Nutzer) Einstellungen als Popup mit Zahnrad in der Kopfleiste (Effektstufe, Musik/Effekte, Stumm, Tempo, Modus, Teamname); Tastatur ist bei offenem Dialog gesperrt.
+- **R-5** Layout 1366 × 768 online: zehn Bestenlisten-Zeilen passen rechnerisch nicht neben das 618 px hohe Spielfeld. Seitenleiste ist so hoch wie das Spielfeld, die Liste scrollt in sich (≥ 3 Zeilen sichtbar); AC-12 entsprechend präzisiert, E2E-Test angepasst. Dazu: Unterzeile des Logos bricht um (Kopfleiste einzeilig), Kartennamen einzeilig („Analyst“), Tempo/Ton neben dem Start-Knopf, Zeitraum-Tabs in der Titelzeile der Bestenliste.
+- **R-6** Fund beim Layout: Infobox zeigte für Unterstützungsrollen „Reichweite 0 · Schaden NaN“ → zeigt jetzt ihre Wirkung je Stufe.
+
 ## Open questions
 
 - keine

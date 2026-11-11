@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { SESSION_ID, SupabaseMock } from './fixtures/supabase-mock';
+import { Game } from '../../src/sim/index';
 
 const OUT = '.tmp/evidence/season2';
 
@@ -257,9 +258,13 @@ test.describe('AC-9 effect levels', () => {
   test('switch persists, url params', async ({ page }) => {
     await open(page, 'map=waterfall&seed=7');
     expect(await fxLevel(page)).toBe('max');
-    await page.locator('#settings summary').click();
+    await page.locator('#open-settings').click();
+    await expect(page.locator('#settings-dialog')).toBeVisible();
     await page.locator('#fx-level button[data-fx=normal]').click();
     expect(await fxLevel(page)).toBe('normal');
+    await expect(page.locator('#fx-level button[data-fx=normal]')).toHaveClass(/active/);
+    await page.locator('#settings-close').click();
+    await expect(page.locator('#settings-dialog')).toBeHidden();
     await open(page, 'map=waterfall&seed=7');
     expect(await fxLevel(page)).toBe('normal');
     await open(page, 'map=waterfall&seed=7&fx=low');
@@ -295,6 +300,38 @@ test.describe('AC-9 effect levels', () => {
   }
 });
 
+test.describe('Einstellungen-Popup', () => {
+  test('Zahnrad öffnet Dialog: Tempo, Tastatursperre, Schließen', async ({ page }) => {
+    const errors = collectErrors(page);
+    await open(page, 'map=waterfall&seed=7');
+    const state = () => page.evaluate(() => {
+      const bd = (window as unknown as { __bd: { speed: number; game: { state: { running: boolean } } } }).__bd;
+      return { speed: bd.speed, running: bd.game.state.running };
+    });
+    await page.locator('#open-settings').click();
+    const dlg = page.locator('#settings-dialog');
+    await expect(dlg).toBeVisible();
+    for (const id of ['#fx-level', '#vol-music', '#vol-sfx', '#mute-check', '#speed-set', '#mode']) await expect(dlg.locator(id)).toBeVisible();
+    await expect(page.locator('#settings-team')).toBeHidden();
+    await page.screenshot({ path: `${OUT}/settings-popup.png` });
+    await dlg.locator('#speed-set button[data-speed="3"]').click();
+    expect((await state()).speed).toBe(3);
+    await expect(dlg.locator('#speed-set button[data-speed="3"]')).toHaveClass(/active/);
+    await expect(page.locator('#spd')).toContainText('x3');
+    // Tastatur wirkt bei offenem Dialog nicht aufs Spiel
+    await page.keyboard.press('3');
+    await expect(page.locator('.tw.sel')).toHaveCount(0);
+    await page.keyboard.press(' ');
+    expect((await state()).running).toBe(false);
+    await page.keyboard.press('Escape');
+    await expect(dlg).toBeHidden();
+    await page.keyboard.press('3');
+    await expect(page.locator('.tw[data-t=dev]')).toHaveClass(/sel/);
+    await expect(page.locator('#lb h2')).toHaveText('Bestenliste');
+    expect(errors).toEqual([]);
+  });
+});
+
 test.describe('AC-10 audio', () => {
   test('lazy load, phases, volumes, mute, no errors', async ({ page }) => {
     test.setTimeout(120_000);
@@ -311,13 +348,19 @@ test.describe('AC-10 audio', () => {
     await startWave(page);
     await expect.poll(async () => (await audio()).phase).toBe('music-wave');
 
-    await page.locator('#settings summary').click();
+    await page.locator('#open-settings').click();
     await page.locator('#vol-music').fill('35');
     await page.locator('#vol-sfx').fill('55');
     let st = (await audio()).settings;
     expect(st.music).toBeCloseTo(0.35, 2);
     expect(st.sfx).toBeCloseTo(0.55, 2);
     const muted0 = st.muted;
+    // Stumm im Popup und über den Knopf in der Seitenleiste
+    await page.locator('#mute-check').click();
+    expect((await audio()).settings.muted).toBe(!muted0);
+    await page.locator('#mute-check').click();
+    expect((await audio()).settings.muted).toBe(muted0);
+    await page.locator('#settings-close').click();
     await page.locator('#mute').click();
     expect((await audio()).settings.muted).toBe(!muted0);
     await page.locator('#mute').click();
@@ -361,11 +404,12 @@ test.describe('AC-11 share', () => {
 test.describe('AC-12 layout and limits', () => {
   const emoji = /\p{Extended_Pictographic}/u;
 
-  async function checkLayout(page: Page): Promise<void> {
+  async function checkLayout(page: Page, query = 'map=waterfall&seed=7'): Promise<void> {
     await page.setViewportSize({ width: 1366, height: 768 });
-    await open(page, 'map=waterfall&seed=7');
+    await open(page, query);
     await expect(page.locator('.tw')).toHaveCount(9);
     console.log('S2 AC12 boxes', JSON.stringify(await page.evaluate(() => ['#frame', '#team-card', '#control-card', '#lb', '#lb-list', '#ticker'].map((s) => [s, JSON.stringify(document.querySelector(s)?.getBoundingClientRect().toJSON())]))));
+    await page.screenshot({ path: `${OUT}/layout-${page.url().includes(':4175') ? 'online' : 'offline'}.png` });
     for (const sel of ['.tw', '#frame', '#big', '#lb']) {
       const loc = page.locator(sel);
       for (let i = 0; i < (await loc.count()); i++) {
@@ -421,7 +465,7 @@ test.describe('AC-12 layout and limits', () => {
         body: {
           sessionId: SESSION_ID,
           seed: 1,
-          mapId: 'waterfall',
+          mapId: new Game({ seed: 1 }).state.mapId,
           mode: 'challenge',
           gameVersion: '0.3.0',
           dailyDate: today,
@@ -431,10 +475,19 @@ test.describe('AC-12 layout and limits', () => {
       };
       mock.config.board.day = Array.from({ length: 10 }, (_, i) => ({ rank: i + 1, nickname: `Team${i + 1}`, score: 20_000 - i * 1000, wave: 30, lives: 50, won: i === 0, is_me: false }));
       await mock.install();
-      await checkLayout(page);
+      // ohne Karten-/Seed-Parameter: normaler Daily-Ablauf wie beim echten Aufruf
+      await checkLayout(page, 'v=1');
+      await expect(page.locator('#lb-status')).not.toContainText('nicht verfügbar');
       await expect(page.locator('#lb-list li[data-rank]')).toHaveCount(10);
-      const last = (await page.locator('#lb-list li[data-rank]').last().boundingBox())!;
+      // Bei 768 px passen nicht alle 10 Zeilen neben das Spielfeld: Die Liste scrollt in sich (Ruling T13 im Ledger).
+      const list = (await page.locator('#lb-list').boundingBox())!;
+      const third = (await page.locator('#lb-list li[data-rank="3"]').boundingBox())!;
+      expect(third.y + third.height, 'Platz 3 sichtbar').toBeLessThanOrEqual(list.y + list.height + 1);
+      expect(list.y + list.height).toBeLessThanOrEqual(768);
+      await page.locator('#lb-list li[data-rank="10"]').scrollIntoViewIfNeeded();
+      const last = (await page.locator('#lb-list li[data-rank="10"]').boundingBox())!;
       expect(last.y + last.height).toBeLessThanOrEqual(768);
+      expect(await page.evaluate(() => document.scrollingElement!.scrollTop), 'Seite scrollt nicht').toBe(0);
     });
   });
 });

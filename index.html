@@ -18,6 +18,7 @@
     <div class="chip" title="Score"><i class="ico ico-trophy"></i><b id="score"></b></div>
     <div class="chip chip-map" title="Karte"><i class="ico ico-map"></i><b id="map"></b></div>
     <button id="team-name" class="chip chip-team" hidden title="Teamname ändern"></button>
+    <button id="open-settings" class="chip chip-gear" title="Einstellungen" aria-label="Einstellungen" aria-haspopup="dialog"><i class="ico ico-gear"></i></button>
   </div>
 </header>
 <div id="wrap">
@@ -29,44 +30,73 @@
       <div id="info"></div>
     </section>
     <section class="card" id="control-card">
-      <button id="big">Sprint starten</button>
-      <div class="row">
-        <button id="spd" title="Tempo">x1</button>
+      <div class="row ctl-main">
+        <button id="big">Sprint starten</button>
+        <button id="spd" title="Tempo (auch im Einstellungen-Popup)">x1</button>
         <button id="mute" title="Ton an/aus">Ton</button>
+      </div>
+      <div class="row ctl-end">
         <button id="replay" hidden title="Replay herunterladen">Replay</button>
         <button id="share" hidden title="Ergebnis teilen">Teilen</button>
       </div>
-      <div id="mode" class="row seg" role="group" aria-label="Spielmodus">
-        <button data-mode="challenge" title="30 Wellen – wer schafft das Release?">Challenge 30</button>
-        <button data-mode="endless" title="Bis zum Burnout">Endlos</button>
-      </div>
-      <details id="settings">
-        <summary>Einstellungen</summary>
-        <div id="fx-level" class="row seg" role="group" aria-label="Effekte">
-          <button data-fx="max" title="Combos, Zeitlupe, Kamerafahrten – alles an">Maximal</button>
-          <button data-fx="normal" title="Ohne Zeitlupe und Kamerazoom">Normal</button>
-          <button data-fx="calm" title="Ohne Wackeln, Combos und Animationen">Ruhig</button>
-        </div>
-        <label class="vol">Musik <input id="vol-music" type="range" min="0" max="100" step="5"></label>
-        <label class="vol">Effekte <input id="vol-sfx" type="range" min="0" max="100" step="5"></label>
-      </details>
     </section>
     <section class="card" id="lb">
-      <h2>Bestenliste <small>Saison 2</small></h2>
+      <div class="lb-head">
+        <h2>Bestenliste</h2>
+        <div id="lb-tabs" class="row seg" role="group" aria-label="Zeitraum">
+          <button data-period="day" class="active">Heute</button>
+          <button data-period="week">Woche</button>
+        </div>
+      </div>
       <div id="play-kind" class="row seg" role="group" aria-label="Spielart">
         <button data-kind="daily" class="active" title="Alle spielen heute dieselbe Karte – zählt für die Bestenliste">Daily</button>
         <button data-kind="free" title="Zufällige Karte, Challenge oder Endlos – zählt nicht">Freies Spiel</button>
       </div>
       <div id="lb-status" aria-live="polite"></div>
-      <div id="lb-tabs" class="row seg" role="group" aria-label="Zeitraum">
-        <button data-period="day" class="active">Heute</button>
-        <button data-period="week">Woche</button>
-      </div>
       <ol id="lb-list"></ol>
     </section>
   </aside>
 </div>
 <div id="ticker"><span id="tk"></span></div>
+<dialog id="settings-dialog" aria-labelledby="settings-title">
+  <form method="dialog">
+    <h2 id="settings-title">Einstellungen</h2>
+    <section>
+      <h3>Effekte</h3>
+      <div id="fx-level" class="row seg" role="group" aria-label="Effekte">
+        <button type="button" data-fx="max">Maximal</button>
+        <button type="button" data-fx="normal">Normal</button>
+        <button type="button" data-fx="calm">Ruhig</button>
+      </div>
+      <p id="fx-hint" class="hint"></p>
+    </section>
+    <section>
+      <h3>Ton</h3>
+      <label class="vol">Musik <input id="vol-music" type="range" min="0" max="100" step="5"></label>
+      <label class="vol">Effekte <input id="vol-sfx" type="range" min="0" max="100" step="5"></label>
+      <label class="check"><input id="mute-check" type="checkbox"> Stumm</label>
+    </section>
+    <section>
+      <h3>Spiel</h3>
+      <div class="lbl">Tempo</div>
+      <div id="speed-set" class="row seg" role="group" aria-label="Tempo">
+        <button type="button" data-speed="1">x1</button>
+        <button type="button" data-speed="2">x2</button>
+        <button type="button" data-speed="3">x3</button>
+      </div>
+      <div class="lbl">Modus im freien Spiel <small>(vor dem ersten Sprint)</small></div>
+      <div id="mode" class="row seg" role="group" aria-label="Spielmodus">
+        <button type="button" data-mode="challenge" title="30 Wellen – wer schafft das Release?">Challenge 30</button>
+        <button type="button" data-mode="endless" title="Bis zum Burnout">Endlos</button>
+      </div>
+    </section>
+    <section id="settings-team" hidden>
+      <h3>Team</h3>
+      <button type="button" id="rename">Teamnamen ändern</button>
+    </section>
+    <div class="row"><button value="close" id="settings-close">Fertig</button></div>
+  </form>
+</dialog>
 <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

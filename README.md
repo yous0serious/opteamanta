@@ -58,8 +58,9 @@ Spielversion 0.3.0 – **Saison 2** (Spec `specs/season-2/spec.md`, Werte in `sr
 | Leertaste / großer Button | Nächster Sprint, nach Spielende neu starten |
 | `Esc` / Rechtsklick | Auswahl aufheben |
 
-**Einstellungen** (Seitenleiste): Effektstufe *Maximal* (Combos, Zeitlupe, Kamerafahrten), *Normal* (ohne Zeitlupe/Zoom),
-*Ruhig* (ohne Wackeln, Combos, Animationen; Standard bei `prefers-reduced-motion`), Lautstärke für Musik und Effekte.
+**Einstellungen** (Zahnrad oben rechts): Effektstufe *Maximal* (Combos, Zeitlupe, Kamerafahrten), *Normal* (ohne Zeitlupe/Zoom),
+*Ruhig* (ohne Wackeln, Combos, Animationen; Standard bei `prefers-reduced-motion`), Lautstärke für Musik und Effekte, Stumm,
+Tempo, Modus im freien Spiel und Teamname. Bei offenem Dialog reagiert das Spiel nicht auf Tasten.
 Nach Spielende teilt „Teilen“ das Ergebnis als Text und Bildkarte.
 
 ### URL-Parameter

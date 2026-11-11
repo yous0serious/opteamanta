@@ -205,6 +205,13 @@ export class Controller {
     this.changed();
   }
 
+  /** Tempo direkt setzen (Einstellungen-Popup); nur 1–3 wie über den Button. */
+  setSpeed(n: number): void {
+    if (![1, 2, 3].includes(n)) return;
+    this.speed = n;
+    this.changed();
+  }
+
   /** Kurzer Hitstop (Spec visual-overhaul AC-9): pausiert das Vorrücken der Simulation für `ms` Echtzeit. */
   hitstop(ms: number): void {
     this.stopUntil = performance.now() + ms;

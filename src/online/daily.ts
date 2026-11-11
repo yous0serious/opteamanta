@@ -103,7 +103,7 @@ export class DailyFlow {
   private begin(session: DailySession): void {
     this.ctl.startDaily(session);
     const [, m, d] = session.dailyDate.split('-');
-    this.ui.status(`Daily ${d}.${m}. – alle spielen heute dieselbe Karte. Viel Erfolg!`, 'info');
+    this.ui.status(`Daily ${d}.${m}. – heute für alle dieselbe Karte`, 'info');
   }
 
   /** Schalter „Freies Spiel“. */
