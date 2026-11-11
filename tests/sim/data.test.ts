@@ -19,7 +19,7 @@ describe('AC-3 Konstanten', () => {
 
 describe('AC-3 Türme', () => {
   it('Reihenfolge', () => {
-    expect([...TOWER_ORDER]).toEqual(['dualo', 'analyst', 'dev', 'ppl', 'scrum']);
+    expect([...TOWER_ORDER]).toEqual(['dualo', 'analyst', 'dev', 'ppl', 'scrum', 'rte', 'rta', 'rto', 'board']);
   });
   it('dualo', () => {
     const t = TOWERS.dualo;

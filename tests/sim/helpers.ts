@@ -59,3 +59,19 @@ export const STANDARD_SCRIPT: ScriptCommand[] = [
   { tick: 3700, cmd: { type: 'startWave' } },
   { tick: 7500, cmd: { type: 'startWave' } },
 ];
+
+/** Freie Zelle (canPlace === null), deren Mittelpunkt `lo`..`hi` Pixel von `from` entfernt liegt (Mittelwert-nah zuerst). */
+export function cellNear(game: Game, type: TowerType, from: { x: number; y: number }, lo: number, hi: number): { cx: number; cy: number } {
+  let best: { cx: number; cy: number; score: number } | null = null;
+  for (let cx = 0; cx < 24; cx++) {
+    for (let cy = 0; cy < 15; cy++) {
+      if (game.canPlace(type, cx, cy) !== null) continue;
+      const d = Math.hypot(cx * 40 + 20 - from.x, cy * 40 + 20 - from.y);
+      if (d < lo || d > hi) continue;
+      const score = Math.abs(d - (lo + hi) / 2);
+      if (!best || score < best.score) best = { cx, cy, score };
+    }
+  }
+  if (!best) throw new Error(`Keine freie Zelle ${lo}..${hi} px von (${from.x}, ${from.y})`);
+  return { cx: best.cx, cy: best.cy };
+}

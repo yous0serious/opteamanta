@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { Tower, TowerType } from '../../../sim/index';
+import { TOWERS, type Tower, type TowerType } from '../../../sim/index';
 import { ATLAS } from '../../PreloadScene';
 import type { ViewCtx } from '../entities';
 
@@ -12,15 +12,25 @@ const POSES: Record<TowerType, { idle: string; fire: readonly string[] }> = {
   dev: { idle: 'interact', fire: ['interact', 'hold'] },
   ppl: { idle: 'think', fire: ['show', 'wide'] },
   scrum: { idle: 'idle', fire: ['kick', 'attack2'] },
+  // Saison 2: „fire“ = Fähigkeit/Ereignis der Unterstützungsrolle
+  rte: { idle: 'idle', fire: ['wide', 'show'] },
+  rta: { idle: 'think', fire: ['show', 'talk'] },
+  rto: { idle: 'hold', fire: ['cheer0', 'cheer1'] },
+  board: { idle: 'talk', fire: ['wide', 'attack2'] },
 };
 const CHEER = ['cheer0', 'cheer1'] as const;
 
 /** Gegenstand der Rolle auf dem Tisch. */
-const ROLE_ITEM: Record<TowerType, string> = { dualo: 'item/cup', analyst: 'item/clipboard', dev: 'item/laptop', ppl: 'item/folder', scrum: 'item/bell' };
+const ROLE_ITEM: Record<TowerType, string> = {
+  dualo: 'item/cup', analyst: 'item/clipboard', dev: 'item/laptop', ppl: 'item/folder', scrum: 'item/bell',
+  rte: 'item/hourglass', rta: 'item/notebook', rto: 'item/wallet', board: 'item/laptop',
+};
 /** Ausstattung je Stufe (rechts auf dem Tisch). */
 const LEVEL_ITEM = ['item/notepad', 'item/notebook', 'item/monitor', 'item/monitor', 'item/monitor'] as const;
 
-const ROLE_COLOR: Record<TowerType, number> = { dualo: 0x1e88e5, analyst: 0x43a047, dev: 0xd81b60, ppl: 0xf9a825, scrum: 0x8e24aa };
+const ROLE_COLOR: Record<TowerType, number> = Object.fromEntries(
+  Object.values(TOWERS).map((d) => [d.id, Number.parseInt(d.color.slice(1), 16)]),
+) as Record<TowerType, number>;
 
 const CHAR_H = 58;
 const FEET_Y = 12;

@@ -17,7 +17,7 @@ describe.skipIf(!HAVE_ENV)('start-run (AC-2)', () => {
     expect(r1.body.mapId).toBe(r2.body.mapId);
     expect(r1.body.dailyDate).toBe(r2.body.dailyDate);
     expect(r1.body.mode).toBe('challenge');
-    expect(r1.body.gameVersion).toBe('0.2.0');
+    expect(r1.body.gameVersion).toBe('0.3.0');
   });
 
   it('ohne Token -> 401', async () => {

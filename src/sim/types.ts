@@ -1,5 +1,5 @@
-export type TowerType = 'dualo' | 'analyst' | 'dev' | 'ppl' | 'scrum';
-export type EnemyType = 'req' | 'cr' | 'story' | 'obj' | 'feat' | 'creep' | 'debt' | 'boss';
+export type TowerType = 'dualo' | 'analyst' | 'dev' | 'ppl' | 'scrum' | 'rte' | 'rta' | 'rto' | 'board';
+export type EnemyType = 'req' | 'cr' | 'story' | 'obj' | 'feat' | 'creep' | 'debt' | 'boss' | 'meeting' | 'hotfix';
 export type MapId = 'spaghetti' | 'waterfall' | 'release-train' | 'matrix';
 /** Challenge: 30 Wellen, dann Sieg. Endlos: bis Game Over. */
 export type GameMode = 'challenge' | 'endless';
@@ -18,6 +18,10 @@ export interface TowerDef {
   splash?: number;
   aura?: number;
   push?: number;
+  /** Unterstützungsrolle ohne eigenes Ziel (RTE, RTA, RTO, Vorstand – Spec season-2). */
+  support?: boolean;
+  /** Höchstzahl gleichzeitig im Spiel (Vorstand: 1). */
+  limit?: number;
   color: string;
 }
 
@@ -37,6 +41,8 @@ export interface EnemyDef {
   grow?: number;
   /** Radius des Störimpulses. */
   jam?: number;
+  /** Dauer der Störung in Sekunden (Standard: JAM_OFF_TIME). */
+  jamTime?: number;
   boss?: boolean;
 }
 
@@ -65,6 +71,10 @@ export interface Tower {
   offTime: number;
   targetId: number | null;
   beam: boolean;
+  /** Restdauer des PI-Sync-Boosts (RTE, Spec season-2). */
+  syncTime: number;
+  /** Fähigkeiten-Zähler (Vorstand wechselt Budget-Freeze/„Projekt eingestampft“). */
+  phase: number;
 }
 
 export interface Enemy {
@@ -83,6 +93,8 @@ export interface Enemy {
   slowTime: number;
   pushCooldown: number;
   jamCooldown: number;
+  /** Restdauer des Budget-Freeze (Vorstand, Spec season-2). */
+  frozenTime: number;
 }
 
 export interface Shot {
@@ -133,7 +145,8 @@ export type RejectReason =
   | 'maxLevel'
   | 'unknownTower'
   | 'waveRunning'
-  | 'gameOver';
+  | 'gameOver'
+  | 'limit';
 
 export type SimEvent =
   | { type: 'placed'; tower: Tower }
@@ -153,6 +166,10 @@ export type SimEvent =
   | { type: 'pushed'; enemy: Enemy }
   | { type: 'absent'; tower: Tower }
   | { type: 'jammed'; enemy: Enemy; towerIds: number[]; radius: number }
+  | { type: 'synced'; tower: Tower; towerIds: number[]; radius: number }
+  | { type: 'businessValue'; tower: Tower; amount: number }
+  | { type: 'freeze'; tower: Tower; enemyIds: number[] }
+  | { type: 'axed'; tower: Tower; enemy: Enemy }
   | { type: 'gameOver'; wave: number; score: number }
   | { type: 'victory'; wave: number; score: number; bonus: number };
 

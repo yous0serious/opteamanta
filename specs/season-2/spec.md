@@ -67,7 +67,24 @@ Spielregeln ändern, steigt die Spielversion auf 0.3.0; die Bestenliste beginnt 
 
 ## Referenzwerte v0.3.0
 
-Wird nach dem Bot-Tuning ergänzt (Tabelle wie in Spec balancing-challenge).
+Ermittelt per Bot-Tuning (`npm run balance`, 2026-11-11). Rollen- und Gegnerwerte wie in „Entscheidungen“ (unverändert);
+geändert gegenüber v0.2.0: Boss-HP-Faktor **2,6** (statt 2,5) und die Wellenzusammensetzung (Hotfix ab Welle 3, Meeting ab Welle 4).
+
+| Wert | v0.2.0 | v0.3.0 |
+|---|---|---|
+| Boss-HP | Grund-HP × Skalierung × 2,5 | **× 2,6** (Welle 1: 2340) |
+| Wellenmix (ohne PIP) | cr 25, obj 12, feat 12, creep 13, debt 10, req Rest | zusätzlich **hotfix 8 %** (Welle 3: 18 %), **meeting 6 %** ab Welle 4; req Rest |
+| Übrige Werte | – | unverändert (`hpGrowth` 1,115, `rewardFactor` 0,25, Wellenbonus 40 + 5·w, Start 300 SP) |
+
+Messwerte (20 Läufe je Gruppe, Seeds 1–5 × 4 Karten):
+
+| Gruppe | Median Welle | Min–Max | Siege | Einstieg ohne Moralverlust | Neue Rollen im Team |
+|---|---|---|---|---|---|
+| Referenz-Bot, Challenge | 21 | 7–26 | 0 % | 95 % | RTE/RTA/RTO je 95 % |
+| Starker Bot, Challenge | 30 | 21–30 | 80 % | – | RTE/RTA/RTO 100 %, Vorstand 80 % |
+| Starker Bot, Endlos | 31 | max. 35 | – | – | – |
+
+Nachrechnen des längsten Challenge-Laufs (104 028 Ticks): 404 ms (Node).
 
 ## Risiken
 

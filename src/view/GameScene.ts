@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ENEMIES, HEIGHT, TILE, TOWERS, WIDTH, type Enemy, type Game, type SimEvent } from '../sim/index';
+import { ENEMIES, HEIGHT, TILE, TOWERS, WIDTH, type Enemy, type Game, type SimEvent, type TowerType } from '../sim/index';
 import type { SoundEngine } from './audio';
 import type { Controller, DebugApi } from './controller';
 import type { FxSettings } from './fx';
@@ -26,8 +26,8 @@ const PILE_MAX = 60;
 const HITSTOP_MS = 60;
 
 /** Geschosse als Büro-Gegenstände (Spec office-makeover AC-6). */
-const SHOT_FRAME = { dualo: 'item/cup', analyst: 'item/notepad', scrum: 'item/bell', ppl: 'item/folder', dev: 'item/cup' } as const;
-const SHOT_SIZE = { dualo: 16, analyst: 16, scrum: 16, ppl: 20, dev: 12 } as const;
+const SHOT_FRAME: Partial<Record<TowerType, string>> = { dualo: 'item/cup', analyst: 'item/notepad', scrum: 'item/bell', ppl: 'item/folder', dev: 'item/cup' };
+const SHOT_SIZE: Partial<Record<TowerType, number>> = { dualo: 16, analyst: 16, scrum: 16, ppl: 20, dev: 12 };
 
 /** Entfernt Darstellungen, deren Sim-Objekt nicht mehr existiert. */
 function prune<V extends { destroy(): void }>(views: Map<number, V>, seen: ReadonlySet<number>): void {
@@ -576,8 +576,8 @@ export class GameScene extends Phaser.Scene {
       }
       let img = this.shots.get(s.id);
       if (!img) {
-        const size = SHOT_SIZE[s.towerType];
-        img = this.add.image(s.x, s.y, ATLAS, SHOT_FRAME[s.towerType]).setDisplaySize(size, size);
+        const size = SHOT_SIZE[s.towerType] ?? 14;
+        img = this.add.image(s.x, s.y, ATLAS, SHOT_FRAME[s.towerType] ?? 'item/cup').setDisplaySize(size, size);
         this.shots.set(s.id, img);
         this.layers.shots.add(img);
       }

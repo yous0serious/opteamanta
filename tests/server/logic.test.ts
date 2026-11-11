@@ -51,7 +51,7 @@ describe('checkSubmission', () => {
   const replay = game.toReplay();
   const issued = new Date('2026-11-10T12:00:00Z');
   const session: SessionRow = {
-    id: 's1', user_id: 'u1', daily_date: '2026-11-10', seed, map_id: mapId, mode: 'challenge', game_version: '0.2.0',
+    id: 's1', user_id: 'u1', daily_date: '2026-11-10', seed, map_id: mapId, mode: 'challenge', game_version: '0.3.0',
     issued_at: issued.toISOString(), expires_at: new Date(issued.getTime() + 3 * 3600_000).toISOString(), used_at: null,
   };
   const later = new Date(issued.getTime() + 60_000);
@@ -68,7 +68,7 @@ describe('checkSubmission', () => {
     ['falscher Seed', session, 'u1', { ...replay, seed: seed + 1 }, later, 422, 'seed_mismatch'],
     ['falsche Karte', session, 'u1', { ...replay, mapId: mapId === 'matrix' ? 'waterfall' : 'matrix' }, later, 422, 'map_mismatch'],
     ['falscher Modus', session, 'u1', { ...replay, mode: 'endless' }, later, 422, 'mode_mismatch'],
-    ['falsche Version', session, 'u1', { ...replay, gameVersion: '0.1.0' }, later, 422, 'version_mismatch'],
+    ['falsche Version', session, 'u1', { ...replay, gameVersion: '0.2.0' }, later, 422, 'version_mismatch'],
     ['kaputtes Replay', session, 'u1', { ...replay, commands: [[0, 'place', ['dev'], 1, 1]] }, later, 400, 'replay_invalid'],
     ['zu schnell', session, 'u1', replay, new Date(issued.getTime() + 500), 422, 'too_fast'],
   ] as const)('%s → %i %s', (_label, s, user, raw, now, status, reason) => {

@@ -12,7 +12,7 @@ import { playStrongBot } from './bot-strong';
 
 type Bot = 'ref' | 'strong';
 interface Job { id: number; bot: Bot; mode: GameMode; seed: number; mapId: MapId; maxWave: number; balance: BalanceConfig; keepReplay: boolean }
-interface Result { id: number; wave: number; won: boolean; over: boolean; lives: number; ticks: number; cleanStart: boolean; replay?: Replay }
+interface Result { id: number; wave: number; won: boolean; over: boolean; lives: number; ticks: number; cleanStart: boolean; roles: string[]; replay?: Replay }
 
 function runJob(j: Job): Result {
   let cleanStart = true;
@@ -24,7 +24,7 @@ function runJob(j: Job): Result {
   };
   const game = j.bot === 'ref' ? playBot(opts) : playStrongBot(opts);
   const s = game.state;
-  return { id: j.id, wave: s.wave, won: s.won, over: s.over, lives: s.lives, ticks: s.tick, cleanStart, replay: j.keepReplay ? game.toReplay() : undefined };
+  return { id: j.id, wave: s.wave, won: s.won, over: s.over, lives: s.lives, ticks: s.tick, cleanStart, roles: [...new Set(s.towers.map((t) => t.type))].sort(), replay: j.keepReplay ? game.toReplay() : undefined };
 }
 
 if (!isMainThread) {
@@ -63,6 +63,7 @@ interface Summary {
   strong: { median: number; min: number; max: number; winRate: number; cleanStart: number; maxTicks: number };
   endless: { median: number; max: number; allOver: boolean };
   verifyMs: number | null;
+  roles: { ref: Record<string, number>; strong: Record<string, number> };
   ok: Record<string, boolean>;
 }
 
@@ -101,6 +102,13 @@ async function evaluate(balance: BalanceConfig, seeds: number[], withVerify: boo
     verifyMs = Math.round(performance.now() - t0);
     if (!check.matches) throw new Error('Replay des längsten Laufs stimmt nicht');
   }
+  // Saison 2 (Spec season-2 AC-4): Anteil der Läufe, in denen die Rolle am Ende im Team ist
+  const share = (rs: Result[], role: string): number => rs.filter((r) => r.roles.includes(role)).length / rs.length;
+  const refRuns = pick('ref', 'challenge');
+  const roles = {
+    ref: Object.fromEntries(['rte', 'rta', 'rto'].map((k) => [k, share(refRuns, k)])),
+    strong: Object.fromEntries(['rte', 'rta', 'rto', 'board'].map((k) => [k, share(strongRuns, k)])),
+  };
   const ok = {
     'AC-3 median 18–25': ref.median >= 18 && ref.median <= 25,
     'AC-3 ref wins ≤10%': ref.winRate <= 0.1,
@@ -108,8 +116,10 @@ async function evaluate(balance: BalanceConfig, seeds: number[], withVerify: boo
     'AC-5 clean start ≥90%': ref.cleanStart >= 0.9,
     'AC-6 endless ends ≤45': endless.allOver && endless.max <= 45,
     ...(verifyMs !== null ? { 'AC-7 verify ≤1000ms': verifyMs <= 1000 } : {}),
+    'S2 ref nutzt RTE/RTA/RTO': Object.values(roles.ref).every((v) => v >= 0.5),
+    'S2 strong nutzt alle neuen': Object.values(roles.strong).every((v) => v >= 0.5),
   };
-  return { balance, ref, strong, endless, verifyMs, ok };
+  return { balance, ref, strong, endless, verifyMs, roles, ok };
 }
 
 function print(s: Summary, json: boolean): void {
@@ -123,6 +133,7 @@ function print(s: Summary, json: boolean): void {
   console.log(`  strong challenge: median=${s.strong.median} min=${s.strong.min} max=${s.strong.max} wins=${pct(s.strong.winRate)} maxTicks=${s.strong.maxTicks}`);
   console.log(`  strong endless  : median=${s.endless.median} max=${s.endless.max} allOver=${s.endless.allOver}`);
   if (s.verifyMs !== null) console.log(`  verify longest strong challenge: ${s.verifyMs} ms`);
+  console.log(`  roles ref ${JSON.stringify(s.roles.ref)} strong ${JSON.stringify(s.roles.strong)}`);
   console.log(`  ${Object.entries(s.ok).map(([k, v]) => `${v ? '✓' : '✗'} ${k}`).join(' | ')}`);
 }
 

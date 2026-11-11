@@ -1,4 +1,4 @@
-// GENERIERT von npm run build:sim – nicht von Hand ändern. Quelle: src/sim (sha256 fbb4ec3fc5464dd0)
+// GENERIERT von npm run build:sim – nicht von Hand ändern. Quelle: src/sim (sha256 bf5c6245ea56d181)
 
 // src/sim/constants.ts
 var TILE = 40;
@@ -19,7 +19,7 @@ var CHALLENGE_WAVES = 30;
 var VICTORY_BONUS_PER_LIFE = 100;
 
 // src/sim/version.ts
-var GAME_VERSION = "0.2.0";
+var GAME_VERSION = "0.3.0";
 
 // src/sim/data/towers.ts
 var TOWERS = {
@@ -27,9 +27,18 @@ var TOWERS = {
   analyst: { id: "analyst", name: "Business Analyst", emoji: "\u{1F4CB}", cost: 70, range: 105, rate: 0.7, dmg: 5, color: "#43a047" },
   dev: { id: "dev", name: "Entwickler", emoji: "\u{1F469}\u200D\u{1F4BB}", cost: 120, range: 150, dps: 45, color: "#d81b60" },
   ppl: { id: "ppl", name: "PPL", emoji: "\u{1F9ED}", cost: 150, range: 140, rate: 1.5, dmg: 40, splash: 65, aura: 120, color: "#f9a825" },
-  scrum: { id: "scrum", name: "Scrum Master", emoji: "\u{1F501}", cost: 110, range: 115, rate: 2.4, dmg: 4, push: 70, color: "#8e24aa" }
+  scrum: { id: "scrum", name: "Scrum Master", emoji: "\u{1F501}", cost: 110, range: 115, rate: 2.4, dmg: 4, push: 70, color: "#8e24aa" },
+  // Saison 2 (Spec season-2): Unterstützungsrollen ohne eigenes Ziel
+  rte: { id: "rte", name: "RTE", emoji: "\u{1F682}", cost: 140, range: 130, support: true, color: "#00897b" },
+  rta: { id: "rta", name: "RTA", emoji: "\u{1F4D0}", cost: 130, range: 110, support: true, color: "#3949ab" },
+  rto: { id: "rto", name: "RTO", emoji: "\u{1F4B0}", cost: 100, range: 0, support: true, color: "#7cb342" },
+  board: { id: "board", name: "Vorstand", emoji: "\u{1F454}", cost: 500, range: 0, support: true, limit: 1, color: "#37474f" }
 };
-var TOWER_ORDER = ["dualo", "analyst", "dev", "ppl", "scrum"];
+var TOWER_ORDER = ["dualo", "analyst", "dev", "ppl", "scrum", "rte", "rta", "rto", "board"];
+var RTE_SYNC = { interval: 10, duration: 4, durationPerLevel: 0.5, factor: 1.3 };
+var RTA_RUNWAY = { factor: 1.25, perLevel: 0.05, debt: 2 };
+var RTO_VALUE = { base: 15, perLevel: 10 };
+var BOARD_ABILITY = { interval: 20, perLevel: 1, freeze: 2, bossFreeze: 1 };
 var DUALO_ABSENT_CHANCE = 0.08;
 var DUALO_ABSENT_TIME = 2;
 var SLOW_FACTOR = 0.5;
@@ -56,7 +65,10 @@ var ENEMIES = {
     color: "#ef9a9a",
     leakDamage: 40,
     boss: true
-  }
+  },
+  // Saison 2 (Spec season-2)
+  meeting: { id: "meeting", name: "Meeting-Einladung", emoji: "\u{1F4C5}", hp: 35, speed: 70, reward: 7, color: "#90caf9", leakDamage: 5, jam: 60, jamTime: 1.2 },
+  hotfix: { id: "hotfix", name: "Hotfix", emoji: "\u{1F525}", hp: 12, speed: 150, reward: 3, color: "#ffab91", leakDamage: 5 }
 };
 var JAM_FIRST = 1;
 var JAM_INTERVAL = 3;
@@ -71,7 +83,7 @@ var BALANCE = {
   waveBonusPerWave: 5,
   waveSizeBase: 8,
   waveSizePerWave: 2,
-  bossHpFactor: 2.5,
+  bossHpFactor: 2.6,
   startMoney: 300
 };
 function hpScaleForWave(cfg, wave) {
@@ -214,6 +226,8 @@ var Game = class {
   commands = [];
   statsCache = /* @__PURE__ */ new Map();
   statsTowers = null;
+  /** RTA-Türme des laufenden Ticks (für den Runway-Faktor). */
+  runways = [];
   statsCount = 0;
   constructor(opts) {
     const seed = opts.seed >>> 0;
@@ -276,7 +290,9 @@ var Game = class {
           spent: def.cost,
           offTime: 0,
           targetId: null,
-          beam: false
+          beam: false,
+          syncTime: 0,
+          phase: 0
         };
         s.towers.push(tower);
         events.push({ type: "placed", tower });
@@ -316,6 +332,8 @@ var Game = class {
     if (!Number.isInteger(cx) || !Number.isInteger(cy) || cx < 0 || cy < 0 || cx >= COLS || cy >= ROWS) return "outOfBounds";
     if (this.pathCells.has(`${cx},${cy}`)) return "path";
     if (s.towers.some((t) => t.cx === cx && t.cy === cy)) return "occupied";
+    const limit = TOWERS[type].limit;
+    if (limit !== void 0 && s.towers.filter((t) => t.type === type).length >= limit) return "limit";
     if (s.money < TOWERS[type].cost) return "noMoney";
     return null;
   }
@@ -337,6 +355,8 @@ var Game = class {
       else if (w > 2 && r < 0.49) t = "feat";
       else if (w > 2 && r < 0.62) t = "creep";
       else if (w > 3 && r < 0.72) t = "debt";
+      else if (w > 2 && r < 0.8) t = "hotfix";
+      else if (w > 3 && r < 0.86) t = "meeting";
       list.push(t);
     }
     const boss = pip && w > 1;
@@ -363,6 +383,10 @@ var Game = class {
       const def = ENEMIES[e.type];
       e.slowTime -= DT;
       e.pushCooldown -= DT;
+      if (e.frozenTime > 0) {
+        e.frozenTime -= DT;
+        continue;
+      }
       if (def.grow && e.maxHp < e.baseMaxHp * 2) {
         const g = Math.min(e.maxHp * def.grow * DT, e.baseMaxHp * 2 - e.maxHp);
         e.maxHp += g;
@@ -376,7 +400,7 @@ var Game = class {
           const towerIds = [];
           for (const t of s.towers) {
             if (dist2(t, e) <= r2) {
-              t.offTime = JAM_OFF_TIME;
+              t.offTime = def.jamTime ?? JAM_OFF_TIME;
               towerIds.push(t.id);
             }
           }
@@ -402,6 +426,12 @@ var Game = class {
       const bonus = this.balance.waveBonusBase + this.balance.waveBonusPerWave * s.wave;
       s.money += bonus;
       events.push({ type: "waveCleared", wave: s.wave, bonus });
+      for (const t of s.towers) {
+        if (t.type !== "rto") continue;
+        const amount = RTO_VALUE.base + RTO_VALUE.perLevel * (t.level - 1);
+        s.money += amount;
+        events.push({ type: "businessValue", tower: t, amount });
+      }
       if (s.mode === "challenge" && s.wave >= CHALLENGE_WAVES) {
         const victoryBonus = s.lives * VICTORY_BONUS_PER_LIFE;
         s.score += victoryBonus;
@@ -413,12 +443,19 @@ var Game = class {
         return events;
       }
     }
+    this.runways = s.towers.filter((t) => t.type === "rta");
     for (const t of s.towers) {
-      t.cooldown -= DT;
+      const sync = t.syncTime > 0 ? RTE_SYNC.factor : 1;
+      if (t.syncTime > 0) t.syncTime -= DT;
+      t.cooldown -= DT * sync;
       t.beam = false;
       if (t.offTime > 0) {
         t.offTime -= DT;
         t.targetId = null;
+        continue;
+      }
+      if (TOWERS[t.type].support) {
+        this.supportAction(t, events);
         continue;
       }
       if (t.type !== "dev" && t.cooldown > 0) continue;
@@ -428,7 +465,7 @@ var Game = class {
       if (!target) continue;
       if (t.type === "dev") {
         t.beam = true;
-        this.hurt(target, stats.dps * DT, events);
+        this.hurt(target, stats.dps * DT * sync, events);
         continue;
       }
       if (t.cooldown <= 0) {
@@ -523,7 +560,8 @@ var Game = class {
       hpScale,
       slowTime: 0,
       pushCooldown: 0,
-      jamCooldown: JAM_FIRST
+      jamCooldown: JAM_FIRST,
+      frozenTime: 0
     };
     if (at) this.placeAt(e, at.dist);
     s.enemies.push(e);
@@ -545,7 +583,7 @@ var Game = class {
   computeStats(t) {
     const def = TOWERS[t.type];
     const aura = TOWERS.ppl.aura;
-    const boosted = t.type !== "ppl" && this.state.towers.some((o) => o.type === "ppl" && dist2(o, t) <= aura * aura);
+    const boosted = t.type !== "ppl" && !def.support && this.state.towers.some((o) => o.type === "ppl" && dist2(o, t) <= aura * aura);
     const m = LEVEL_DMG[t.level - 1] * (boosted ? PPL_BOOST : 1);
     return {
       boosted,
@@ -602,8 +640,8 @@ var Game = class {
         s.spawnTimer,
         s.nextId,
         s.queue,
-        s.towers.map((t) => [t.id, t.type, t.cx, t.cy, t.level, t.cooldown, t.spent, t.offTime, t.targetId, t.beam]),
-        s.enemies.map((e) => [e.id, e.type, e.x, e.y, e.wi, e.dist, e.hp, e.maxHp, e.slowTime, e.pushCooldown, e.jamCooldown]),
+        s.towers.map((t) => [t.id, t.type, t.cx, t.cy, t.level, t.cooldown, t.spent, t.offTime, t.targetId, t.beam, t.syncTime, t.phase]),
+        s.enemies.map((e) => [e.id, e.type, e.x, e.y, e.wi, e.dist, e.hp, e.maxHp, e.slowTime, e.pushCooldown, e.jamCooldown, e.frozenTime]),
         s.shots.map((sh) => [sh.id, sh.towerId, sh.x, sh.y, sh.targetId, sh.tx, sh.ty, sh.dmg]),
         this.rng.state()
       ])
@@ -658,8 +696,61 @@ var Game = class {
   }
   hurt(e, damage, events) {
     if (e.hp <= 0) return;
-    e.hp -= damage;
+    e.hp -= damage * this.runwayFactor(e);
     if (e.hp <= 0) this.kill(e, events);
+  }
+  /** RTA „Architektur-Runway“: höchster Faktor aller RTA in Reichweite (nicht kumulativ), Tech Debt zusätzlich ×2. */
+  runwayFactor(e) {
+    let best = 1;
+    for (const t of this.runways) {
+      if (t.offTime > 0) continue;
+      const r = TOWERS.rta.range * (1 + 0.1 * (t.level - 1));
+      if (dist2(e, t) > r * r) continue;
+      const f = RTA_RUNWAY.factor + RTA_RUNWAY.perLevel * (t.level - 1);
+      if (f > best) best = f;
+    }
+    if (best > 1 && e.type === "debt") best *= RTA_RUNWAY.debt;
+    return best;
+  }
+  /** Unterstützungsrollen (Spec season-2): RTE PI-Sync, Vorstand-Fähigkeiten; RTA wirkt passiv, RTO beim Wellenende. */
+  supportAction(t, events) {
+    const s = this.state;
+    t.targetId = null;
+    if (!s.running || t.cooldown > 0) return;
+    if (t.type === "rte") {
+      t.cooldown = RTE_SYNC.interval;
+      const radius = TOWERS.rte.range * (1 + 0.1 * (t.level - 1));
+      const r2 = radius * radius;
+      const duration = RTE_SYNC.duration + RTE_SYNC.durationPerLevel * (t.level - 1);
+      const towerIds = [];
+      for (const o of s.towers) {
+        if (o === t || dist2(o, t) > r2) continue;
+        o.syncTime = duration;
+        o.offTime = 0;
+        towerIds.push(o.id);
+      }
+      events.push({ type: "synced", tower: t, towerIds, radius });
+    } else if (t.type === "board") {
+      const alive = s.enemies.filter((e) => e.hp > 0);
+      if (!alive.length) return;
+      t.cooldown = BOARD_ABILITY.interval - BOARD_ABILITY.perLevel * (t.level - 1);
+      if (t.phase % 2 === 0) {
+        for (const e of alive) e.frozenTime = ENEMIES[e.type].boss ? BOARD_ABILITY.bossFreeze : BOARD_ABILITY.freeze;
+        events.push({ type: "freeze", tower: t, enemyIds: alive.map((e) => e.id) });
+      } else {
+        let victim = null;
+        for (const e of alive) {
+          if (ENEMIES[e.type].boss) continue;
+          if (!victim || e.hp > victim.hp || e.hp === victim.hp && e.id < victim.id) victim = e;
+        }
+        if (victim) {
+          events.push({ type: "axed", tower: t, enemy: victim });
+          victim.hp = 0;
+          this.kill(victim, events);
+        }
+      }
+      t.phase++;
+    }
   }
   kill(e, events) {
     const s = this.state;

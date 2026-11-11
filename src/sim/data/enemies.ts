@@ -20,6 +20,9 @@ export const ENEMIES: Readonly<Record<EnemyType, EnemyDef>> = {
     leakDamage: 40,
     boss: true,
   },
+  // Saison 2 (Spec season-2)
+  meeting: { id: 'meeting', name: 'Meeting-Einladung', emoji: '📅', hp: 35, speed: 70, reward: 7, color: '#90caf9', leakDamage: 5, jam: 60, jamTime: 1.2 },
+  hotfix: { id: 'hotfix', name: 'Hotfix', emoji: '🔥', hp: 12, speed: 150, reward: 3, color: '#ffab91', leakDamage: 5 },
 };
 
 export const JAM_FIRST = 1;

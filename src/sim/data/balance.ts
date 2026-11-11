@@ -28,7 +28,7 @@ export const BALANCE: Readonly<BalanceConfig> = {
   waveBonusPerWave: 5,
   waveSizeBase: 8,
   waveSizePerWave: 2,
-  bossHpFactor: 2.5,
+  bossHpFactor: 2.6,
   startMoney: 300,
 };
 

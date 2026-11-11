@@ -7,7 +7,7 @@ import type { ViewCtx } from '../entities';
 // Gegner als Monster mit Ticket (Spec office-makeover AC-5). Frames aus tools/monsters.ts: walk0..3, hit.
 
 /** Anzeigebreite je Typ (px) – Boss deutlich größer. */
-export const MONSTER_W: Record<EnemyType, number> = { req: 40, cr: 37, story: 32, obj: 44, feat: 46, creep: 37, debt: 42, boss: 84 };
+export const MONSTER_W: Record<EnemyType, number> = { req: 40, cr: 37, story: 32, obj: 44, feat: 46, creep: 37, debt: 42, boss: 84, meeting: 38, hotfix: 30 };
 const FEET = 12;
 
 /** Animationen einmal pro Szene anlegen. */

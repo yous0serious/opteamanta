@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { makeGame, place, stepUntil } from './helpers';
 
-describe('AC-8 Referenzwerte v0.2.0', () => {
+describe('AC-8 Referenzwerte v0.3.0 (Spec season-2)', () => {
   it('Startkapital 300', () => {
     expect(makeGame().state.money).toBe(300);
   });
@@ -20,12 +20,12 @@ describe('AC-8 Referenzwerte v0.2.0', () => {
       expect(e.hp).toBeCloseTo(30 * hpS, 6);
     }
   });
-  it('Boss-HP: Grund 900 x 2.5 x Skalierung', () => {
+  it('Boss-HP: Grund 900 x 2.6 x Skalierung', () => {
     const g = makeGame();
     g.state.wave = 1;
-    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2250, 6);
+    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2340, 6);
     g.state.wave = 2;
-    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2250 * 1.115, 6);
+    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2340 * 1.115, 6);
   });
   const rewards: [string, number][] = [['req', 2], ['cr', 1], ['story', 1], ['obj', 3], ['feat', 4], ['creep', 2], ['debt', 3], ['boss', 38]];
   for (const [type, reward] of rewards) {

@@ -84,17 +84,19 @@ describe('AC-5 Typverteilung (2000+ Ziehungen, +-3 Prozentpunkte)', () => {
     expectShare(s, 'req', 0.75);
     expect(Object.keys(s.counts).sort()).toEqual(['cr', 'req']);
   });
-  it('Welle 3: cr 25, obj 12, feat 12, creep 13, req 38 %; kein debt', () => {
+  it('Welle 3: cr 25, obj 12, feat 12, creep 13, hotfix 18, req 20 %; kein debt, kein meeting', () => {
     const s = sample(3, 150);
     expect(s.total).toBeGreaterThanOrEqual(2000);
     expectShare(s, 'cr', 0.25);
     expectShare(s, 'obj', 0.12);
     expectShare(s, 'feat', 0.12);
     expectShare(s, 'creep', 0.13);
-    expectShare(s, 'req', 0.38);
+    expectShare(s, 'hotfix', 0.18);
+    expectShare(s, 'req', 0.2);
     expect(s.counts.debt ?? 0).toBe(0);
+    expect(s.counts.meeting ?? 0).toBe(0);
   });
-  it('Welle 4: cr 25, obj 12, feat 12, creep 13, debt 10, req 28 %', () => {
+  it('Welle 4: cr 25, obj 12, feat 12, creep 13, debt 10, hotfix 8, meeting 6, req 14 %', () => {
     const s = sample(4, 130);
     expect(s.total).toBeGreaterThanOrEqual(2000);
     expectShare(s, 'cr', 0.25);
@@ -102,7 +104,9 @@ describe('AC-5 Typverteilung (2000+ Ziehungen, +-3 Prozentpunkte)', () => {
     expectShare(s, 'feat', 0.12);
     expectShare(s, 'creep', 0.13);
     expectShare(s, 'debt', 0.1);
-    expectShare(s, 'req', 0.28);
+    expectShare(s, 'hotfix', 0.08);
+    expectShare(s, 'meeting', 0.06);
+    expectShare(s, 'req', 0.14);
   });
 });
 
@@ -119,7 +123,7 @@ describe('AC-5 HP-Skalierung', () => {
     const g = makeGame();
     expect(g.spawnEnemy('req').hpScale).toBeCloseTo(1, 6);
     g.state.wave = 1;
-    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2250, 6);
+    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2340, 6);
     g.state.wave = 30;
     expect(g.spawnEnemy('req').hpScale).toBeCloseTo(23.494767633146218, 9);
   });

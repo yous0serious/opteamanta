@@ -1,8 +1,8 @@
 import { COLS, Game, ROWS, TILE, TOWERS, type Tower, type TowerType } from '../src/sim/index';
 import type { BotOptions } from './bot-strong';
 
-/** Kauf-Rotation des Referenz-Bots (Strategie seit Spec 1 unverändert). */
-export const BOT_ROTATION: readonly TowerType[] = ['dualo', 'dev', 'analyst', 'ppl', 'scrum', 'dev'];
+/** Kauf-Rotation des Referenz-Bots: Mix aus Spec 1, ab Saison 2 inkl. RTO, RTA und RTE (Spec season-2 AC-4). */
+export const BOT_ROTATION: readonly TowerType[] = ['dualo', 'dev', 'analyst', 'ppl', 'scrum', 'dev', 'rto', 'rta', 'rte'];
 
 const MAX_TICKS_PER_WAVE = 60 * 60 * 10;
 

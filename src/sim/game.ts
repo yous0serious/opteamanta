@@ -4,10 +4,14 @@ import { BALANCE, hpScaleForWave, rewardForWave, type BalanceConfig } from './da
 import { ENEMIES, JAM_FIRST, JAM_INTERVAL, JAM_OFF_TIME } from './data/enemies';
 import { MAPS } from './data/maps';
 import {
+  BOARD_ABILITY,
   DUALO_ABSENT_CHANCE,
   DUALO_ABSENT_TIME,
   PPL_BOOST,
   PPL_SHOT_SPEED,
+  RTA_RUNWAY,
+  RTE_SYNC,
+  RTO_VALUE,
   SHOT_SPEED,
   SLOW_FACTOR,
   TOWERS,
@@ -59,6 +63,8 @@ export class Game {
   private readonly commands: ReplayCommand[] = [];
   private readonly statsCache = new Map<number, { level: number; x: number; y: number; stats: TowerStats }>();
   private statsTowers: Tower[] | null = null;
+  /** RTA-Türme des laufenden Ticks (für den Runway-Faktor). */
+  private runways: Tower[] = [];
   private statsCount = 0;
 
   constructor(opts: GameOptions) {
@@ -127,6 +133,8 @@ export class Game {
           offTime: 0,
           targetId: null,
           beam: false,
+          syncTime: 0,
+          phase: 0,
         };
         s.towers.push(tower);
         events.push({ type: 'placed', tower });
@@ -167,6 +175,8 @@ export class Game {
     if (!Number.isInteger(cx) || !Number.isInteger(cy) || cx < 0 || cy < 0 || cx >= COLS || cy >= ROWS) return 'outOfBounds';
     if (this.pathCells.has(`${cx},${cy}`)) return 'path';
     if (s.towers.some((t) => t.cx === cx && t.cy === cy)) return 'occupied';
+    const limit = TOWERS[type].limit;
+    if (limit !== undefined && s.towers.filter((t) => t.type === type).length >= limit) return 'limit';
     if (s.money < TOWERS[type].cost) return 'noMoney';
     return null;
   }
@@ -189,6 +199,9 @@ export class Game {
       else if (w > 2 && r < 0.49) t = 'feat';
       else if (w > 2 && r < 0.62) t = 'creep';
       else if (w > 3 && r < 0.72) t = 'debt';
+      // Saison 2: Hotfix ab Welle 3, Meeting-Einladung ab Welle 4 (Spec season-2)
+      else if (w > 2 && r < 0.8) t = 'hotfix';
+      else if (w > 3 && r < 0.86) t = 'meeting';
       list.push(t);
     }
     const boss = pip && w > 1;
@@ -221,6 +234,11 @@ export class Game {
       const def = ENEMIES[e.type];
       e.slowTime -= DT;
       e.pushCooldown -= DT;
+      // Budget-Freeze (Vorstand): Gegner steht still, wächst nicht und stört nicht.
+      if (e.frozenTime > 0) {
+        e.frozenTime -= DT;
+        continue;
+      }
       if (def.grow && e.maxHp < e.baseMaxHp * 2) {
         // Gekappt auf genau 2× Start-Max-HP (Spec; Original überschießt im letzten Tick um < 0,1 %).
         const g = Math.min(e.maxHp * def.grow * DT, e.baseMaxHp * 2 - e.maxHp);
@@ -235,7 +253,7 @@ export class Game {
           const towerIds: number[] = [];
           for (const t of s.towers) {
             if (dist2(t, e) <= r2) {
-              t.offTime = JAM_OFF_TIME;
+              t.offTime = def.jamTime ?? JAM_OFF_TIME;
               towerIds.push(t.id);
             }
           }
@@ -267,6 +285,13 @@ export class Game {
       const bonus = this.balance.waveBonusBase + this.balance.waveBonusPerWave * s.wave;
       s.money += bonus;
       events.push({ type: 'waveCleared', wave: s.wave, bonus });
+      // RTO „Business Value“ (Spec season-2)
+      for (const t of s.towers) {
+        if (t.type !== 'rto') continue;
+        const amount = RTO_VALUE.base + RTO_VALUE.perLevel * (t.level - 1);
+        s.money += amount;
+        events.push({ type: 'businessValue', tower: t, amount });
+      }
       // Challenge: Sieg nach der letzten Welle; der Zustand ist danach eingefroren (wie bei Game Over).
       if (s.mode === 'challenge' && s.wave >= CHALLENGE_WAVES) {
         const victoryBonus = s.lives * VICTORY_BONUS_PER_LIFE;
@@ -281,12 +306,20 @@ export class Game {
     }
 
     // 6. Türme
+    this.runways = s.towers.filter((t) => t.type === 'rta');
     for (const t of s.towers) {
-      t.cooldown -= DT;
+      // PI-Sync (RTE): Abklingzeit läuft schneller ab
+      const sync = t.syncTime > 0 ? RTE_SYNC.factor : 1;
+      if (t.syncTime > 0) t.syncTime -= DT;
+      t.cooldown -= DT * sync;
       t.beam = false;
       if (t.offTime > 0) {
         t.offTime -= DT;
         t.targetId = null;
+        continue;
+      }
+      if (TOWERS[t.type].support) {
+        this.supportAction(t, events);
         continue;
       }
       // Performance: Schuss-Türme suchen nur ein Ziel, wenn sie feuern könnten (verhaltensgleich – ohne Ziel
@@ -298,7 +331,7 @@ export class Game {
       if (!target) continue;
       if (t.type === 'dev') {
         t.beam = true;
-        this.hurt(target, stats.dps * DT, events);
+        this.hurt(target, stats.dps * DT * sync, events);
         continue;
       }
       if (t.cooldown <= 0) {
@@ -400,6 +433,7 @@ export class Game {
       slowTime: 0,
       pushCooldown: 0,
       jamCooldown: JAM_FIRST,
+      frozenTime: 0,
     };
     if (at) this.placeAt(e, at.dist);
     s.enemies.push(e);
@@ -424,7 +458,7 @@ export class Game {
   private computeStats(t: Tower): TowerStats {
     const def = TOWERS[t.type];
     const aura = TOWERS.ppl.aura!;
-    const boosted = t.type !== 'ppl' && this.state.towers.some((o) => o.type === 'ppl' && dist2(o, t) <= aura * aura);
+    const boosted = t.type !== 'ppl' && !def.support && this.state.towers.some((o) => o.type === 'ppl' && dist2(o, t) <= aura * aura);
     const m = LEVEL_DMG[t.level - 1]! * (boosted ? PPL_BOOST : 1);
     return {
       boosted,
@@ -473,8 +507,8 @@ export class Game {
     return fnv1a(
       JSON.stringify([
         s.tick, s.seed, s.mapId, s.mode, s.money, s.lives, s.wave, s.score, s.running, s.over, s.won, s.spawnTimer, s.nextId, s.queue,
-        s.towers.map((t) => [t.id, t.type, t.cx, t.cy, t.level, t.cooldown, t.spent, t.offTime, t.targetId, t.beam]),
-        s.enemies.map((e) => [e.id, e.type, e.x, e.y, e.wi, e.dist, e.hp, e.maxHp, e.slowTime, e.pushCooldown, e.jamCooldown]),
+        s.towers.map((t) => [t.id, t.type, t.cx, t.cy, t.level, t.cooldown, t.spent, t.offTime, t.targetId, t.beam, t.syncTime, t.phase]),
+        s.enemies.map((e) => [e.id, e.type, e.x, e.y, e.wi, e.dist, e.hp, e.maxHp, e.slowTime, e.pushCooldown, e.jamCooldown, e.frozenTime]),
         s.shots.map((sh) => [sh.id, sh.towerId, sh.x, sh.y, sh.targetId, sh.tx, sh.ty, sh.dmg]),
         this.rng.state(),
       ]),
@@ -535,8 +569,64 @@ export class Game {
 
   private hurt(e: Enemy, damage: number, events: SimEvent[]): void {
     if (e.hp <= 0) return;
-    e.hp -= damage;
+    e.hp -= damage * this.runwayFactor(e);
     if (e.hp <= 0) this.kill(e, events);
+  }
+
+  /** RTA „Architektur-Runway“: höchster Faktor aller RTA in Reichweite (nicht kumulativ), Tech Debt zusätzlich ×2. */
+  private runwayFactor(e: Enemy): number {
+    let best = 1;
+    for (const t of this.runways) {
+      if (t.offTime > 0) continue;
+      const r = TOWERS.rta.range * (1 + 0.1 * (t.level - 1));
+      if (dist2(e, t) > r * r) continue;
+      const f = RTA_RUNWAY.factor + RTA_RUNWAY.perLevel * (t.level - 1);
+      if (f > best) best = f;
+    }
+    if (best > 1 && e.type === 'debt') best *= RTA_RUNWAY.debt;
+    return best;
+  }
+
+  /** Unterstützungsrollen (Spec season-2): RTE PI-Sync, Vorstand-Fähigkeiten; RTA wirkt passiv, RTO beim Wellenende. */
+  private supportAction(t: Tower, events: SimEvent[]): void {
+    const s = this.state;
+    t.targetId = null;
+    if (!s.running || t.cooldown > 0) return;
+    if (t.type === 'rte') {
+      t.cooldown = RTE_SYNC.interval;
+      const radius = TOWERS.rte.range * (1 + 0.1 * (t.level - 1));
+      const r2 = radius * radius;
+      const duration = RTE_SYNC.duration + RTE_SYNC.durationPerLevel * (t.level - 1);
+      const towerIds: number[] = [];
+      for (const o of s.towers) {
+        if (o === t || dist2(o, t) > r2) continue;
+        o.syncTime = duration;
+        o.offTime = 0;
+        towerIds.push(o.id);
+      }
+      events.push({ type: 'synced', tower: t, towerIds, radius });
+    } else if (t.type === 'board') {
+      const alive = s.enemies.filter((e) => e.hp > 0);
+      if (!alive.length) return;
+      t.cooldown = BOARD_ABILITY.interval - BOARD_ABILITY.perLevel * (t.level - 1);
+      if (t.phase % 2 === 0) {
+        for (const e of alive) e.frozenTime = ENEMIES[e.type].boss ? BOARD_ABILITY.bossFreeze : BOARD_ABILITY.freeze;
+        events.push({ type: 'freeze', tower: t, enemyIds: alive.map((e) => e.id) });
+      } else {
+        // Nicht-Boss mit den meisten HP; Gleichstand: zuerst gespawnt (kleinste ID)
+        let victim: Enemy | null = null;
+        for (const e of alive) {
+          if (ENEMIES[e.type].boss) continue;
+          if (!victim || e.hp > victim.hp || (e.hp === victim.hp && e.id < victim.id)) victim = e;
+        }
+        if (victim) {
+          events.push({ type: 'axed', tower: t, enemy: victim });
+          victim.hp = 0;
+          this.kill(victim, events);
+        }
+      }
+      t.phase++;
+    }
   }
 
   private kill(e: Enemy, events: SimEvent[]): void {

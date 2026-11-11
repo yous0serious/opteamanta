@@ -43,7 +43,7 @@ async function setup(page: Page, configure?: (m: SupabaseMock) => void): Promise
       seed: SEED,
       mapId: MAP_ID,
       mode: 'challenge',
-      gameVersion: '0.2.0',
+      gameVersion: '0.3.0',
       dailyDate: TODAY,
       issuedAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 3 * 3600_000).toISOString(),
@@ -127,7 +127,7 @@ test.describe('online build (mocked Supabase)', () => {
 
     expect(mock.find('POST', '/auth/v1/signup')).toHaveLength(1);
     const first = mock.find('POST', '/rpc/get_leaderboard')[0]!;
-    expect(first.body).toMatchObject({ period: 'day', version: '0.2.0' });
+    expect(first.body).toMatchObject({ period: 'day', version: '0.3.0' });
     expect((first.body as { ref_date: string }).ref_date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
     await page.locator('#lb-tabs button[data-period=week]').click();

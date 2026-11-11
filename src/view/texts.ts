@@ -35,6 +35,10 @@ export const UPGRADE_TITLES: Record<TowerType, readonly string[]> = {
   dev: ['', '', 'Senior Dev!', 'Tech Lead!', 'Principal!', '10x-DEV!!!'],
   ppl: ['', '', 'Mehr Team!', 'Zwei Teams!', 'Ganzer Zug!', 'RTE-LEGENDE!!!'],
   scrum: ['', '', 'Zertifiziert!', 'Agile Coach!', 'Lean-Portfolio!', 'SAFe-GURU!!!'],
+  rte: ['', '', 'Pünktlich!', 'Fahrplan steht!', 'Solution Train!', 'ZUGCHEF!!!'],
+  rta: ['', '', 'Diagramme!', 'Enterprise-Architekt!', 'Zielbild 2030!', 'CHEF-ARCHITEKT!!!'],
+  rto: ['', '', 'Roadmap!', 'Business Case!', 'Portfolio-Board!', 'VALUE-STREAM-KÖNIG!!!'],
+  board: ['', '', 'Strategiepapier!', 'Neue Vision!', 'Reorganisation!', 'CEO!!!'],
 };
 
 export const TOWER_BLURBS: Record<TowerType, string> = {
@@ -43,6 +47,10 @@ export const TOWER_BLURBS: Record<TowerType, string> = {
   dev: 'Dauerstrahl aus Code. Braucht Kaffee, Kopfhörer und keine Meetings.',
   ppl: 'Product & People Lead: priorisiert mit Flächenwirkung und pusht Teammitglieder in Reichweite (+25%).',
   scrum: 'Schickt Tickets zurück ins Refinement. Beim Mega-Objective nur bedingt wirksam.',
+  rte: 'Release Train Engineer: Alle 10 s PI-Sync – Teammitglieder in Reichweite arbeiten 4 s lang 30 % schneller, Tech-Debt-Störungen enden sofort.',
+  rta: 'Release Train Architect: Architektur-Runway – Tickets in Reichweite nehmen 25 % mehr Schaden, Tech Debt doppelt so viel.',
+  rto: 'Release Train Owner: Greift nicht an, bringt aber bei jedem Sprint-Ende Business Value (15 SP, +10 je Stufe).',
+  board: 'Vorstand (max. 1): Alle 20 s abwechselnd Budget-Freeze (alles steht still) und „Projekt eingestampft“ (dickstes Ticket weg).',
 };
 
 /** Lesbare Stiftfarben (Original INK): Signalfarbe → Whiteboard-Marker. */
