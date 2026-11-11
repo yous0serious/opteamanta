@@ -28,6 +28,7 @@ export class MonsterView {
   readonly root: Phaser.GameObjects.Container;
   private readonly body: Phaser.GameObjects.Sprite;
   private readonly flash: Phaser.GameObjects.Image;
+  private readonly ice: Phaser.GameObjects.Image;
   private readonly shadow: Phaser.GameObjects.Ellipse;
   private readonly bar: Phaser.GameObjects.Graphics;
   private readonly slow: Phaser.GameObjects.Text;
@@ -56,7 +57,10 @@ export class MonsterView {
       this.body.anims.timeScale = Math.max(0.6, ENEMIES[type].speed / 60);
     }
     this.flash = s.add.image(0, 0, ATLAS, `enemy/${type}/hit`).setOrigin(0.5, 1).setAlpha(0);
-    this.root = s.add.container(enemy.x, enemy.y, [this.shadow, this.body, this.flash]);
+    // Budget-Freeze (Vorstand): Eiskristall vor dem Monster
+    this.ice = s.add.image(0, -this.body.height * this.baseScale * 0.5, ATLAS, 'prop/ice').setVisible(false);
+    this.ice.setDisplaySize(MONSTER_W[type] * 0.9, MONSTER_W[type] * 0.9).setAlpha(0.85);
+    this.root = s.add.container(enemy.x, enemy.y, [this.shadow, this.body, this.flash, this.ice]);
     this.bar = s.add.graphics();
     this.slow = s.add
       .text(0, 0, '?', { fontFamily: HAND, fontSize: '22px', fontStyle: 'bold', color: '#2e7d32', stroke: '#ffffff', strokeThickness: 4, resolution: 2 })
@@ -104,7 +108,14 @@ export class MonsterView {
     this.flash.setScale(sc).setFlipX(this.facing < 0).setFrame(`enemy/${e.type}/hit`);
     this.flash.setAlpha(this.hitT > 0 ? 0.85 : 0);
     this.shadow.setScale(grow);
-    if (!this.ctx.reducedMotion) this.root.rotation = Math.sin(time * 9 + e.id) * 0.04;
+    const frozen = e.frozenTime > 0;
+    this.ice.setVisible(frozen);
+    if (frozen) this.ice.setAngle(Math.sin(time * 3 + e.id) * 8);
+    if (this.body.anims.isPlaying === frozen && !this.ctx.reducedMotion) {
+      if (frozen) this.body.anims.pause();
+      else this.body.anims.resume();
+    }
+    if (!this.ctx.reducedMotion && !frozen) this.root.rotation = Math.sin(time * 9 + e.id) * 0.04;
 
     const top = e.y + FEET - this.h * grow;
     const g = this.bar;

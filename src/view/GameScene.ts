@@ -11,6 +11,7 @@ import { dashedCircle, hex } from './render/draw';
 import { Effects } from './render/effects';
 import type { ViewCtx } from './render/entities';
 import { Decals } from './render/office/decals';
+import { Season2Fx } from './render/office/season2fx';
 import { OfficeFloor } from './render/office/floor';
 import { MONSTER_W, MonsterView, createMonsterAnims } from './render/office/monster';
 import { WorkstationView } from './render/office/workstation';
@@ -45,6 +46,7 @@ export class GameScene extends Phaser.Scene {
   private layers!: Layers;
   private ctx!: ViewCtx;
   private decals!: Decals;
+  private s2!: Season2Fx;
   private puffs!: Phaser.GameObjects.Particles.ParticleEmitter;
   private under!: Phaser.GameObjects.Graphics;
   private beams!: Phaser.GameObjects.Graphics;
@@ -66,6 +68,7 @@ export class GameScene extends Phaser.Scene {
 
   private readonly fx = new Effects();
   private readonly towers = new Map<number, WorkstationView>();
+  private readonly rtaPose = new Map<number, number>();
   private readonly enemies = new Map<number, MonsterView>();
   private readonly trails = new Map<number, Array<[number, number]>>();
   private readonly shots = new Map<number, Phaser.GameObjects.Image>();
@@ -105,6 +108,7 @@ export class GameScene extends Phaser.Scene {
     this.layers = createLayers(this, this.settings);
     createMonsterAnims(this);
     this.decals = new Decals(this, this.layers.decals);
+    this.s2 = new Season2Fx(this, this.layers.under, this.layers.texts, this.settings.reducedMotion);
     this.under = this.add.graphics();
     this.layers.under.add(this.under);
 
@@ -198,6 +202,7 @@ export class GameScene extends Phaser.Scene {
     this.parts.clear();
     this.puffs.killAll();
     this.decals.clear();
+    this.s2.reset();
     this.banner.hide();
     if (this.desat) {
       this.cameras.main.filters.internal.remove(this.desat);
@@ -342,13 +347,34 @@ export class GameScene extends Phaser.Scene {
         break;
       }
       case 'jammed':
-        fx.text(e.enemy.x, e.enemy.y - 34, pick(JAM), INK.grey, 12, 1.2);
+        fx.text(e.enemy.x, e.enemy.y - 34, e.enemy.type === 'meeting' ? 'Kurzer Sync?' : pick(JAM), INK.grey, 12, 1.2);
         fx.ring(e.enemy.x, e.enemy.y, e.radius, INK.grey);
         parts.burst(e.enemy.x, e.enemy.y, INK.grey, 10, 70, 'smoke');
         for (const id of e.towerIds) {
           const t = game.towerById(id);
-          if (t) parts.burst(t.x, t.y - 20, INK.grey, 5, 50, 'smoke');
+          if (!t) continue;
+          if (e.enemy.type === 'meeting') this.s2.bubble(t.x, t.y - 52, 'Termin!', '#1565c0', 1.2);
+          else parts.burst(t.x, t.y - 20, INK.grey, 5, 50, 'smoke');
         }
+        break;
+      case 'synced':
+        this.s2.sync(e.tower, e.radius, e.towerIds.map((id) => game.towerById(id)).filter((t): t is NonNullable<typeof t> => !!t));
+        this.towers.get(e.tower.id)?.fire();
+        break;
+      case 'businessValue':
+        this.s2.coins(e.tower, e.amount);
+        this.towers.get(e.tower.id)?.fire();
+        break;
+      case 'freeze':
+        this.banner.show('BUDGET-FREEZE! Alles steht still.', '#0277bd', 26, 1.4, 0xe1f5fe);
+        this.towers.get(e.tower.id)?.fire();
+        parts.burst(e.tower.x, e.tower.y, '#4fc3f7', 30, 300, 'star');
+        fx.bumpShake(6);
+        break;
+      case 'axed':
+        this.towers.get(e.tower.id)?.fire();
+        fx.text(e.enemy.x, e.enemy.y - 40, 'Projekt eingestampft!', INK.red, 16, 1.4);
+        this.s2.shred(e.enemy, () => parts.burst(e.enemy.x, e.enemy.y, INK.neutral, 16, 200, 'dirt'));
         break;
       case 'absent':
         fx.text(e.tower.x, e.tower.y - 22, pick(ABSENT), INK.cyan, 12, 1);
@@ -430,6 +456,7 @@ export class GameScene extends Phaser.Scene {
     this.fx.update(s.over ? dt * 0.3 : dt);
     this.board.update(this.time_, dt);
     this.decals.update(dt);
+    this.s2.update(dt, this.time_, this.ctl.game);
     this.banner.update(dt);
     this.syncEntities(dt);
     this.drawUnder();
@@ -473,6 +500,14 @@ export class GameScene extends Phaser.Scene {
       v.update(dt, this.time_, t.targetId !== null ? (enemyPos.get(t.targetId) ?? null) : null);
       v.root.setDepth(v.depthY);
       if (t.beam) this.sfx.laser();
+      // RTA hat kein eigenes Ereignis: zeigt alle ~1,6 s auf den Bauplan, solange Gegner im Runway sind
+      if (t.type === 'rta' && this.time_ - (this.rtaPose.get(t.id) ?? 0) > 1.6) {
+        const r = TOWERS.rta.range * (1 + 0.1 * (t.level - 1));
+        if (s.enemies.some((e) => (e.x - t.x) ** 2 + (e.y - t.y) ** 2 <= r * r)) {
+          this.rtaPose.set(t.id, this.time_);
+          v.fire();
+        }
+      }
     }
     for (const [id, v] of this.towers) {
       if (!seenT.has(id)) {
