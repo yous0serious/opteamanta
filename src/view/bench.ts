@@ -28,7 +28,9 @@ export function runBench(ctl: Controller, phaser: Phaser.Game, settings: FxSetti
   let i = 0;
   for (let cy = 0; cy < ROWS; cy++) {
     for (let cx = 0; cx < COLS; cx++) {
-      const type = TOWER_ORDER[i % TOWER_ORDER.length]!;
+      // Nächste platzierbare Rolle (Vorstand nur einmal – Limit, Spec season-2)
+      let type = TOWER_ORDER[i % TOWER_ORDER.length]!;
+      for (let k = 0; k < TOWER_ORDER.length && game.canPlace(type, cx, cy) === 'limit'; k++) type = TOWER_ORDER[++i % TOWER_ORDER.length]!;
       if (game.canPlace(type, cx, cy) !== null) continue;
       const ev = ctl.command({ type: 'place', tower: type, cx, cy });
       const placed = ev.find((e) => e.type === 'placed');

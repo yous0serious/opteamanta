@@ -16,9 +16,9 @@
 | T08 | done | `2bc96f5` | `juice.ts`: Combo-Zähler mit Titeln, Zeitlupe ab Combo 10 und beim Boss (nur Maximal, `Controller.timeScale` – nur Echtzeit-Tempo), SP-Münzen zur Kapazitätsanzeige (Chip hüpft), gebündelte Schadenszahlen, Boss-Auftritt mit Zoom/Pan + Namenskarte, Beförderungs-Lichtsäule; Drop-in beim Platzieren. Effektstufen `max/normal/calm` (live umschaltbar, gespeichert, URL `fx=high/low` kompatibel, reduced motion → Ruhig). |
 | T09 | done | `2bc96f5` | `life.ts`: Statisten (4 umgefärbte Figuren, Laufanimation, max. 2), Kaffeedampf, Drucker-Papier beim Wellenende, Sprechblasen-Sprüche (≤ 1 je 4 Arbeitsplätze), Tageslicht (Morgen hell, Abend warm per Multiply), Schreibtischlampen ab Welle 20. Helligkeit Welle 25: 0,844. |
 | T10 | done | (T10-Commit) | 9 Turmkarten (3 Spalten, Tasten 1–9, Vorstand „max. 1“ + Sperre), Einstellungen (Effektstufe, Musik-/Effekt-Lautstärke), „Saison 2“, Teilen (`share.ts`: Text + Karte 1200 × 630 mit Phaser-Snapshot, Web Share API oder Kopieren + Download). Layout 1366 × 768: Bestenliste endet bei 748 px; Liste passt ihre Höhe der Fensterhöhe an. |
-| T11 | todo | – | |
+| T11 | done | `4606119`, `5d5ce30` | general: `season2.spec.ts` (AC-5–AC-12) + `share.test.ts`; Popup-Test ergänzt; volle Suite 58/58 grün (8,7 min), Unit 246/246. |
 | T12 | todo | – | |
-| T13 | todo | – | |
+| T13 | in_progress | – | Bench (AC-13, 1366 × 768, Canvas, 299 Arbeitsplätze): Maximal 25,0 / 30,0 ms (×0,89 ggü. 28,1 / 35,0), Ruhig 22,3 / 25,0 ms (×0,84 ggü. 26,7 / 31,7) – erfüllt. Fund: Bench-Szenario blieb am Vorstand-Limit hängen (nur 17 Türme) → behoben. Hinweis: 4 der 9 Rollen schießen nicht, Szenario daher etwas leichter. |
 
 ## Rulings
 
