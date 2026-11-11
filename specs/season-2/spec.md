@@ -1,6 +1,6 @@
 # Spec: Saison 2 – neue Rollen, neue Gegner, mehr Bums (Teil 5)
 
-**Status:** Approved
+**Status:** Done
 **Size:** L
 **Ticket:** –
 **Plan:** `.ai/specs/season-2/plan.md` (nach Freigabe) · **Ledger:** `.ai/specs/season-2/ledger.md`
