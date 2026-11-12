@@ -26,6 +26,10 @@ interface FrameSpec {
   crop?: { left: number; top: number; width: number; height: number };
   /** Transparente Ränder abschneiden. */
   trim?: boolean;
+  /** Horizontale Scherung vor dem Skalieren (x += shear · y), z. B. schräg einfallendes Fensterlicht. */
+  shear?: number;
+  /** Weichzeichnen (Gauß-Sigma in Quell-px) nach der Scherung. */
+  blur?: number;
 }
 interface Manifest {
   atlas: string;
@@ -55,6 +59,8 @@ async function render(frame: FrameSpec): Promise<Buffer> {
   let img = sharp(input, isSvg ? { density: 288 } : {});
   if (frame.trim) img = sharp(await img.trim({ threshold: 1 }).png().toBuffer());
   if (frame.crop) img = sharp(await img.extract(frame.crop).png().toBuffer());
+  if (frame.shear) img = sharp(await img.affine([[1, frame.shear], [0, 1]], { background: '#000000' }).png().toBuffer());
+  if (frame.blur) img = sharp(await img.blur(frame.blur).png().toBuffer());
   if (frame.width || frame.height) {
     img = img.resize({ width: frame.width, height: frame.height, fit: frame.width && frame.height ? 'fill' : 'inside' });
   }

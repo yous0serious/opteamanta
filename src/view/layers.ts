@@ -40,7 +40,9 @@ export function createLayers(scene: Phaser.Scene, fx: FxSettings): Layers {
   const webgl = scene.game.renderer.type === Phaser.WEBGL;
   if (fx.level !== 'calm' && webgl) {
     layers.actors.enableFilters();
-    layers.actors.filters?.internal.addShadow(1, 1.5, 0.1, 1, 0x000000, 6, 0.25);
+    // Weicher, warmer Schlagschatten nach rechts unten (Licht aus den Fenstern oben links). Geringe Stärke je Probe,
+    // damit sich der Schatten nicht zu schwarzen Rändern aufsummiert; 12 Proben = glatter Verlauf.
+    layers.actors.filters?.internal.addShadow(-0.25, -0.55, 0.1, 0.045, 0x3e2723, 12, 0.11);
     active.push({ name: 'Shadow', layer: 'actors' });
   }
   registry.set(scene, active);

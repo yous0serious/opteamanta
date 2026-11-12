@@ -1,0 +1,20 @@
+{
+  "name": "Backlog Defense 3000",
+  "short_name": "Backlog Defense",
+  "description": "Tower Defense im Agile-Büro: Stell dein Team auf, bevor der Backlog in die Deadline rauscht.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#f3efe8",
+  "theme_color": "#f3efe8",
+  "categories": ["games"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

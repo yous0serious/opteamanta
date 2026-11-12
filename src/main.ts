@@ -13,6 +13,7 @@ import { shareState } from './view/share';
 import { GameScene } from './view/GameScene';
 import { Hud } from './view/hud';
 import { installKeyboard } from './view/input';
+import { installMobileChrome, installPointerMode } from './view/touch';
 import { randomSeed, readParams } from './view/params';
 import { PreloadScene } from './view/PreloadScene';
 import { runBench } from './view/bench';
@@ -20,6 +21,7 @@ import { createOnline } from './online/api';
 import { LeaderboardPanel } from './view/leaderboard';
 
 const params = readParams();
+installPointerMode();
 const settings = readFx(params);
 // ?bench=1: festes Szenario (Seed 12345, Karte matrix), siehe src/view/bench.ts
 const ctl = new Controller(
@@ -33,6 +35,7 @@ ctl.onSim((e) => sound.onSim(e));
 // Teilen-Karte: Bild des Spielfelds über Phasers Snapshot (funktioniert in WebGL und Canvas)
 const hud = new Hud(ctl, sound, settings, () => new Promise((resolve) => game.renderer.snapshot((img) => resolve(img as HTMLImageElement))));
 installKeyboard(ctl, sound);
+installMobileChrome(() => sound.start());
 
 const scene = new GameScene(ctl, sound, settings);
 ctl.debug = { ...scene.debugApi(), audio: () => sound.status(), share: () => shareState.last, fxLevel: () => settings.level };

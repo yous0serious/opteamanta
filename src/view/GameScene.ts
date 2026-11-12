@@ -11,6 +11,7 @@ import { dashedCircle, hex } from './render/draw';
 import { Effects } from './render/effects';
 import type { ViewCtx } from './render/entities';
 import { Decals } from './render/office/decals';
+import { Emotes } from './render/office/emotes';
 import { Juice } from './render/office/juice';
 import { OfficeLife } from './render/office/life';
 import { Season2Fx } from './render/office/season2fx';
@@ -20,6 +21,7 @@ import { WorkstationView } from './render/office/workstation';
 import { Particles } from './render/particles';
 import { PileView } from './render/pile';
 import { ABSENT, HAND, INK, JAM, KILL, LEAK, SPRINTS, UPGRADE_TITLES, pick, piLabel } from './texts';
+import { onPointerModeChange, pointerMode } from './touch';
 
 /** Caveat läuft kleiner als die alte Systemschrift – Textgrößen aus Spec 1 werden skaliert. */
 const HAND_SCALE = 1.3;
@@ -51,6 +53,7 @@ export class GameScene extends Phaser.Scene {
   private s2!: Season2Fx;
   private juice!: Juice;
   private life!: OfficeLife;
+  private emotes!: Emotes;
   private puffs!: Phaser.GameObjects.Particles.ParticleEmitter;
   private under!: Phaser.GameObjects.Graphics;
   private beams!: Phaser.GameObjects.Graphics;
@@ -67,6 +70,9 @@ export class GameScene extends Phaser.Scene {
   private victoryLayer!: Phaser.GameObjects.Container;
   private victoryStats!: Phaser.GameObjects.Text;
   private hint!: Phaser.GameObjects.Text;
+  private overHint!: Phaser.GameObjects.Text;
+  private victoryHint!: Phaser.GameObjects.Text;
+  private previewLabel!: Phaser.GameObjects.Text;
   private desat: Phaser.Filters.ColorMatrix | null = null;
   private desatT = 0;
 
@@ -103,6 +109,7 @@ export class GameScene extends Phaser.Scene {
         ...this.effectCounts,
         ...Object.fromEntries(Object.entries(this.juice.counters).map(([k, v]) => [`juice:${k}`, v])),
         ...Object.fromEntries(Object.entries(this.life.counters).map(([k, v]) => [`life:${k}`, v])),
+        ...Object.fromEntries(Object.entries(this.emotes.counters).map(([k, v]) => [`emote:${k}`, v])),
       }),
     };
   }
@@ -121,6 +128,7 @@ export class GameScene extends Phaser.Scene {
     this.s2 = new Season2Fx(this, this.layers.under, this.layers.texts, this.settings.reducedMotion);
     this.juice = new Juice(this, this.layers.texts, this.ctl, this.settings, (k, v, r) => this.sfx.play(k, v, r));
     this.life = new OfficeLife(this, this.layers.actors, this.layers.texts, this.settings);
+    this.emotes = new Emotes(this, this.layers.texts, () => this.settings.reducedMotion);
     this.under = this.add.graphics();
     this.layers.under.add(this.under);
 
@@ -154,11 +162,15 @@ export class GameScene extends Phaser.Scene {
     this.flashRect = this.add.rectangle(0, 0, WIDTH, HEIGHT, 0xc62828, 0).setOrigin(0);
     this.buildGameOver();
     this.hint = this.add
-      .text(WIDTH / 2, HEIGHT - 28, 'Klick irgendwo oder drück 1–9 → Teammitglied wählen · LEERTASTE → Sprint starten', {
+      .text(WIDTH / 2, HEIGHT - 28, '', {
         fontFamily: HAND, fontSize: '26px', fontStyle: 'bold', color: '#1565c0', stroke: '#ffffff', strokeThickness: 5, resolution: 2,
       })
       .setOrigin(0.5);
-    this.layers.overlay.add([this.banner.root, this.flashRect, this.overLayer, this.victoryLayer, this.hint]);
+    this.previewLabel = this.add
+      .text(0, 0, '', { fontFamily: HAND, fontSize: '24px', fontStyle: 'bold', color: '#1b5e20', stroke: '#ffffff', strokeThickness: 6, resolution: 2 })
+      .setOrigin(0.5, 1)
+      .setVisible(false);
+    this.layers.overlay.add([this.banner.root, this.flashRect, this.overLayer, this.victoryLayer, this.hint, this.previewLabel]);
 
     this.buildBoard(this.ctl.game);
     this.ctl.onSim((e) => this.onSim(e));
@@ -178,8 +190,12 @@ export class GameScene extends Phaser.Scene {
         this.ctl.clearSelection();
         return;
       }
-      if (this.ctl.clickBoard(p.x, p.y) === 'selectedTower') this.sfx.select();
+      const r = p.wasTouch ? this.ctl.tapBoard(p.x, p.y) : this.ctl.clickBoard(p.x, p.y);
+      if (r === 'selectedTower') this.sfx.select();
+      else if (r === 'preview') this.sfx.play('click', 0.5);
     });
+    onPointerModeChange(() => this.applyInputTexts());
+    this.applyInputTexts();
     // Signal für Tests/Automatisierung: Spielszene ist bereit und nimmt Eingaben an.
     document.body.dataset.ready = '1';
   }
@@ -217,6 +233,7 @@ export class GameScene extends Phaser.Scene {
     this.s2.reset();
     this.juice.reset();
     this.life.reset();
+    this.emotes.clear();
     this.banner.hide();
     if (this.desat) {
       this.cameras.main.filters.internal.remove(this.desat);
@@ -224,6 +241,39 @@ export class GameScene extends Phaser.Scene {
       this.desat = null;
     }
     this.buildBoard(game);
+  }
+
+  /** Schild über dem vorgemerkten Feld (Touch), am Rand gehalten. */
+  private showPreviewLabel(x: number, y: number, text: string, color: string): void {
+    const l = this.previewLabel;
+    if (l.text !== text) l.setText(text);
+    l.setColor(color);
+    l.setScale(this.textScale() * 0.85);
+    const half = l.displayWidth / 2;
+    const top = y < l.displayHeight + 4;
+    l.setOrigin(0.5, top ? 0 : 1);
+    l.setPosition(Math.min(WIDTH - 6 - half, Math.max(6 + half, x)), top ? y + TILE + 8 : y);
+    l.setVisible(true);
+  }
+
+  /** Hinweise im Spielfeld passend zur Eingabeart (Maus/Tastatur oder Touch). */
+  private applyInputTexts(): void {
+    const touch = pointerMode.touch;
+    this.hint.setText(
+      touch
+        ? 'Unten eine Rolle wählen · Feld antippen · nochmal tippen = einsetzen'
+        : 'Klick irgendwo oder drück 1–9 → Teammitglied wählen · LEERTASTE → Sprint starten',
+    );
+    this.overHint.setText(
+      touch ? 'Unten „Projekt neu aufsetzen“ tippen (gleiche Leute, neuer Projektname)' : '[Leertaste] Neues Programm aufsetzen (gleiche Leute, neuer Projektname)',
+    );
+    this.victoryHint.setText(touch ? 'Unten „Neues Programm“ tippen · Ergebnis teilen' : '[Leertaste] Nächstes Programm · Replay rechts herunterladen');
+  }
+
+  /** Schwebende Texte auf kleinen Bildschirmen größer, damit sie bei verkleinertem Spielfeld lesbar bleiben. */
+  private textScale(): number {
+    const shrink = this.scale.displayScale.x;
+    return Math.min(1.8, Math.max(1, shrink * 0.7));
   }
 
   private buildGameOver(): void {
@@ -236,8 +286,9 @@ export class GameScene extends Phaser.Scene {
     const l1 = this.add.text(WIDTH / 2, HEIGHT / 2 + 30, 'Team-Moral: 0%. Das Programm wird in „Phase 2“ umbenannt.', style).setOrigin(0.5);
     this.overStats = this.add.text(WIDTH / 2, HEIGHT / 2 + 64, '', style).setOrigin(0.5);
     const l3 = this.add
-      .text(WIDTH / 2, HEIGHT / 2 + 108, '[Leertaste] Neues Programm aufsetzen (gleiche Leute, neuer Projektname)', { ...style, color: '#1565c0' })
+      .text(WIDTH / 2, HEIGHT / 2 + 108, '', { ...style, color: '#1565c0' })
       .setOrigin(0.5);
+    this.overHint = l3;
     this.overLayer = this.add.container(0, 0, [bg, box, l1, this.overStats, l3]).setVisible(false);
 
     // Sieg (Spec balancing-challenge AC-9)
@@ -252,8 +303,9 @@ export class GameScene extends Phaser.Scene {
     const v1 = this.add.text(WIDTH / 2, HEIGHT / 2 + 20, '30 Wellen überstanden. Der Fachbereich ist sprachlos (zum ersten Mal).', style).setOrigin(0.5);
     this.victoryStats = this.add.text(WIDTH / 2, HEIGHT / 2 + 58, '', { ...style, fontSize: '30px', color: '#1b5e20' }).setOrigin(0.5);
     const v3 = this.add
-      .text(WIDTH / 2, HEIGHT / 2 + 108, '[Leertaste] Nächstes Programm · Replay rechts herunterladen', { ...style, color: '#1565c0' })
+      .text(WIDTH / 2, HEIGHT / 2 + 108, '', { ...style, color: '#1565c0' })
       .setOrigin(0.5);
+    this.victoryHint = v3;
     this.victoryLayer = this.add.container(0, 0, [vbg, vbox, v1, this.victoryStats, v3]).setVisible(false);
   }
 
@@ -270,15 +322,20 @@ export class GameScene extends Phaser.Scene {
         parts.burst(e.tower.x, e.tower.y + 10, TOWERS[e.tower.type].color, 18, 150, 'circle');
         this.puffs.explode(Math.max(1, Math.round(4 * this.settings.particleScale)), e.tower.x, e.tower.y + 14);
         fx.bumpShake(3);
+        this.emotes.show(`t${e.tower.id}`, e.tower.x + 14, e.tower.y - 34, 'idea', 1.1);
         break;
       case 'upgraded':
         parts.burst(e.tower.x, e.tower.y, INK.yellow, 26, 250, 'star');
         this.towers.get(e.tower.id)?.upgrade();
         this.juice.promote(e.tower);
+        this.emotes.show(`t${e.tower.id}`, e.tower.x + 14, e.tower.y - 38, 'stars', 1.3);
         fx.text(e.tower.x, e.tower.y - 40, UPGRADE_TITLES[e.tower.type][e.tower.level] ?? '', INK.yellow, 16, 1.2);
         break;
       case 'spawned':
-        if (ENEMIES[e.enemy.type].boss) this.juice.bossIntro(e.enemy);
+        if (ENEMIES[e.enemy.type].boss) {
+          this.juice.bossIntro(e.enemy);
+          this.emotes.show(`e${e.enemy.id}`, e.enemy.x, e.enemy.y - 44, 'anger', 2);
+        }
         break;
       case 'sold':
         this.puffs.explode(Math.max(1, Math.round(6 * this.settings.particleScale)), e.tower.x, e.tower.y);
@@ -335,6 +392,7 @@ export class GameScene extends Phaser.Scene {
         fx.flash = 0.25;
         this.puffs.explode(Math.max(1, Math.round(6 * this.settings.particleScale)), Math.min(WIDTH - 20, last.x), last.y);
         fx.text(WIDTH - 120, last.y - 20, `${pick(LEAK)} -${e.damage}%`, INK.red, 16, 1.5);
+        this.emotes.show('leak', Math.min(WIDTH - 24, last.x - 10), last.y - 30, 'heartbreak', 1.4);
         break;
       }
       case 'gameOver':
@@ -352,7 +410,13 @@ export class GameScene extends Phaser.Scene {
         this.banner.show(`SPRINT-REVIEW BESTANDEN! Kapazität +${e.bonus} SP`, INK.green, 22, 1.6, 0xc8e6c9);
         this.life.print(this.board);
         let i = 0;
-        for (const v of this.towers.values()) this.time.delayedCall((i++ % 12) * 40, () => v.cheer(1.1));
+        for (const v of this.towers.values()) {
+          const t = v.tower;
+          const k = i;
+          // Ein paar Teammitglieder freuen sich sichtbar
+          if (k % 3 === 0) this.time.delayedCall(120 + k * 60, () => this.emotes.show(`t${t.id}`, t.x + 14, t.y - 34, k % 2 ? 'laugh' : 'heart', 1.4));
+          this.time.delayedCall((i++ % 12) * 40, () => v.cheer(1.1));
+        }
         break;
       }
       case 'victory': {
@@ -374,7 +438,10 @@ export class GameScene extends Phaser.Scene {
           const t = game.towerById(id);
           if (!t) continue;
           if (e.enemy.type === 'meeting') this.s2.bubble(t.x, t.y - 52, 'Termin!', '#1565c0', 1.2);
-          else parts.burst(t.x, t.y - 20, INK.grey, 5, 50, 'smoke');
+          else {
+            parts.burst(t.x, t.y - 20, INK.grey, 5, 50, 'smoke');
+            this.emotes.show(`t${t.id}`, t.x + 14, t.y - 34, 'sweat', 1.2);
+          }
         }
         break;
       case 'synced':
@@ -383,6 +450,7 @@ export class GameScene extends Phaser.Scene {
         break;
       case 'businessValue':
         this.s2.coins(e.tower, e.amount);
+        this.emotes.show(`t${e.tower.id}`, e.tower.x + 14, e.tower.y - 38, 'cash', 1.3);
         this.towers.get(e.tower.id)?.fire();
         break;
       case 'freeze':
@@ -398,6 +466,7 @@ export class GameScene extends Phaser.Scene {
         break;
       case 'absent':
         fx.text(e.tower.x, e.tower.y - 22, pick(ABSENT), INK.cyan, 12, 1);
+        this.emotes.show(`t${e.tower.id}`, e.tower.x + 14, e.tower.y - 34, 'sleep', 1.4);
         break;
       case 'splash':
         parts.burst(e.x, e.y, INK.yellow, 26, 250, 'spark');
@@ -412,6 +481,7 @@ export class GameScene extends Phaser.Scene {
         fx.ring(e.enemy.x, e.enemy.y, 26, INK.purple);
         parts.burst(e.enemy.x, e.enemy.y, TOWERS.scrum.color, 8, 160, 'spark');
         fx.text(e.enemy.x, e.enemy.y - 30, e.enemy.type === 'boss' ? 'Hmm, nochmal schätzen…' : 'Zurück ins Refinement!', INK.purple, 12, 1);
+        this.emotes.show(`e${e.enemy.id}`, e.enemy.x + 12, e.enemy.y - 30, 'question', 1);
         break;
       default:
         break;
@@ -565,14 +635,30 @@ export class GameScene extends Phaser.Scene {
     g.clear();
     b.clear();
     const sel = this.ctl.selected;
-    if (sel && this.mouse.x >= 0 && !game.state.over) {
-      const cx = Math.floor(this.mouse.x / TILE);
-      const cy = Math.floor(this.mouse.y / TILE);
-      const ok = game.canPlace(sel, cx, cy) === null;
-      const c = ok ? 0x43a047 : 0xc62828;
-      g.fillStyle(c, 0.18).fillRect(cx * TILE, cy * TILE, TILE, TILE);
-      g.lineStyle(2, c, 1);
-      dashedCircle(g, cx * TILE + TILE / 2, cy * TILE + TILE / 2, TOWERS[sel].range, 6, 6);
+    const over = game.state.over;
+    // Touch: vorgemerktes Feld; Maus: Feld unter dem Zeiger
+    const cell = this.ctl.preview ?? (sel && this.mouse.x >= 0 && !pointerMode.touch ? { cx: Math.floor(this.mouse.x / TILE), cy: Math.floor(this.mouse.y / TILE) } : null);
+    this.previewLabel.setVisible(false);
+    if (cell && !over) {
+      const { cx, cy } = cell;
+      const px = cx * TILE + TILE / 2;
+      const py = cy * TILE + TILE / 2;
+      if (sel) {
+        const reason = game.canPlace(sel, cx, cy);
+        const ok = reason === null;
+        const c = ok ? 0x43a047 : 0xc62828;
+        g.fillStyle(c, 0.18).fillRect(cx * TILE, cy * TILE, TILE, TILE);
+        g.lineStyle(2, c, 1);
+        dashedCircle(g, px, py, TOWERS[sel].range, 6, 6);
+        if (this.ctl.preview) {
+          g.lineStyle(3, c, 1).strokeRect(cx * TILE + 1.5, cy * TILE + 1.5, TILE - 3, TILE - 3);
+          this.showPreviewLabel(px, cy * TILE - 4, ok ? 'nochmal tippen = einsetzen' : reason === 'noMoney' ? 'zu teuer' : 'hier nicht', ok ? '#1b5e20' : '#c62828');
+        }
+      } else {
+        const pulse = this.settings.reducedMotion ? 0 : Math.sin(this.time_ * 6) * 2;
+        g.lineStyle(3, 0x1565c0, 1).strokeRect(cx * TILE + 1.5 - pulse, cy * TILE + 1.5 - pulse, TILE - 3 + 2 * pulse, TILE - 3 + 2 * pulse);
+        this.showPreviewLabel(px, cy * TILE - 4, 'Rolle wählen', '#1565c0');
+      }
     }
     const byId = new Map(game.state.enemies.map((e) => [e.id, e] as const));
     for (const t of game.state.towers) {
@@ -665,14 +751,20 @@ export class GameScene extends Phaser.Scene {
       if (!obj) {
         obj = this.add
           .text(0, 0, t.text, {
-            fontFamily: HAND, fontSize: `${Math.round(t.size * HAND_SCALE)}px`, fontStyle: 'bold', color: t.color,
+            fontFamily: HAND, fontSize: `${Math.round(t.size * HAND_SCALE * this.textScale())}px`, fontStyle: 'bold', color: t.color,
             stroke: '#ffffff', strokeThickness: 5, resolution: 2,
           })
           .setOrigin(0.5);
         this.floatTexts.set(t.id, obj);
         this.layers.texts.add(obj);
       }
-      const half = obj.width / 2;
+      const label = t.count > 1 ? `${t.text} ×${t.count}` : t.text;
+      if (obj.text !== label) {
+        obj.setText(label);
+        // kurzer Hüpfer beim Zusammenfassen
+        if (!this.settings.reducedMotion) this.tweens.add({ targets: obj, scale: { from: 1.25, to: 1 }, duration: 160, ease: 'Back.easeOut' });
+      }
+      const half = obj.displayWidth / 2;
       obj.setPosition(Math.min(WIDTH - 10 - half, Math.max(10 + half, t.x)), t.y);
       obj.setAlpha(Math.min(1, (t.life / t.maxLife) * 2));
     }

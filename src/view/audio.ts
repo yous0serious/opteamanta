@@ -62,7 +62,19 @@ export class SoundEngine {
   private timer: number | null = null;
   settings: AudioSettings = loadSettings();
 
-  constructor(private readonly ctl: Controller) {}
+  constructor(private readonly ctl: Controller) {
+    // Mobile: Ein beim Antippen (touchstart/pointerdown) erzeugter AudioContext bleibt oft „suspended“; erst
+    // pointerup/touchend/click zählen als Nutzergeste. iOS unterbricht den Kontext zudem bei Anrufen/App-Wechsel.
+    const resume = (): void => {
+      if (this.ac && this.ac.state !== 'running' && !document.hidden) void this.ac.resume().catch(() => undefined);
+    };
+    for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) window.addEventListener(ev, resume, { capture: true, passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (!this.ac) return;
+      if (document.hidden) void this.ac.suspend().catch(() => undefined);
+      else resume();
+    });
+  }
 
   get started(): boolean {
     return this.ac !== null;

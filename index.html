@@ -2,7 +2,17 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3efe8">
+<meta name="description" content="Tower Defense im Agile-Büro: Stell dein Team auf, bevor der Backlog in die Deadline rauscht.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Backlog Defense">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>BACKLOG DEFENSE 3000</title>
 </head>
 <body>
@@ -18,11 +28,13 @@
     <div class="chip" title="Score"><i class="ico ico-trophy"></i><b id="score"></b></div>
     <div class="chip chip-map" title="Karte"><i class="ico ico-map"></i><b id="map"></b></div>
     <button id="team-name" class="chip chip-team" hidden title="Teamname ändern"></button>
+    <button id="fullscreen" class="chip chip-gear" hidden title="Vollbild" aria-label="Vollbild" aria-pressed="false"><i class="ico ico-full"></i></button>
     <button id="open-settings" class="chip chip-gear" title="Einstellungen" aria-label="Einstellungen" aria-haspopup="dialog"><i class="ico ico-gear"></i></button>
   </div>
 </header>
 <div id="wrap">
   <div id="frame"><div id="game"></div></div>
+  <div id="rotate-tip" role="note">Tipp: Handy quer halten – größeres Spielfeld. <button type="button" id="rotate-tip-close" aria-label="Tipp ausblenden">OK</button></div>
   <aside id="side">
     <section class="card" id="team-card">
       <h2>Dein Team <small>Taste 1–9</small></h2>

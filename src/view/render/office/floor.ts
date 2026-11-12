@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { COLS, HEIGHT, ROWS, TILE, WIDTH, type Game, type MapId } from '../../../sim/index';
 import { ATLAS } from '../../PreloadScene';
 import { HAND } from '../../texts';
+import { OfficeLight } from './lighting';
 
 // Heller Büroboden mit Kanban-Laufband (Spec office-makeover AC-3, ADR-0005). Ersetzt das Whiteboard aus Spec 2a.
 
@@ -200,7 +201,8 @@ export class OfficeFloor {
     this.deadlineY = last.y < 90 ? last.y + 52 : last.y - 54;
     this.deadline = sign(s, 'DEADLINE', WIDTH - 82, this.deadlineY, '#c62828', 'item/hourglass');
 
-    this.root = s.add.container(0, 0, [floor, lanes, ...labels, ...decorImgs, belt, this.chevrons, start_, this.deadline]);
+    const light = new OfficeLight(s, reducedMotion);
+    this.root = s.add.container(0, 0, [floor, lanes, ...labels, belt, ...light.objects, ...decorImgs, this.chevrons, start_, this.deadline]);
   }
 
   /** Arbeitsplatz gesetzt/entfernt: Deko der Zelle aus-/einblenden. */

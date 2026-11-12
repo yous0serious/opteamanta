@@ -40,6 +40,8 @@ export class Controller {
   speed: number;
   selected: TowerType | null = null;
   selectedTowerId: number | null = null;
+  /** Touch: Feld, auf dem die gewählte Rolle als Vorschau steht (noch nicht platziert). */
+  preview: { cx: number; cy: number } | null = null;
   /** Debug-Abfragen der Darstellung (nur für E2E/Entwicklung, über window.__bd). */
   debug: DebugApi | null = null;
   /** Nur Darstellung: Zeitlupe (Spec season-2 AC-7) – ändert das Echtzeit-Tempo, nicht die Ticks/Ergebnisse. */
@@ -92,6 +94,7 @@ export class Controller {
     this.acc = 0;
     this.selected = null;
     this.selectedTowerId = null;
+    this.preview = null;
     for (const fn of this.restartListeners) fn(this.game);
     this.changed();
   }
@@ -149,12 +152,15 @@ export class Controller {
   selectType(type: TowerType | null, toggle = true): void {
     this.selected = toggle && this.selected === type ? null : type;
     this.selectedTowerId = null;
+    // Rollenwechsel behält das vorgemerkte Feld (Touch: erst Platz, dann Rolle vergleichen)
+    if (!this.selected) this.preview = null;
     this.changed();
   }
 
   clearSelection(): void {
     this.selected = null;
     this.selectedTowerId = null;
+    this.preview = null;
     this.changed();
   }
 
@@ -163,6 +169,7 @@ export class Controller {
     if (this.over) return 'ignored';
     const cx = Math.floor(x / TILE);
     const cy = Math.floor(y / TILE);
+    this.preview = null;
     const tower = this.game.state.towers.find((t) => t.cx === cx && t.cy === cy);
     if (tower) {
       this.selectedTowerId = tower.id;
@@ -176,6 +183,38 @@ export class Controller {
     }
     this.clearSelection();
     return 'cleared';
+  }
+
+  /**
+   * Touch: Das erste Tippen auf ein Feld zeigt nur die Vorschau (Reichweite, frei/belegt), das zweite Tippen auf dasselbe
+   * Feld platziert. Ein Finger verdeckt die Kachel – ohne Bestätigung landen Teammitglieder sonst auf dem falschen Feld.
+   */
+  tapBoard(x: number, y: number): 'selectedTower' | 'placed' | 'rejected' | 'cleared' | 'ignored' | 'preview' {
+    if (this.over) return 'ignored';
+    const cx = Math.floor(x / TILE);
+    const cy = Math.floor(y / TILE);
+    const hasTower = this.game.state.towers.some((t) => t.cx === cx && t.cy === cy);
+    const same = this.preview?.cx === cx && this.preview.cy === cy;
+    // Ohne gewählte Rolle: Feld vormerken, die Rolle folgt aus der Leiste (zweites Tippen hebt die Markierung auf)
+    if (!this.selected && !hasTower) {
+      this.preview = same ? null : { cx, cy };
+      this.selectedTowerId = null;
+      this.changed();
+      return same ? 'cleared' : 'preview';
+    }
+    if (this.selected && !hasTower && !same) {
+      this.preview = { cx, cy };
+      this.changed();
+      return 'preview';
+    }
+    return this.clickBoard(x, y);
+  }
+
+  /** Touch-Vorschau bestätigen (Button „Hier einsetzen“). */
+  placePreview(): 'placed' | 'rejected' | 'ignored' {
+    if (!this.preview || !this.selected || this.over) return 'ignored';
+    const r = this.clickBoard(this.preview.cx * TILE + TILE / 2, this.preview.cy * TILE + TILE / 2);
+    return r === 'placed' || r === 'rejected' ? r : 'ignored';
   }
 
   upgradeSelected(): void {
@@ -235,6 +274,7 @@ export class Controller {
     this.acc = 0;
     this.selected = null;
     this.selectedTowerId = null;
+    this.preview = null;
     for (const fn of this.restartListeners) fn(this.game);
     this.changed();
   }

@@ -203,3 +203,127 @@ button:disabled { opacity: .45; cursor: default; }
   #ticker span { animation-duration: 240s; }
   button { transition: none; }
 }
+
+/* ---------- Mobile / Touch ---------- */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; }
+button, .tw, #frame { touch-action: manipulation; }
+#frame, #side, #top { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+#settings-dialog { width: min(360px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; }
+#nick { width: min(330px, calc(100vw - 24px)); }
+#info .acts { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+#info .acts button { margin: 0; }
+#info button.go { background: var(--teal); color: #fff; border-color: transparent; }
+#fullscreen[hidden], #rotate-tip { display: none; }
+.ico-full { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23607d8b' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5'/%3E%3C/svg%3E"); }
+#fullscreen[aria-pressed=true] .ico-full { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23607d8b' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5'/%3E%3C/svg%3E"); }
+html.touch .tw .key, html.touch #team-card h2 small { display: none; }
+html.touch #info { min-height: 68px; }
+@media (hover: none) {
+  /* Touch: kein „klebender“ Hover-Zustand nach dem Antippen */
+  button:hover:not(:disabled) { transform: none; box-shadow: none; }
+  #big:hover { box-shadow: 0 4px 0 #00695c, 0 6px 14px rgba(0, 105, 92, .35); }
+  #big.running:hover { box-shadow: 0 4px 0 #546e7a; }
+  #big.over:hover { box-shadow: 0 4px 0 #b71c1c; }
+  #big.won:hover { box-shadow: 0 4px 0 #f57f17; }
+  .chip-team:hover, .chip-gear:hover { background: var(--card); }
+}
+
+/* Gemeinsam für Handy hoch und quer: kompakte Kopfzeile, große Tippziele */
+@media (max-width: 760px), (orientation: landscape) and (max-height: 540px) {
+  #brand .sub { display: none; }
+  #stats { gap: 4px; }
+  .chip { padding: 3px 8px 3px 5px; font-size: 12px; gap: 4px; box-shadow: 0 1px 3px rgba(38, 50, 56, .1); }
+  .chip b { font-size: 13.5px; }
+  .chip .ico { width: 16px; height: 16px; }
+  .chip-moral .meter, .chip-map { display: none; }
+  .chip-team { max-width: 44vw; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+  .chip-gear { padding: 5px; }
+  .chip-gear .ico { width: 20px; height: 20px; }
+  .card { padding: 8px; border-radius: 12px; }
+  .card h2 { font-size: 20px; margin-bottom: 4px; }
+  #side { width: 100%; display: flex; flex-direction: column; gap: 8px; contain: none; }
+  #control-card { order: -1; padding: 6px; }
+  .ctl-main #big { min-height: 46px; font-size: 15px; min-width: 0; white-space: normal; line-height: 1.15; }
+  .ctl-main #spd, .ctl-main #mute { min-width: 50px; min-height: 46px; }
+  .ctl-end button { min-height: 40px; }
+  /* Infobox (Upgrade/Abgeben/Einsetzen) direkt unter dem Start-Button, die Rollen darunter – sonst außer Sicht */
+  #team-card { display: flex; flex-direction: column; gap: 6px; }
+  #team-card h2 { display: none; }
+  #info { order: -1; margin-top: 0; font-size: 12.5px; }
+  #towers { gap: 6px; }
+  .tw {
+    display: grid; grid-template-columns: 34px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 6px; row-gap: 0;
+    align-items: center; justify-items: start; text-align: left; padding: 5px 6px; min-height: 48px;
+  }
+  .tw .pt { grid-row: 1 / span 2; }
+  .tw .nm { font-size: 12px; white-space: normal; line-height: 1.05; align-self: end; }
+  .tw .ct { align-self: start; }
+  .tw .lim { top: auto; bottom: 3px; left: auto; right: 4px; }
+  #info .acts { flex-wrap: nowrap; }
+  #info .acts button { flex: 1 1 0; min-width: 0; min-height: 42px; font-size: 13px; padding: 6px 6px; }
+  #info .acts button.x { flex: 0 0 auto; padding: 6px 12px; }
+  .seg button { min-height: 34px; }
+  #settings-dialog .vol input { min-height: 32px; }
+  #settings-dialog .check input { width: 20px; height: 20px; }
+}
+
+/* Handy hochkant: Kopf, Spielfeld über volle Breite, darunter Start-Button, Team und Bestenliste */
+@media (max-width: 760px) {
+  body { padding: 0 0 calc(12px + env(safe-area-inset-bottom)); }
+  #top {
+    margin: 0; gap: 4px 8px;
+    padding: max(6px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) 6px max(8px, env(safe-area-inset-left));
+  }
+  #brand { max-width: none; }
+  #brand h1 { font-size: 26px; }
+  /* Zahnrad und Vollbild rechts neben dem Titel, die Werte in einer eigenen Zeile */
+  #top { position: relative; }
+  #top #open-settings, #top #fullscreen { position: absolute; top: max(6px, env(safe-area-inset-top)); }
+  #top #open-settings { right: max(8px, env(safe-area-inset-right)); }
+  #top #fullscreen { right: calc(max(8px, env(safe-area-inset-right)) + 40px); }
+  #stats { width: 100%; }
+  #wrap { padding: 0 max(6px, env(safe-area-inset-right)) 0 max(6px, env(safe-area-inset-left)); gap: 8px; }
+  #frame { width: 100%; border-radius: 10px; }
+  #lb-list { max-height: none; }
+  #ticker { margin: 8px 6px 0; border-radius: 8px; }
+}
+@media (max-width: 760px) and (orientation: portrait) and (pointer: coarse) {
+  html:not(.tip-off) #rotate-tip {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;
+    background: #fff8e1; border: 1px solid #ffe082; color: #6d4c41; border-radius: 10px; padding: 4px 6px 4px 10px; font-size: 12.5px; font-weight: 700;
+  }
+  #rotate-tip button { min-height: 32px; padding: 4px 12px; }
+}
+
+/* Handy quer: Spielfeld links in voller Höhe, rechts eine scrollbare Spalte mit Werten und Steuerung */
+@media (orientation: landscape) and (max-height: 540px) {
+  html, body { height: 100%; }
+  body {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: "frame top" "frame side"; gap: 6px 8px; height: 100vh; height: 100dvh; overflow: hidden;
+    padding: max(6px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  }
+  #wrap { display: contents; }
+  #top { grid-area: top; margin: 0; padding: 0; max-width: none; }
+  #brand { display: none; }
+  #frame {
+    grid-area: frame; align-self: center; border-radius: 10px;
+    width: min(
+      calc((100dvh - max(6px, env(safe-area-inset-top)) - max(6px, env(safe-area-inset-bottom))) * 1.6),
+      calc(100vw - 268px - max(8px, env(safe-area-inset-left)) - max(8px, env(safe-area-inset-right)))
+    );
+  }
+  #side { grid-area: side; min-height: 0; overflow-y: auto; overscroll-behavior: contain; gap: 6px; padding-bottom: 4px; }
+  #side > .card { flex: none; }
+  #side > #lb { flex: none; min-height: 0; overflow: visible; }
+  #lb-list { max-height: none; overflow: visible; }
+  .tw .pt { width: 28px; height: 28px; }
+  /* Schmale Spalte: Karten wieder gestapelt (Kopf über Name), damit lange Namen passen */
+  .tw { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; padding: 4px 3px 3px; min-height: 0; }
+  .tw .nm { font-size: 11px; white-space: nowrap; }
+  .tw .lim { top: 3px; bottom: auto; left: 4px; right: auto; }
+  .ctl-main #big { font-size: 13.5px; padding: 6px 4px; }
+  .ctl-main #spd, .ctl-main #mute { min-width: 44px; }
+  #ticker, #rotate-tip { display: none; }
+}

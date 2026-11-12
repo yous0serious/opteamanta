@@ -28,6 +28,8 @@ export const PALETTES: Record<string, Record<string, string>> = {
   towers: { ...colors(TOWERS), off: '#9e9e9e' },
   maps: Object.fromEntries(MAPS.map((m) => [m.id, toHex(hsl(m.hue, 65, 82))])),
   fx: FX_PALETTE,
+  /** Sonnenlicht durch die Bürofenster (Kenney Light Masks). */
+  sun: { warm: '#fff1bf' },
 };
 
 const byColor = new Map<string, string>();

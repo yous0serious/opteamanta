@@ -5,6 +5,7 @@ import { setFxLevel, type FxLevel, type FxSettings } from './fx';
 import { shareResult, shareState } from './share';
 import { applySprite } from './sprite';
 import { JOKES, TOWER_BLURBS, piLabel } from './texts';
+import { onPointerModeChange, pointerMode } from './touch';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
@@ -21,6 +22,8 @@ const FX_HINT: Record<FxLevel, string> = {
 
 const DEFAULT_INFO =
   'Rolle wählen (1–9), freien Platz anklicken.<br><span class="muted">Arbeitsplatz: [U] Upgrade · [S] Abgeben</span>';
+const DEFAULT_INFO_TOUCH =
+  'Rolle antippen, dann Feld antippen und <b>nochmal tippen</b> zum Einsetzen.<br><span class="muted">Arbeitsplatz antippen: Upgrade oder Abgeben</span>';
 
 /** Kurznamen für die Turmkarten (einzeilig; voller Name im Tooltip und in der Infobox). */
 const CARD_NAME: Partial<Record<TowerType, string>> = { analyst: 'Analyst' };
@@ -119,7 +122,10 @@ export class Hud {
       const action = (ev.target as HTMLElement).closest<HTMLElement>('[data-action]')?.dataset.action;
       if (action === 'upgrade') this.ctl.upgradeSelected();
       if (action === 'sell') this.ctl.sellSelected();
+      if (action === 'place') this.ctl.placePreview();
+      if (action === 'cancel' || action === 'close') this.ctl.clearSelection();
     });
+    onPointerModeChange(() => this.markDirty());
     // Buttons sollen die Leertaste nicht „klicken“ (sonst doppelte Aktion).
     for (const b of document.querySelectorAll('button')) b.addEventListener('keydown', (ev) => ev.key === ' ' && ev.preventDefault());
 
@@ -156,6 +162,7 @@ export class Hud {
   render(): void {
     const { game, selected, selectedTowerId, speed } = this.ctl;
     const s = game.state;
+    const touch = pointerMode.touch;
     $('money').textContent = String(s.money);
     const lives = Math.max(0, s.lives);
     $('lives').textContent = String(lives);
@@ -196,7 +203,7 @@ export class Hud {
     $<HTMLInputElement>('mute-check').checked = this.sound.muted;
     $('fx-hint').textContent = FX_HINT[this.fx.level];
 
-    let info = DEFAULT_INFO;
+    let info = touch ? DEFAULT_INFO_TOUCH : DEFAULT_INFO;
     const tower = selectedTowerId !== null ? game.towerById(selectedTowerId) : undefined;
     if (tower) {
       const def = TOWERS[tower.type];
@@ -206,13 +213,27 @@ export class Hud {
         ? supportInfo(tower.type, tower.level)
         : `Reichweite ${Math.floor(st.range)} · ${st.dps ? `DPS ${Math.floor(st.dps)}` : `Schaden ${Math.floor(st.dmg)}`}`;
       const push = tower.type === 'scrum' ? ` · Rückstoß ${Math.floor(def.push! * (1 + 0.2 * (tower.level - 1)))}` : '';
+      const canUp = up !== null && s.money >= up;
       info =
         `<b>${def.name}</b> <span class="muted">Stufe ${tower.level}/5</span><br>${stats}${push}${st.boosted ? '<br><span class="muted">PPL-Boost aktiv (+25 %)</span>' : ''}<br>` +
-        `<button data-action="upgrade">Upgrade (${up ?? 'max'}) [U]</button>` +
-        `<button data-action="sell">Abgeben (+${game.sellValue(tower)}) [S]</button>`;
+        `<span class="acts"><button data-action="upgrade"${touch && !canUp ? ' disabled' : ''}>Upgrade (${up ?? 'max'})${touch ? '' : ' [U]'}</button>` +
+        `<button data-action="sell">Abgeben (+${game.sellValue(tower)})${touch ? '' : ' [S]'}</button>` +
+        `${touch ? '<button data-action="close" class="x" aria-label="Auswahl schließen">OK</button>' : ''}</span>`;
     } else if (selected) {
       const def = TOWERS[selected];
-      info = `<b>${def.name}</b> <span class="muted">Kosten ${def.cost}</span><br>${TOWER_BLURBS[selected]}<br><span class="muted">Klick aufs Feld · Rechtsklick/Esc: abbrechen</span>`;
+      if (touch) {
+        const p = this.ctl.preview;
+        const reason = p ? game.canPlace(selected, p.cx, p.cy) : null;
+        const hint = !p ? 'Feld antippen für Vorschau' : reason === null ? 'Nochmal aufs Feld tippen oder:' : reason === 'noMoney' ? 'Zu wenig Kapazität' : 'Hier ist kein Platz frei';
+        info =
+          `<b>${def.name}</b> <span class="muted">Kosten ${def.cost}</span><br>${p ? '' : `${TOWER_BLURBS[selected]}<br>`}<span class="muted">${hint}</span><br>` +
+          `<span class="acts"><button data-action="place" class="go"${p && reason === null ? '' : ' disabled'}>Hier einsetzen</button>` +
+          `<button data-action="cancel">Abbrechen</button></span>`;
+      } else {
+        info = `<b>${def.name}</b> <span class="muted">Kosten ${def.cost}</span><br>${TOWER_BLURBS[selected]}<br><span class="muted">Klick aufs Feld · Rechtsklick/Esc: abbrechen</span>`;
+      }
+    } else if (touch && this.ctl.preview) {
+      info = '<b>Platz vorgemerkt</b><br>Jetzt eine Rolle antippen – Reichweite erscheint, dann einsetzen.<br><span class="acts"><button data-action="cancel">Abbrechen</button></span>';
     }
     if (info !== this.lastInfo) {
       this.lastInfo = info;

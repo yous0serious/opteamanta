@@ -58,6 +58,13 @@ Spielversion 0.3.0 – **Saison 2** (Spec `specs/season-2/spec.md`, Werte in `sr
 | Leertaste / großer Button | Nächster Sprint, nach Spielende neu starten |
 | `Esc` / Rechtsklick | Auswahl aufheben |
 
+**Handy/Tablet (Touch):** Rolle antippen, dann ein Feld antippen – das zeigt nur die Vorschau (Reichweite, frei/belegt);
+erneutes Tippen auf dasselbe Feld oder „Hier einsetzen“ platziert. Man kann auch zuerst das Feld und dann die Rolle
+wählen. Ein platzierter Arbeitsplatz zeigt per Tippen Upgrade/Abgeben. Hochkant liegt das Spielfeld oben, darunter
+Start-Button, Infobox und Rollen; quer füllt das Spielfeld die Höhe, rechts daneben eine scrollbare Spalte.
+Auf Android gibt es einen Vollbild-Knopf (sperrt quer); auf dem iPhone „Zum Home-Bildschirm“ (Web-App-Manifest,
+startet ohne Browserleisten). Ton startet nach dem ersten Tippen und pausiert, wenn die App im Hintergrund ist.
+
 **Einstellungen** (Zahnrad oben rechts): Effektstufe *Maximal* (Combos, Zeitlupe, Kamerafahrten), *Normal* (ohne Zeitlupe/Zoom),
 *Ruhig* (ohne Wackeln, Combos, Animationen; Standard bei `prefers-reduced-motion`), Lautstärke für Musik und Effekte, Stumm,
 Tempo, Modus im freien Spiel und Teamname. Bei offenem Dialog reagiert das Spiel nicht auf Tasten.
@@ -152,6 +159,9 @@ Look „Cartoon-Büro“ (Spec `office-makeover`, ADR-0005), ausschließlich CC0
 - **Boden:** beim Start erzeugt (Dielen, Teppich, Fliesen je Karte), animiertes Kanban-Laufband, Deko in Schrägsicht
   (eigene SVGs: Pflanze, Wasserspender, Kaffeemaschine, Drucker, Aktenschrank).
 - **Effekte:** Kenney „Particle Pack“, „Smoke Particles“, „Splat Pack“ (Bodenflecken), „Generic Items“ (Geschosse).
+- **Licht und Reaktionen:** Kenney „Light Masks“ (weiches, schräg einfallendes Fensterlicht auf dem Boden, beim Build
+  geschert/weichgezeichnet) und „Emotes Pack“ (Sprechblasen: Zzz, Herzbruch beim Leak, Sterne beim Upgrade …).
+  Schwebende Texte werden zusammengefasst („×3“), weichen einander aus und sind auf 9 gleichzeitig begrenzt.
 - **Oberfläche:** Schriften Caveat und Nunito (OFL-1.1), Icons als eigene SVGs. Lizenzen: `public/assets/CREDITS.md`.
 - **Saison-2-Figuren:** RTE, RTA, RTO, Vorstand und Statisten entstehen beim Asset-Build aus den Kenney-Figuren
   (Umfärben + eigenes Zubehör, `tools/characters.ts`; Kopfposition je Pose per Template-Matching).

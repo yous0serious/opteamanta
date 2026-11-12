@@ -23,6 +23,14 @@ Zulässig sind nur `CC0`, `OFL-1.1` und `eigenes Werk`. Prüfung: `npm run check
 | `item/*` | Generic Items, Ordner `PNG/Colored` – https://opengameart.org/content/generic-items (`assets-src/kenney/generic-items/License.txt`) | Kenney (www.kenney.nl) | CC0 |
 | `splat/*` | Splat Pack, Ordner `PNG/Default (256px)`, beim Build eingefärbt – https://opengameart.org/content/splat-pack (`assets-src/kenney/splat-pack/License.txt`) | Kenney (www.kenney.nl) | CC0 |
 | `puff/*` | Smoke Particles, Ordner `PNG/White puff` – https://opengameart.org/content/smoke-particle-assets (`assets-src/kenney/smoke-particles/License.txt`) | Kenney (www.kenney.nl) | CC0 |
+| `light/*` | Light Masks, Ordner `Default` (`window_k_blur`) – https://kenney.nl/assets/light-masks (`assets-src/kenney/light-masks/License.txt`); beim Build geschert, weichgezeichnet, Helligkeit → Transparenz und warm eingefärbt | Kenney (www.kenney.nl) | CC0 |
+| `emote/*` | Emotes Pack, Ordner `PNG/Vector/Style 4` – https://kenney.nl/assets/emotes-pack (`assets-src/kenney/emotes-pack/License.txt`) | Kenney (www.kenney.nl) | CC0 |
+
+## App-Icons (außerhalb von `public/assets/`)
+
+| Datei | Inhalt | Lizenz |
+|---|---|---|
+| `../icon.svg`, `../icon-192.png`, `../icon-512.png`, `../icon-maskable-512.png`, `../apple-touch-icon.png` | Web-App-Icon (Post-it „BD“), PNGs aus dem SVG gerendert | eigenes Werk |
 
 ## Schrift
 
