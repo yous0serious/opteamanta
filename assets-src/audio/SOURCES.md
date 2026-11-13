@@ -3,7 +3,7 @@
 Spec season-2 AC-10/AC-14, ADR-0006. Checked on 2026-11-11 by fetching each OpenGameArt page and reading its `License(s):` block.
 Every page below lists exactly one license: `CC0` (https://opengameart.org/content/cc0). No dual-licensed item was used.
 Authors are the uploader/credited names from the page. Kenney packs ship a `License.txt` (copied to `kenney-<pack>/`); the Digital pack ships only `readme.txt`, its CC0 status rests on the page.
-Processing: ffmpeg, loudnorm, MP3 (music 112 kbps stereo, SFX 96 kbps mono, leading silence trimmed, length caps).
+Processing: ffmpeg, loudnorm, MP3 (music 112 kbps stereo; campaign tracks 2026-11-12: 96 kbps, long tracks 64 kbps to stay within the 12 MB budget, SFX 96 kbps mono, leading silence trimmed, length caps).
 
 | Output | Page | Author | Source file | License text on page | Checked |
 |---|---|---|---|---|---|
@@ -34,3 +34,16 @@ Processing: ffmpeg, loudnorm, MP3 (music 112 kbps stereo, SFX 96 kbps mono, lead
 | `sfx/applause.mp3` | https://opengameart.org/content/well-done | qubodup | Well Done (OGG; page: changed to CC0 on 2024-10-05) | License(s): CC0 | 2026-11-11 |
 | `sfx/jam.mp3` | https://opengameart.org/content/interface-sounds | Kenney | error_003.ogg | License(s): CC0 | 2026-11-11 |
 | `sfx/businessValue.mp3` | https://opengameart.org/content/50-rpg-sound-effects | Kenney | handleCoins.ogg | License(s): CC0 | 2026-11-11 |
+| `music/music-planning-big-room.mp3` | https://opengameart.org/content/cunning-plan-short-seamless-loop | congusbongus | Cunning plan_0.ogg | License(s): CC0 | 2026-11-12 |
+| `music/music-wave-big-room.mp3` | https://opengameart.org/content/lasso-lady-seamless-loop | congusbongus | lassolady_4.ogg | License(s): CC0 | 2026-11-12 |
+| `music/music-planning-server-room.mp3` | https://opengameart.org/content/project-utopia-seamless-loop | congusbongus | Project Utopia_0.ogg | License(s): CC0 | 2026-11-12 |
+| `music/music-wave-server-room.mp3` | https://opengameart.org/content/escape-from-metal-city | congusbongus | escape_from_metal_city_0.ogg (64 kbps) | License(s): CC0 | 2026-11-12 |
+| `music/music-planning-boardroom.mp3` | https://opengameart.org/content/which-brand-of-mustard-shall-i-buy | congusbongus | which_brand_of_mustard_shall_i_buy.ogg (64 kbps) | License(s): CC0 | 2026-11-12 |
+| `music/music-wave-boardroom.mp3` | https://opengameart.org/content/covert-action | congusbongus | covert_action_0.ogg (64 kbps) | License(s): CC0 | 2026-11-12 |
+| `sfx/ui-click.mp3` | https://kenney.nl/assets/interface-sounds | Kenney | click_001.ogg (`kenney-interface-sounds/License.txt`) | CC0 (License.txt) | 2026-11-12 |
+| `sfx/ui-hover.mp3` | https://kenney.nl/assets/ui-pack | Kenney | Sounds/tap-b.ogg (`kenney-ui-pack/License.txt`) | CC0 (License.txt) | 2026-11-12 |
+| `sfx/ui-open.mp3` | https://kenney.nl/assets/interface-sounds | Kenney | open_001.ogg | CC0 (License.txt) | 2026-11-12 |
+| `sfx/ui-back.mp3` | https://kenney.nl/assets/interface-sounds | Kenney | back_002.ogg | CC0 (License.txt) | 2026-11-12 |
+| `sfx/star.mp3` | https://kenney.nl/assets/interface-sounds | Kenney | glass_001.ogg | CC0 (License.txt) | 2026-11-12 |
+| `sfx/levelup.mp3` | https://kenney.nl/assets/music-jingles | Kenney | Pizzicato jingles/jingles_PIZZI07.ogg (`kenney-music-jingles/License.txt`) | CC0 (License.txt) | 2026-11-12 |
+| `sfx/xp-tick.mp3` | https://kenney.nl/assets/interface-sounds | Kenney | tick_002.ogg | CC0 (License.txt) | 2026-11-12 |

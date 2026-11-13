@@ -1,2 +1,2 @@
 /** Spielversion; jede Balancing-Änderung erhöht sie (Bestenlisten pro Version, ADR-0002). */
-export const GAME_VERSION = '0.3.0';
+export const GAME_VERSION = '0.4.0';

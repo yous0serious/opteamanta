@@ -18,11 +18,11 @@ describe.skipIf(!HAVE_ENV)('get_leaderboard und get_ticker (AC-6)', () => {
   async function seedRun(k: string, date: string, score: number, lives: number, verifiedAt: string): Promise<void> {
     const sid = randomUUID();
     const sess = await rest('POST', 'run_sessions', secretHeaders(), {
-      id: sid, user_id: users[k]!.id, daily_date: date, seed: 1, map_id: 'matrix', game_version: version, expires_at: '2030-01-01T00:00:00Z', used_at: verifiedAt,
+      id: sid, user_id: users[k]!.id, daily_date: date, board: `daily:${date}`, seed: 1, map_id: 'matrix', game_version: version, expires_at: '2030-01-01T00:00:00Z', used_at: verifiedAt,
     });
     expect(sess.status).toBe(201);
     const sub = await rest('POST', 'submissions', secretHeaders(), {
-      session_id: sid, user_id: users[k]!.id, daily_date: date, game_version: version, replay: {}, end_tick: 1,
+      session_id: sid, user_id: users[k]!.id, daily_date: date, board: `daily:${date}`, map_id: 'matrix', game_version: version, replay: {}, end_tick: 1,
       replay_hash: createHash('sha256').update(randomUUID()).digest('hex'),
       status: 'verified', score, wave: 5, lives, won: false, verified_at: verifiedAt,
     });

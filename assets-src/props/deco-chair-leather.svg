@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="76" viewBox="0 0 56 76">
+  <!-- Ledersessel (Chefsessel) (eigenes Werk) -->
+  <ellipse cx="28" cy="71" rx="22" ry="4" fill="#000" opacity="0.15"/>
+  <g stroke="#455a64" stroke-width="3" stroke-linecap="round"><path d="M28 56 L28 66 M14 68 L42 68"/></g>
+  <rect x="10" y="4" width="36" height="40" rx="10" fill="#8d5a3b"/>
+  <rect x="14" y="8" width="28" height="32" rx="8" fill="#a66b47"/>
+  <g fill="#7a4b30"><circle cx="21" cy="16" r="1.6"/><circle cx="35" cy="16" r="1.6"/><circle cx="28" cy="24" r="1.6"/><circle cx="21" cy="32" r="1.6"/><circle cx="35" cy="32" r="1.6"/></g>
+  <rect x="6" y="40" width="44" height="16" rx="6" fill="#8d5a3b"/><rect x="10" y="38" width="36" height="12" rx="5" fill="#b07651"/>
+  <path d="M18 12 L18 30" stroke="#c48a63" stroke-width="3" stroke-linecap="round"/>
+</svg>

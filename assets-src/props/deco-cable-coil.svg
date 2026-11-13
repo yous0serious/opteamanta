@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="44" viewBox="0 0 64 44">
+  <!-- Kabelrollen (eigenes Werk) -->
+  <ellipse cx="32" cy="39" rx="28" ry="4" fill="#000" opacity="0.15"/>
+  <g fill="none" stroke-width="5"><ellipse cx="22" cy="24" rx="16" ry="10" stroke="#1e88e5"/><ellipse cx="22" cy="24" rx="9" ry="5" stroke="#42a5f5"/><ellipse cx="44" cy="28" rx="15" ry="9" stroke="#fbc02d"/><ellipse cx="44" cy="28" rx="8" ry="4" stroke="#fdd835"/></g>
+  <path d="M38 24 Q30 34 18 36" stroke="#1e88e5" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>

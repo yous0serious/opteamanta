@@ -1,6 +1,6 @@
 import { availableParallelism } from 'node:os';
 import { isMainThread, parentPort, Worker, workerData } from 'node:worker_threads';
-import { BALANCE, CHALLENGE_WAVES, MAPS, runReplay, type BalanceConfig, type GameMode, type MapId, type Replay } from '../src/sim/index';
+import { BALANCE, CHALLENGE_WAVES, FREE_MAPS, LEVELS, runReplay, type BalanceConfig, type GameMode, type LevelId, type MapId, type Replay } from '../src/sim/index';
 import { playBot } from './bot';
 import { playStrongBot } from './bot-strong';
 
@@ -9,22 +9,24 @@ import { playStrongBot } from './bot-strong';
 // npm run balance -- --balance '{…}'    → Kennzahlen für eine Variante (Teilobjekt, Rest aus BALANCE)
 // npm run balance -- --sweep            → Raster über hpGrowth/rewardGrowth/bossHpFactor (12 Läufe je Gruppe)
 // npm run balance -- --json             → Ausgabe als JSON
+// npm run balance -- --levels [n]       → alle 24 Kampagnen-Level mit starkem und Referenz-Bot (n Seeds, Standard 10)
+// npm run balance -- --levels n team-1  → nur die genannten Level
 
 type Bot = 'ref' | 'strong';
-interface Job { id: number; bot: Bot; mode: GameMode; seed: number; mapId: MapId; maxWave: number; balance: BalanceConfig; keepReplay: boolean }
-interface Result { id: number; wave: number; won: boolean; over: boolean; lives: number; ticks: number; cleanStart: boolean; roles: string[]; replay?: Replay }
+interface Job { id: number; bot: Bot; mode: GameMode; seed: number; mapId?: MapId; levelId?: LevelId; maxWave: number; balance: BalanceConfig; keepReplay: boolean }
+interface Result { id: number; wave: number; won: boolean; over: boolean; lives: number; ticks: number; stars: number; cleanStart: boolean; roles: string[]; replay?: Replay }
 
 function runJob(j: Job): Result {
   let cleanStart = true;
   const opts = {
-    seed: j.seed, mapId: j.mapId, mode: j.mode, maxWave: j.maxWave, balance: j.balance,
+    seed: j.seed, mapId: j.mapId, levelId: j.levelId, mode: j.mode, maxWave: j.maxWave, balance: j.balance,
     onWaveEnd: (g: { state: { wave: number; lives: number } }) => {
       if (g.state.wave <= 5 && g.state.lives < 100) cleanStart = false;
     },
   };
   const game = j.bot === 'ref' ? playBot(opts) : playStrongBot(opts);
   const s = game.state;
-  return { id: j.id, wave: s.wave, won: s.won, over: s.over, lives: s.lives, ticks: s.tick, cleanStart, roles: [...new Set(s.towers.map((t) => t.type))].sort(), replay: j.keepReplay ? game.toReplay() : undefined };
+  return { id: j.id, wave: s.wave, won: s.won, over: s.over, lives: s.lives, ticks: s.tick, stars: game.stars(), cleanStart, roles: [...new Set(s.towers.map((t) => t.type))].sort(), replay: j.keepReplay ? game.toReplay() : undefined };
 }
 
 if (!isMainThread) {
@@ -75,7 +77,7 @@ const median = (xs: number[]): number => {
 async function evaluate(balance: BalanceConfig, seeds: number[], withVerify: boolean): Promise<Summary> {
   const jobs: Job[] = [];
   let id = 0;
-  for (const seed of seeds) for (const m of MAPS) {
+  for (const seed of seeds) for (const m of FREE_MAPS) {
     jobs.push({ id: id++, bot: 'ref', mode: 'challenge', seed, mapId: m.id, maxWave: CHALLENGE_WAVES, balance, keepReplay: false });
     jobs.push({ id: id++, bot: 'strong', mode: 'challenge', seed, mapId: m.id, maxWave: CHALLENGE_WAVES, balance, keepReplay: withVerify });
     jobs.push({ id: id++, bot: 'strong', mode: 'endless', seed, mapId: m.id, maxWave: 60, balance, keepReplay: false });
@@ -137,9 +139,54 @@ function print(s: Summary, json: boolean): void {
   console.log(`  ${Object.entries(s.ok).map(([k, v]) => `${v ? '✓' : '✗'} ${k}`).join(' | ')}`);
 }
 
+/** Kampagnen-Level (Spec campaigns AC-1): starker Bot ≥ 80 % Siege je Level, Referenz-Bot schafft team-1 … team-3. */
+async function evaluateLevels(seeds: number[], only: string[], json: boolean): Promise<boolean> {
+  const levels = LEVELS.filter((l) => !only.length || only.includes(l.id));
+  const jobs: Job[] = [];
+  let id = 0;
+  for (const l of levels) for (const seed of seeds) for (const bot of ['strong', 'ref'] as const) {
+    jobs.push({ id: id++, bot, mode: 'level', seed, levelId: l.id, maxWave: l.waves, balance: { ...BALANCE }, keepReplay: false });
+  }
+  const res = await runAll(jobs);
+  const pct = (x: number): string => `${Math.round(x * 100)}%`.padStart(4);
+  const rows = levels.map((l) => {
+    const pick = (bot: Bot): Result[] => res.filter((r) => jobs[r.id]!.levelId === l.id && jobs[r.id]!.bot === bot);
+    const strong = pick('strong');
+    const ref = pick('ref');
+    const stars = [0, 1, 2, 3].map((n) => strong.filter((r) => r.stars === n).length);
+    const win = strong.filter((r) => r.won).length / strong.length;
+    const refWin = ref.filter((r) => r.won).length / ref.length;
+    const minLives = Math.min(...strong.filter((r) => r.won).map((r) => r.lives));
+    const lost = strong.filter((r) => !r.won).map((r) => r.wave);
+    const needRef = ['team-1', 'team-2', 'team-3'].includes(l.id);
+    const ok = win >= 0.8 && (!needRef || refWin >= 0.8);
+    return { level: l.id, waves: l.waves, win, stars, refWin, minLives, lost, ok, maxTicks: Math.max(...strong.map((r) => r.ticks)) };
+  });
+  if (json) console.log(JSON.stringify(rows));
+  else {
+    console.log(`level        waves strong  ★0/★1/★2/★3   ref   minLives lostAt   maxTicks`);
+    for (const r of rows) {
+      console.log(
+        `${r.ok ? '✓' : '✗'} ${r.level.padEnd(12)} ${String(r.waves).padStart(3)}  ${pct(r.win)}   ${r.stars.map((n) => String(n).padStart(2)).join('/')}  ${pct(r.refWin)}   ${String(r.minLives === Infinity ? '-' : r.minLives).padStart(4)}   ${r.lost.join(',').padEnd(8)} ${r.maxTicks}`,
+      );
+    }
+    console.log(`${rows.filter((r) => r.ok).length}/${rows.length} Level im Ziel (stark ≥ 80 %, Referenz team-1…3 ≥ 80 %)`);
+  }
+  return rows.every((r) => r.ok);
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const json = args.includes('--json');
+  const li = args.indexOf('--levels');
+  if (li >= 0) {
+    const n = Number(args[li + 1]);
+    const count = Number.isInteger(n) && n > 0 ? n : 10;
+    const only = args.slice(li + 1).filter((a) => /^[a-z]+-\d$/.test(a));
+    const ok = await evaluateLevels(Array.from({ length: count }, (_, i) => i + 1), only, json);
+    if (!ok) process.exitCode = 1;
+    return;
+  }
   const bi = args.indexOf('--balance');
   if (args.includes('--sweep')) {
     // Raster als JSON, z. B. --sweep '{"hpGrowth":[1.08,1.1],"rewardFactor":[0.6,0.8]}' (fehlende Felder aus BALANCE)

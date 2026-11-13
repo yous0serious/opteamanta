@@ -19,6 +19,10 @@ import { PreloadScene } from './view/PreloadScene';
 import { runBench } from './view/bench';
 import { createOnline } from './online/api';
 import { LeaderboardPanel } from './view/leaderboard';
+import { createMeta } from './meta/service';
+import { Host } from './meta/host';
+import { RunBoard } from './meta/runboard';
+import { mountShell } from './ui/index';
 
 const params = readParams();
 installPointerMode();
@@ -33,7 +37,7 @@ const ctl = new Controller(
 const sound = new SoundEngine(ctl);
 ctl.onSim((e) => sound.onSim(e));
 // Teilen-Karte: Bild des Spielfelds über Phasers Snapshot (funktioniert in WebGL und Canvas)
-const hud = new Hud(ctl, sound, settings, () => new Promise((resolve) => game.renderer.snapshot((img) => resolve(img as HTMLImageElement))));
+const hud = new Hud(ctl, sound, settings, () => snapshot());
 installKeyboard(ctl, sound);
 installMobileChrome(() => sound.start());
 
@@ -53,9 +57,38 @@ hud.render();
 window.addEventListener('beforeunload', () => ctl.saveReplay());
 
 // Bestenliste/Daily (Spec leaderboard-supabase): ohne VITE_SUPABASE_* offline, keine Netzwerkaufrufe.
-void (params.bench ? Promise.resolve(null) : createOnline())
-  .catch(() => null)
-  .then((online) => new LeaderboardPanel(online, ctl));
+// Direktlinks mit Spielparametern (?map=…, ?seed=…, ?bench=1 …) starten wie bisher sofort ins Spiel (alter Daily-Ablauf);
+// ohne solche Parameter startet das Hauptmenü (Spec campaigns) mit Meta-Dienst und Host.
+const SHELL_PARAMS = new Set(['debug', 'fx', 'shell', 'offline']);
+const deepLink = [...new URLSearchParams(location.search).keys()].some((k) => !SHELL_PARAMS.has(k));
+const snapshot = (): Promise<CanvasImageSource | null> => new Promise((resolve) => game.renderer.snapshot((img) => resolve(img as HTMLImageElement)));
+
+if (deepLink) {
+  void (params.bench ? Promise.resolve(null) : createOnline())
+    .catch(() => null)
+    .then((online) => new LeaderboardPanel(online, ctl));
+} else {
+  void bootShell();
+}
+
+async function bootShell(): Promise<void> {
+  const online = await createOnline().catch(() => null);
+  const { meta, error } = await createMeta(online);
+  const board = new RunBoard(meta, ctl);
+  if (error) board.status('Online-Anmeldung fehlgeschlagen – Fortschritt wird nur lokal gespeichert.', 'err');
+  const host = new Host(ctl, meta, { status: (text, kind) => board.status(text, kind) });
+  ctl.togglePause(true);
+  mountShell(meta, host, sound, {
+    snapshot,
+    runActive: () => ctl.game.state.wave > 0 && !ctl.over,
+    currentRun: () => ctl.game,
+    onRoute: (to) => {
+      // Außerhalb des Spiels steht die Simulation still; zurück im Spiel läuft sie weiter.
+      if (to.name === 'play') ctl.togglePause(false);
+      else ctl.togglePause(true);
+    },
+  });
+}
 
 if (params.bench) {
   const waitReady = (): void => {

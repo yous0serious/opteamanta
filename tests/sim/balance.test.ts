@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { makeGame, place, stepUntil } from './helpers';
 
-describe('AC-8 Referenzwerte v0.3.0 (Spec season-2)', () => {
+describe('AC-8 Referenzwerte v0.4.0 (Spec season-2, hpGrowth Spec campaigns)', () => {
   it('Startkapital 300', () => {
     expect(makeGame().state.money).toBe(300);
   });
@@ -9,9 +9,9 @@ describe('AC-8 Referenzwerte v0.3.0 (Spec season-2)', () => {
     const g = makeGame();
     const expected: [number, number][] = [
       [1, 1],
-      [2, 1.115],
-      [10, 2.663629440812066],
-      [30, 23.494767633146218],
+      [2, 1.1325],
+      [10, 3.064389010207768],
+      [30, 36.90694603920566],
     ];
     for (const [w, hpS] of expected) {
       g.state.wave = w;
@@ -25,7 +25,7 @@ describe('AC-8 Referenzwerte v0.3.0 (Spec season-2)', () => {
     g.state.wave = 1;
     expect(g.spawnEnemy('boss').hp).toBeCloseTo(2340, 6);
     g.state.wave = 2;
-    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2340 * 1.115, 6);
+    expect(g.spawnEnemy('boss').hp).toBeCloseTo(2340 * 1.1325, 6);
   });
   const rewards: [string, number][] = [['req', 2], ['cr', 1], ['story', 1], ['obj', 3], ['feat', 4], ['creep', 2], ['debt', 3], ['boss', 38]];
   for (const [type, reward] of rewards) {

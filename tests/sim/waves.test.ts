@@ -2,14 +2,13 @@ import { describe, expect, it } from 'vitest';
 import type { EnemyType } from '../../src/sim/index';
 import { makeGame, stepN } from './helpers';
 
-/** Zieht n Wellen `w` hintereinander und zählt die Typen (ohne den angehängten Boss). */
+/** Zieht Welle `w` in `runs` Spielen (Seeds 2024…; jede Welle hat ihren eigenen Zufallsstrom) und zählt die Typen (ohne den angehängten Boss). */
 function sample(w: number, runs: number): { counts: Record<string, number>; total: number; bosses: number } {
-  const g = makeGame(2024);
   const counts: Record<string, number> = {};
   let total = 0;
   let bosses = 0;
   for (let i = 0; i < runs; i++) {
-    g.state.running = false;
+    const g = makeGame(2024 + i);
     g.state.wave = w - 1;
     g.apply({ type: 'startWave' });
     const q: EnemyType[] = [...g.state.queue];
@@ -111,21 +110,21 @@ describe('AC-5 Typverteilung (2000+ Ziehungen, +-3 Prozentpunkte)', () => {
 });
 
 describe('AC-5 HP-Skalierung', () => {
-  it('Welle 6: hpS 1.7233533666968752 -> req 51.7006 HP', () => {
+  it('Welle 6: hpS 1.8629064802239264 -> req 55.8872 HP', () => {
     const g = makeGame();
     g.state.wave = 6;
     const e = g.spawnEnemy('req');
-    expect(e.hpScale).toBeCloseTo(1.7233533666968752, 9);
-    expect(e.hp).toBeCloseTo(51.70060100090626, 6);
-    expect(e.maxHp).toBeCloseTo(51.70060100090626, 6);
+    expect(e.hpScale).toBeCloseTo(1.8629064802239264, 9);
+    expect(e.hp).toBeCloseTo(55.88719440671779, 6);
+    expect(e.maxHp).toBeCloseTo(55.88719440671779, 6);
   });
-  it('Welle 0 und 1: hpS 1; Welle 30: 23.4947676', () => {
+  it('Welle 0 und 1: hpS 1; Welle 30: 36.9069460', () => {
     const g = makeGame();
     expect(g.spawnEnemy('req').hpScale).toBeCloseTo(1, 6);
     g.state.wave = 1;
     expect(g.spawnEnemy('boss').hp).toBeCloseTo(2340, 6);
     g.state.wave = 30;
-    expect(g.spawnEnemy('req').hpScale).toBeCloseTo(23.494767633146218, 9);
+    expect(g.spawnEnemy('req').hpScale).toBeCloseTo(36.90694603920566, 9);
   });
 });
 

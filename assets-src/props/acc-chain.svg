@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="44" viewBox="0 0 140 44">
+  <!-- Kette (Abhängigkeit). Eigenes Werk. -->
+  <g fill="none" stroke-width="7">
+    <rect x="4" y="10" width="40" height="24" rx="12" stroke="#78909c"/>
+    <rect x="34" y="10" width="40" height="24" rx="12" stroke="#90a4ae"/>
+    <rect x="64" y="10" width="40" height="24" rx="12" stroke="#78909c"/>
+    <rect x="94" y="10" width="40" height="24" rx="12" stroke="#90a4ae"/>
+  </g>
+  <g fill="none" stroke="#eceff1" stroke-width="2.5" stroke-linecap="round"><path d="M14 13 L30 13"/><path d="M74 13 L90 13"/></g>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80">
+  <!-- Megafon (Big-Room-Chaos). Eigenes Werk. -->
+  <path d="M8 30 L8 50 L28 50 L96 76 L96 4 L28 30 Z" fill="#ef5350" stroke="#b71c1c" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M28 30 L28 50" stroke="#ffffff" stroke-width="6"/>
+  <ellipse cx="98" cy="40" rx="12" ry="36" fill="#ffcdd2" stroke="#b71c1c" stroke-width="5"/>
+  <path d="M40 30 L84 14" stroke="#ffcdd2" stroke-width="5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="84" viewBox="0 0 168 84">
+  <!-- Langer Planungstisch mit Notizen und Laptops (eigenes Werk) -->
+  <ellipse cx="84" cy="78" rx="80" ry="6" fill="#000" opacity="0.15"/>
+  <g fill="#90a4ae"><rect x="10" y="40" width="6" height="36" rx="2"/><rect x="152" y="40" width="6" height="36" rx="2"/><rect x="80" y="44" width="6" height="30" rx="2"/></g>
+  <path d="M4 18 Q4 12 10 12 L158 12 Q164 12 164 18 L164 40 L4 40 Z" fill="#fafafa" stroke="#cfd8dc" stroke-width="2"/>
+  <rect x="4" y="38" width="160" height="8" rx="3" fill="#e0e0e0"/>
+  <g><rect x="14" y="16" width="26" height="16" rx="2" fill="#90a4ae"/><rect x="16" y="18" width="22" height="11" fill="#e3f2fd"/>
+  <rect x="112" y="16" width="26" height="16" rx="2" fill="#90a4ae"/><rect x="114" y="18" width="22" height="11" fill="#e3f2fd"/></g>
+  <g><rect x="47.4" y="16.6" width="8" height="7" rx="1" fill="#a5d6a7" transform="rotate(-1.1 51.4 20.1)"/><rect x="66.4" y="16.0" width="8" height="7" rx="1" fill="#ffcc80" transform="rotate(0.5 70.4 19.5)"/><rect x="75.4" y="15.5" width="8" height="7" rx="1" fill="#f48fb1" transform="rotate(-2.4 79.4 19.0)"/><rect x="84.4" y="16.2" width="8" height="7" rx="1" fill="#81d4fa" transform="rotate(-2.2 88.4 19.7)"/><rect x="92.3" y="16.8" width="8" height="7" rx="1" fill="#ce93d8" transform="rotate(-3.9 96.3 20.3)"/><rect x="48.8" y="25.7" width="8" height="7" rx="1" fill="#81d4fa" transform="rotate(-0.2 52.8 29.2)"/><rect x="56.0" y="26.2" width="8" height="7" rx="1" fill="#ffcc80" transform="rotate(-0.8 60.0 29.7)"/><rect x="75.2" y="25.8" width="8" height="7" rx="1" fill="#ffcc80" transform="rotate(3.5 79.2 29.3)"/><rect x="83.5" y="26.1" width="8" height="7" rx="1" fill="#fff176" transform="rotate(1.5 87.5 29.6)"/></g>
+  <circle cx="148" cy="26" r="5" fill="#ffffff" stroke="#8d6e63" stroke-width="2"/><circle cx="148" cy="26" r="2.5" fill="#6d4c41"/>
+</svg>

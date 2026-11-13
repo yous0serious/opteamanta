@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
+  <!-- Explosions-Kranz hinter dem Boss (Scope-Explosion). Eigenes Werk. -->
+  <path d="M110 4 L128 64 L178 26 L156 86 L216 96 L162 126 L200 176 L138 160 L130 216 L104 166 L66 208 L70 148 L8 152 L52 112 L10 70 L72 76 L60 18 Z" fill="#ffee58" stroke="#f9a825" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M110 40 L120 82 L152 64 L140 98 L180 108 L142 124 L164 158 L126 146 L116 180 L102 150 L76 172 L82 136 L44 132 L74 110 L48 80 L88 88 Z" fill="#ffab40"/>
+</svg>

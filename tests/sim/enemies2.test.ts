@@ -5,11 +5,10 @@ import { cellNear, makeGame, place, stepN } from './helpers';
 // Erwartungswerte sind Literale aus der Spec season-2.
 
 function sample(w: number, runs: number): { counts: Record<string, number>; total: number } {
-  const g = makeGame(2024);
   const counts: Record<string, number> = {};
   let total = 0;
   for (let i = 0; i < runs; i++) {
-    g.state.running = false;
+    const g = makeGame(2024 + i);
     g.state.wave = w - 1;
     g.apply({ type: 'startWave' });
     const q: EnemyType[] = g.state.queue.filter((t) => t !== 'boss');

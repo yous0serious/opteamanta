@@ -25,18 +25,40 @@ npm run dev        # http://localhost:5173
 | `npm test` | Alle Vitest-Suites der Simulation |
 | `npm run test:e2e` | Playwright-Smoke-Test im Browser (Chromium, headless) |
 | `npm run replay -- <datei.json>` | Replay headless nachrechnen; Exit 0 = Ergebnis stimmt, 1 = Abweichung, 2 = ungültig |
-| `npm run bench` | Starker Bot, Challenge (Seed 12345): Spiel- und Nachrechenzeit des Replays |
-| `npm run balance` | Balancing-Kennzahlen über 20 Läufe je Bot (`-- --sweep '{…}'`, `-- --balance '{…}'`, `-- --json`) |
-| `npm run assets` | Atlas `public/assets/game.{png,json}` aus `assets-src/` bauen (SVG-Rendering, Farbvarianten) |
-| `npm run check:assets` | Prüft, dass jede Datei in `public/assets/` mit Lizenz in `CREDITS.md` steht (≤ 3 MB) |
+| `npm run bench` | Starker Bot: Challenge (Seed 12345) und Level `solution-5`; Spiel- und Nachrechenzeit, Level/Sterne/Kills |
+| `npm run balance` | Balancing-Kennzahlen über 20 Läufe je Bot (`-- --sweep '{…}'`, `-- --balance '{…}'`, `-- --json`); `-- --levels [n] [ids…]` prüft die 24 Kampagnen-Level |
+| `npm run assets` | Atlas `public/assets/game.json` + Seiten `game-0.png`, `game-1.png` aus `assets-src/` bauen (SVG-Rendering, Farbvarianten, Icons) |
+| `npm run check:assets` | Prüft, dass jede Datei in `public/assets/` und `public/audio/` mit Lizenz in `CREDITS.md` steht (Grafik ≤ 8 MB, Audio ≤ 12 MB) |
 | `npm run test:integration` | Integrationstests gegen das Supabase-Projekt (nicht Teil von `npm test`) |
 | `npm run build:sim` / `db:push` / `fn:deploy` | Sim-Bündel für Deno / Migrationen einspielen / Edge Functions deployen |
+
+## Spielaufbau (Spielversion 0.4.0 – „SAFe Edition“, Spec `specs/campaigns/spec.md`)
+
+Das Spiel startet im **Hauptmenü** (Profil mit Account-Level und XP, Rangliste, Weiterspielen):
+
+- **Kampagne** – die NEON-KFZ-Zentrale als Hochhaus: 4 Etagen = SAFe-Ebenen (Team, ART/PI-Planning-Halle,
+  Large Solution/Serverraum, Portfolio/Vorstandsetage), je 6 Level, Level 6 ist der Boss. Jede Etage hat eigenen Look,
+  eigene Musik und eigene Gegner (Impediment, Spike, Abhängigkeit, Enabler, Compliance-Audit, Schatten-IT,
+  Vendor Lock-in, Epic; Bosse Sprint-Scope-Explosion, Big-Room-Chaos, Integrations-Hydra, Lean Business Case Q4).
+  1–3 Sterne je nach verbleibender Moral; ≥ 1 Stern schaltet das nächste Level frei.
+- **Daily Challenge** (alle dieselbe Karte), **Freies Spiel** (Karte wählen; Challenge 30 zählt für die
+  Karten-Rangliste, Endlos nicht).
+- **XP und Account-Level** (1–50): XP für Kills, Wellen, Sterne, Sieg und Erstabschluss; je Level 1 Skillpunkt.
+- **Skilltree** mit 3 Ästen (Team & Technik, Prozess & Flow, Führung & Kultur), 27 Skills; Respec kostenlos.
+  Skills zählen in Ranglisten – der Server rechnet jeden Lauf mit dem eingefrorenen Skill-Stand nach.
+- **Ranglisten** je Daily, Karte und Level; **21 Erfolge**.
+- Im Spiel: Pause (`P`/Knopf), Wellenvorschau, Zielmodus je Rolle (Erster/Letzter/Stärkster/Nächster),
+  Upgrade-Zweig ab Stufe 3.
+
+Online liegt der Fortschritt im Konto (anonym; per E-Mail-Link sicherbar und auf anderen Geräten nutzbar),
+offline lokal im Browser („nicht gewertet“). Routen: `#/menu`, `#/campaign`, `#/level/<id>`, `#/skills`, `#/ranks`,
+`#/achievements`, `#/free`. Direktlinks mit Spielparametern (z. B. `?map=…&seed=…`) starten wie früher sofort ein
+freies Spiel ohne Menü. Entwicklung: `npm run dev` + `?shell=mock` zeigt die Shell mit Testdaten.
 
 ## Steuerung
 
 **Modi:** *Challenge* (Standard) – 30 Wellen, danach „RELEASE ERFOLGREICH!“ mit Moral-Bonus (Moral × 100);
-*Endlos* – bis zum Burnout. Wahl in der Seitenleiste vor dem ersten Sprint oder per `?mode=endless`.
-Spielversion 0.3.0 – **Saison 2** (Spec `specs/season-2/spec.md`, Werte in `src/sim/data/`).
+*Endlos* – bis zum Burnout; *Level* – Kampagnen-Level mit eigener Wellenzahl.
 
 | Rolle | Taste | Kosten | Wirkung |
 |---|---|---|---|
@@ -56,7 +78,8 @@ Spielversion 0.3.0 – **Saison 2** (Spec `specs/season-2/spec.md`, Werte in `sr
 | Klick aufs Feld | Platzieren bzw. vorhandenen Arbeitsplatz auswählen |
 | `U` / `S` | Upgrade / Abgeben (ausgewählter Arbeitsplatz) |
 | Leertaste / großer Button | Nächster Sprint, nach Spielende neu starten |
-| `Esc` / Rechtsklick | Auswahl aufheben |
+| `P` / Pause-Knopf | Pause (Planen und Platzieren in der Pause möglich) |
+| `Esc` / Rechtsklick | Auswahl aufheben bzw. Pause beenden |
 
 **Handy/Tablet (Touch):** Rolle antippen, dann ein Feld antippen – das zeigt nur die Vorschau (Reichweite, frei/belegt);
 erneutes Tippen auf dasselbe Feld oder „Hier einsetzen“ platziert. Man kann auch zuerst das Feld und dann die Rolle
@@ -128,25 +151,27 @@ rechnen. Daher gilt – per ESLint erzwungen:
 - Zustand ändert sich nur über `Game.apply(command)` und `Game.step()`; die Darstellung liest nur.
 - Jede Balancing-Änderung erhöht `GAME_VERSION` (`src/sim/version.ts`) – alte Replays sind dann nicht mehr vergleichbar.
 
-## Replay-Format 2 (Spielversion 0.2.0)
+## Replay-Format 3 (Spielversion 0.4.0)
 
 ```json
 {
-  "format": 2,
-  "gameVersion": "0.2.0",
+  "format": 3,
+  "gameVersion": "0.4.0",
   "seed": 12345,
-  "mapId": "matrix",
-  "mode": "challenge",
-  "commands": [[0, "place", "dev", 10, 4], [0, "startWave"], [1830, "upgrade", 1]],
-  "endTick": 60194,
-  "result": { "score": 26500, "wave": 26, "lives": -20, "over": true, "won": false }
+  "levelId": "team-3",
+  "mapId": "waterfall",
+  "mode": "level",
+  "loadout": { "pair": 2, "wsjf": 1 },
+  "commands": [[0, "place", "dev", 10, 4], [0, "startWave"], [900, "target", 1, "strong"], [1830, "upgrade", 1, "a"]],
+  "endTick": 40194,
+  "result": { "score": 12100, "wave": 10, "lives": 85, "over": true, "won": true, "kills": 180, "stars": 3, "leaks": 1 }
 }
 ```
 
 Kommandos gelten im angegebenen Tick vor dessen `step()`. Aufgezeichnet werden nur angenommene Kommandos.
-`parseReplay` lehnt Format 1, fremde Spielversionen, unbekannte Modi und Werte außerhalb der Grenzen ab
-(Feldgröße, Tick-/Kommando-Limits). Nach Spielende speichert das Spiel das Replay in
-`localStorage['bd.lastReplay']`; der Button „💾 Replay herunterladen“ exportiert es als Datei.
+`upgrade` braucht beim Schritt auf Stufe 3 den Zweig (`a`/`b`). `parseReplay` lehnt Format 1/2, fremde Spielversionen,
+unbekannte Level/Modi/Skills und Werte außerhalb der Grenzen ab (Feldgröße, Tick-/Kommando-Limits). Nach Spielende
+speichert das Spiel das Replay in `localStorage['bd.lastReplay']`; der Button „Replay“ exportiert es als Datei.
 
 ## Grafik und Assets
 
@@ -166,8 +191,13 @@ Look „Cartoon-Büro“ (Spec `office-makeover`, ADR-0005), ausschließlich CC0
 - **Saison-2-Figuren:** RTE, RTA, RTO, Vorstand und Statisten entstehen beim Asset-Build aus den Kenney-Figuren
   (Umfärben + eigenes Zubehör, `tools/characters.ts`; Kopfposition je Pose per Template-Matching).
 - **Audio (ADR-0006):** CC0-Musik von OpenGameArt (Planung: „Two Left Socks“, Welle: „Raspberry Jam“,
-  Boss: „Hard Boss Battle 1“), Kenney-Jingles und -Soundeffekte, Telefon und Drucker prozedural (WebAudio).
-  Quellen und Lizenzbelege: `assets-src/audio/SOURCES.md`, `public/assets/CREDITS.md`; Budget ≤ 8 MB.
+  Boss: „Hard Boss Battle 1“, dazu Planungs-/Wellen-Musik je Kampagnen-Etage), Kenney-Jingles, -Soundeffekte und
+  UI-Klänge, Telefon und Drucker prozedural (WebAudio).
+  Quellen und Lizenzbelege: `assets-src/audio/SOURCES.md`, `public/assets/CREDITS.md`; Budget ≤ 12 MB.
+- **Kampagnen-Looks** (`src/view/render/office/themes.ts`): Großraumbüro (Eiche, Fensterlicht), PI-Planning-Halle
+  (Teppich, Program Board, Flipcharts, Spots), Serverraum (helle Fliesen, Racks mit LEDs, Kabelkanäle, kühles Licht),
+  Vorstandsetage (Marmor, Glas, Ledermöbel, Skyline-Licht). Icons für Gegner, Skills, Erfolge, Kampagnen aus
+  Kenney „Board Game Icons“/„Game Icons“ und eigenen SVGs; zwei Atlas-Seiten (`game-0.png`, `game-1.png`).
 - Farben werden beim Build vorgefärbt bzw. Silhouetten vorgerendert, damit das Spiel auch im Canvas-Renderer (ohne
   WebGL) vollständig aussieht; mit WebGL und `fx=high` kommt ein weicher Schatten dazu. Keine abdunkelnden Filter.
 - Bewegungsreduktion: Bei `prefers-reduced-motion: reduce` entfallen Wackeln, Hitstop, Lauf- und Atemanimationen.
@@ -184,10 +214,10 @@ eingereichte Replay nach und trägt nur den **selbst berechneten** Score ein (AD
 [`specs/leaderboard-supabase/spec.md`](specs/leaderboard-supabase/spec.md)). Ohne die beiden Variablen läuft das
 Spiel offline („Bestenliste offline“, keine Netzwerkaufrufe).
 
-Online startet beim Öffnen automatisch ein Daily-Lauf; jeder bekommt einen automatischen Teamnamen
-(„<Adjektiv> <Tier> <NNNN>“, per Klick änderbar), Ergebnisse werden nach Spielende ohne Dialog eingereicht und
-„Nochmal“ startet einen neuen Daily-Versuch. Der Schalter „Freies Spiel“ wechselt zu lokalen Spielen
-(Challenge oder Endlos), die nicht in die Bestenliste eingehen.
+Online meldet sich das Spiel anonym an; jeder bekommt einen automatischen Teamnamen („<Adjektiv> <Tier> <NNNN>“,
+änderbar). Gewertete Läufe (Daily, Kampagnen-Level, Challenge 30 auf einer Karte) werden nach Spielende ohne Dialog
+eingereicht; XP, Level-Bestwerte und Erfolge schreibt nur der Server nach dem Nachrechnen gut. Direktlinks mit
+Spielparametern nutzen weiter den alten Ablauf (automatischer Daily-Lauf, Schalter „Freies Spiel“).
 
 ```
 VITE_SUPABASE_URL=https://<projekt>.supabase.co          # Netlify-Umgebungsvariable
@@ -197,7 +227,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...          # browser-tauglich, Re
 | Baustein | Ort |
 |---|---|
 | Schema, RLS, RPCs, Cron-Jobs | `supabase/migrations/` → `npm run db:push` (Management-API, Token aus `supabase_token.txt`) |
-| Edge Functions `start-run`, `submit-run`, `verify-runs` | `supabase/functions/` → `npm run fn:deploy` |
+| Edge Functions `start-run` (Daily/Level/Karte, friert Skill-Stand ein), `submit-run`, `verify-runs` (XP, Erfolge, Level-Bestwerte), `allocate-skill` | `supabase/functions/` → `npm run fn:deploy` |
 | Simulation für Deno | `npm run build:sim` → `supabase/functions/_shared/sim.js` (Test schlägt fehl, wenn veraltet) |
 | Integrationstests gegen das Projekt | `npm run test:integration` (braucht `supabase.txt`, `supabase_secret.txt`, `.agent-state/fn_secrets.json`) |
 
@@ -216,8 +246,11 @@ Function-Secrets im Projekt: `DAILY_SECRET` (Tages-Seed), `VERIFY_SECRET` (Prüf
   danach `npm run build:sim` und `npm run fn:deploy`.
 - *Wartung:* Cron `leaderboard-maintenance` (03:15 UTC) löscht abgelaufene Sessions und anonyme Nutzer ohne Profil
   und ohne Läufe nach 30 Tagen; Cron `verify-runs` prüft minütlich liegengebliebene Einreichungen.
-- *Grenzen:* bis 30 Daily-Läufe pro Nutzer und Tag, 30 anonyme Anmeldungen pro Stunde und IP (Supabase-Standard).
+- *Grenzen:* bis 30 Daily-Läufe und 150 Level-/Karten-Läufe pro Nutzer und Tag, 30 anonyme Anmeldungen pro Stunde
+  und IP (Supabase-Standard), Replays höchstens 200.000 Ticks.
   Bots/TAS lassen sich nicht ausschließen (Anti-Cheat-Analyse: `.ai/knowledge/requirements/anti-cheat.md`).
+- *Konto sichern (E-Mail-Link):* In Supabase Auth die Seiten-URLs (Produktion, Netlify-Previews, localhost) als
+  Redirect-URLs erlauben und einen eigenen SMTP-Versand einrichten (der eingebaute erlaubt nur ~2 Mails/Stunde).
 
 ## Weiterführend
 

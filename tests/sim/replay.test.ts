@@ -12,10 +12,12 @@ function recorded(): ReturnType<typeof runScript> {
 const raw = (): any => JSON.parse(JSON.stringify(recorded().toReplay()));
 
 describe('AC-10 Replay', () => {
-  it('Format 2, Roundtrip, runReplay stimmt überein und liefert denselben Hash', () => {
+  it('Format 3, Roundtrip, runReplay stimmt überein und liefert denselben Hash', () => {
     const g = recorded();
     const r = g.toReplay();
-    expect(r.format).toBe(2);
+    expect(r.format).toBe(3);
+    expect(r.levelId).toBeNull();
+    expect(r.loadout).toEqual({});
     expect(r.mode).toBe('challenge');
     expect(r.result.won).toBe(false);
     expect(r.seed).toBe(42);
@@ -60,10 +62,12 @@ describe('AC-10 parseReplay', () => {
   it('akzeptiert gültiges Replay', () => {
     expect(() => parseReplay(raw())).not.toThrow();
   });
-  it('wirft bei format 1 mit Meldung', () => {
+  it('wirft bei format 1 und 2 mit Meldung', () => {
     const r = raw();
     r.format = 1;
     expect(() => parseReplay(r)).toThrow(/Replay-Format 1/);
+    r.format = 2;
+    expect(() => parseReplay(r)).toThrow(/Replay-Format 2/);
   });
   it('wirft bei falscher gameVersion', () => {
     const r = raw();

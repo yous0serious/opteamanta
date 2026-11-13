@@ -28,12 +28,22 @@
     <div class="chip" title="Score"><i class="ico ico-trophy"></i><b id="score"></b></div>
     <div class="chip chip-map" title="Karte"><i class="ico ico-map"></i><b id="map"></b></div>
     <button id="team-name" class="chip chip-team" hidden title="Teamname ändern"></button>
+    <button id="pause" class="chip chip-gear chip-pause" title="Pause (P)" aria-label="Pause" aria-pressed="false"><i class="ico ico-pause"></i></button>
+    <button id="to-menu" class="chip chip-gear chip-menu" title="Hauptmenü" aria-label="Hauptmenü"><i class="ico ico-menu"></i></button>
     <button id="fullscreen" class="chip chip-gear" hidden title="Vollbild" aria-label="Vollbild" aria-pressed="false"><i class="ico ico-full"></i></button>
     <button id="open-settings" class="chip chip-gear" title="Einstellungen" aria-label="Einstellungen" aria-haspopup="dialog"><i class="ico ico-gear"></i></button>
   </div>
 </header>
 <div id="wrap">
-  <div id="frame"><div id="game"></div></div>
+  <div id="frame"><div id="game"></div>
+    <div id="pause-overlay" hidden>
+      <div class="po-card" role="dialog" aria-modal="false" aria-labelledby="po-title">
+        <h2 id="po-title">Pause</h2>
+        <p>Kaffeepause – das Board wartet.<span class="po-key"> Weiter mit P.</span></p>
+        <div class="row"><button type="button" id="po-resume" class="go">Weiter</button><button type="button" id="po-menu">Hauptmenü</button></div>
+      </div>
+    </div>
+  </div>
   <div id="rotate-tip" role="note">Tipp: Handy quer halten – größeres Spielfeld. <button type="button" id="rotate-tip-close" aria-label="Tipp ausblenden">OK</button></div>
   <aside id="side">
     <section class="card" id="team-card">
@@ -47,6 +57,7 @@
         <button id="spd" title="Tempo (auch im Einstellungen-Popup)">x1</button>
         <button id="mute" title="Ton an/aus">Ton</button>
       </div>
+      <div id="wave-preview" class="wave-preview" hidden><span class="wp-lbl">Nächste Welle</span><span class="wp-list" id="wp-list"></span></div>
       <div class="row ctl-end">
         <button id="replay" hidden title="Replay herunterladen">Replay</button>
         <button id="share" hidden title="Ergebnis teilen">Teilen</button>
@@ -70,6 +81,7 @@
   </aside>
 </div>
 <div id="ticker"><span id="tk"></span></div>
+<div id="shell" hidden></div>
 <dialog id="settings-dialog" aria-labelledby="settings-title">
   <form method="dialog">
     <h2 id="settings-title">Einstellungen</h2>
@@ -109,6 +121,7 @@
     <div class="row"><button value="close" id="settings-close">Fertig</button></div>
   </form>
 </dialog>
+<script type="module" src="/src/ui/dev/entry.ts"></script>
 <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

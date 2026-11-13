@@ -188,7 +188,7 @@ test.describe('AC-7 game feel', () => {
     await page.evaluate((id) => {
       const bd = (window as unknown as W).__bd;
       bd.game.state.money = 1e6;
-      bd.command({ type: 'upgrade', towerId: id });
+      bd.command({ type: 'upgrade', towerId: id, branch: 'a' });
     }, ids[0]!);
     await expect.poll(async () => (await effects(page))['juice:promotions'] ?? 0).toBeGreaterThan(before);
   });

@@ -60,7 +60,7 @@ describe('AC-4 Upgrade und Verkauf', () => {
     for (let i = 0; i < 4; i++) {
       costs.push(g.upgradeCost(t));
       const before = g.state.money;
-      const ev = g.apply({ type: 'upgrade', towerId: t.id });
+      const ev = g.apply({ type: 'upgrade', towerId: t.id, branch: 'b' });
       const up = ev.find((e) => e.type === 'upgraded');
       expect(up).toBeDefined();
       expect(before - g.state.money).toBe(costs[i]);

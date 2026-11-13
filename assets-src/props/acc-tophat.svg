@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="104" viewBox="0 0 130 104">
+  <!-- Zylinder (Lean Business Case). Eigenes Werk. -->
+  <ellipse cx="65" cy="88" rx="62" ry="13" fill="#37474f" stroke="#1c262b" stroke-width="5"/>
+  <path d="M26 88 L32 10 Q65 0 98 10 L104 88 Q65 100 26 88 Z" fill="#455a64" stroke="#1c262b" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M29 64 Q65 74 101 64 L102 80 Q65 90 28 80 Z" fill="#43a047"/>
+  <path d="M44 16 L40 58" stroke="#78909c" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="88" cy="72" r="8" fill="#ffd54f" stroke="#c77800" stroke-width="3"/>
+</svg>

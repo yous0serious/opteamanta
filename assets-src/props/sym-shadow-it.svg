@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Schatten-IT: Gespenst. Eigenes Werk. -->
+  <g fill="none" stroke="#2b3440" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 41 L11 21 A13 13 0 0 1 37 21 L37 41 L32 36 L27 41 L21 36 L16 41 Z"/>
+  </g>
+  <circle cx="19" cy="21" r="2.6" fill="#2b3440"/><circle cx="29" cy="21" r="2.6" fill="#2b3440"/>
+</svg>

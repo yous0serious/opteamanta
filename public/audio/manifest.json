@@ -27,6 +27,30 @@
     "jingle-boss": {
       "file": "music/jingle-boss.mp3",
       "loop": false
+    },
+    "music-planning-big-room": {
+      "file": "music/music-planning-big-room.mp3",
+      "loop": true
+    },
+    "music-wave-big-room": {
+      "file": "music/music-wave-big-room.mp3",
+      "loop": true
+    },
+    "music-planning-server-room": {
+      "file": "music/music-planning-server-room.mp3",
+      "loop": true
+    },
+    "music-wave-server-room": {
+      "file": "music/music-wave-server-room.mp3",
+      "loop": true
+    },
+    "music-planning-boardroom": {
+      "file": "music/music-planning-boardroom.mp3",
+      "loop": true
+    },
+    "music-wave-boardroom": {
+      "file": "music/music-wave-boardroom.mp3",
+      "loop": true
     }
   },
   "sfx": {
@@ -49,6 +73,13 @@
     "combo": "sfx/combo.mp3",
     "applause": "sfx/applause.mp3",
     "jam": "sfx/jam.mp3",
-    "businessValue": "sfx/businessValue.mp3"
+    "businessValue": "sfx/businessValue.mp3",
+    "ui-click": "sfx/ui-click.mp3",
+    "ui-hover": "sfx/ui-hover.mp3",
+    "ui-open": "sfx/ui-open.mp3",
+    "ui-back": "sfx/ui-back.mp3",
+    "star": "sfx/star.mp3",
+    "levelup": "sfx/levelup.mp3",
+    "xp-tick": "sfx/xp-tick.mp3"
   }
 }

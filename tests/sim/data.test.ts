@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COLS, DT, ENEMIES, HEIGHT, LEVEL_DMG, LEVEL_RATE, MAPS, ROWS, TICK_RATE, TILE, TOWERS, TOWER_ORDER, WIDTH } from '../../src/sim/index';
+import { COLS, DT, ENEMIES, FREE_MAPS, HEIGHT, LEVEL_DMG, LEVEL_RATE, MAPS, ROWS, TICK_RATE, TILE, TOWERS, TOWER_ORDER, WIDTH } from '../../src/sim/index';
 
 describe('AC-3 Konstanten', () => {
   it('Spielfeld und Takt', () => {
@@ -83,8 +83,10 @@ describe('AC-3 Karten', () => {
     'release-train': ['Release-Train', [[-1, 7], [5, 7], [5, 2], [11, 2], [11, 12], [17, 12], [17, 4], [21, 4], [21, 9], [24, 9]]],
     matrix: ['Matrix-Organisation', [[-1, 12], [4, 12], [4, 2], [9, 2], [9, 9], [14, 9], [14, 1], [20, 1], [20, 13], [24, 13]]],
   };
-  it('Reihenfolge', () => {
-    expect(MAPS.map((m) => m.id)).toEqual(['spaghetti', 'waterfall', 'release-train', 'matrix']);
+  it('Reihenfolge: die vier Original-Karten vorne (D-2: freie Spiele ziehen nur aus FREE_MAPS)', () => {
+    expect(MAPS.slice(0, 4).map((m) => m.id)).toEqual(['spaghetti', 'waterfall', 'release-train', 'matrix']);
+    expect(FREE_MAPS.map((m) => m.id)).toEqual(['spaghetti', 'waterfall', 'release-train', 'matrix']);
+    expect(MAPS.length).toBe(16);
   });
   it.each(Object.keys(expected))('%s', (id) => {
     const m = MAPS.find((x) => x.id === id)!;

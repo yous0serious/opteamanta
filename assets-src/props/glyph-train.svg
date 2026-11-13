@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Zug-Glyphe (weiß, für Kampagnen-Emblem ART) (eigenes Werk) -->
+  <g fill="#ffffff">
+    <rect x="20" y="26" width="60" height="58" rx="8"/>
+    <rect x="74" y="44" width="38" height="40" rx="8"/>
+    <rect x="30" y="12" width="22" height="18" rx="4"/>
+    <rect x="8" y="80" width="112" height="10" rx="5"/>
+    <circle cx="36" cy="98" r="13"/><circle cx="70" cy="98" r="13"/><circle cx="100" cy="98" r="11"/>
+  </g>
+  <g fill="#000000" opacity="0.28"><rect x="30" y="36" width="20" height="18" rx="3"/><rect x="56" y="36" width="16" height="18" rx="3"/></g>
+</svg>

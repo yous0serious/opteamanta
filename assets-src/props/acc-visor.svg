@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="96" viewBox="0 0 150 96">
+  <!-- Prüfer-Helm mit Visier (Compliance). Eigenes Werk. -->
+  <path d="M12 70 Q12 6 75 6 Q138 6 138 70 Z" fill="#b0bec5" stroke="#546e7a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M75 6 L75 70" stroke="#78909c" stroke-width="7"/>
+  <rect x="6" y="62" width="138" height="26" rx="10" fill="#90a4ae" stroke="#546e7a" stroke-width="5"/>
+  <g stroke="#37474f" stroke-width="5" stroke-linecap="round"><path d="M24 75 L60 75"/><path d="M90 75 L126 75"/></g>
+  <path d="M32 44 Q38 22 58 16" stroke="#eceff1" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle cx="75" cy="20" r="6" fill="#ffd54f" stroke="#546e7a" stroke-width="3"/>
+</svg>

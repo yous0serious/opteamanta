@@ -18,10 +18,14 @@ try {
 }
 
 const r = runReplay(replay);
-console.log(`mode=${replay.mode} wave=${r.wave} lives=${r.lives} won=${r.won} score=${r.score} tick=${r.tick} hash=${r.hash} matches=${r.matches}`);
+console.log(
+  `mode=${replay.mode} level=${replay.levelId ?? '-'} map=${replay.mapId} wave=${r.wave} lives=${r.lives} won=${r.won} stars=${r.stars} ` +
+    `kills=${r.kills} leaks=${r.leaks} score=${r.score} tick=${r.tick} hash=${r.hash} matches=${r.matches}`,
+);
 if (!r.matches) {
   console.error(
     `Abweichung: erwartet wave=${replay.result.wave} lives=${replay.result.lives} score=${replay.result.score} ` +
+      `stars=${replay.result.stars} kills=${replay.result.kills} leaks=${replay.result.leaks} ` +
       `over=${replay.result.over} endTick=${replay.endTick}`,
   );
   process.exit(1);

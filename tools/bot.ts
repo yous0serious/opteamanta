@@ -1,10 +1,28 @@
-import { COLS, Game, ROWS, TILE, TOWERS, type Tower, type TowerType } from '../src/sim/index';
+import { COLS, Game, ROWS, TILE, type Branch, type Tower, type TowerType } from '../src/sim/index';
 import type { BotOptions } from './bot-strong';
 
 /** Kauf-Rotation des Referenz-Bots: Mix aus Spec 1, ab Saison 2 inkl. RTO, RTA und RTE (Spec season-2 AC-4). */
 export const BOT_ROTATION: readonly TowerType[] = ['dualo', 'dev', 'analyst', 'ppl', 'scrum', 'dev', 'rto', 'rta', 'rte'];
 
+/** Zweigwahl der Bots beim Schritt Stufe 2 → 3 (Spec campaigns). */
+export const BOT_BRANCH: Readonly<Record<TowerType, Branch>> = {
+  dualo: 'a', analyst: 'a', dev: 'b', ppl: 'a', scrum: 'a', rte: 'a', rta: 'a', rto: 'a', board: 'b',
+};
+
 const MAX_TICKS_PER_WAVE = 60 * 60 * 10;
+
+/** Upgrade-Kommando inkl. Zweig, falls der Schritt 2 → 3 ansteht. */
+export function upgradeCommand(t: Tower): { type: 'upgrade'; towerId: number; branch?: Branch } {
+  return t.level === 2 ? { type: 'upgrade', towerId: t.id, branch: BOT_BRANCH[t.type] } : { type: 'upgrade', towerId: t.id };
+}
+
+/** Neues Spiel für die Bot-Optionen (Level, Loadout, Modus). */
+export function botGame(opts: BotOptions): Game {
+  return new Game({
+    seed: opts.seed, mapId: opts.levelId ? undefined : opts.mapId, mode: opts.levelId ? 'level' : (opts.mode ?? 'endless'),
+    levelId: opts.levelId, loadout: opts.loadout, balance: opts.balance,
+  });
+}
 
 /** Freie Zellen, sortiert nach Abstand zur Pfadmitte, dann cy, dann cx. */
 function candidateCells(game: Game): Array<[number, number]> {
@@ -24,17 +42,20 @@ function candidateCells(game: Game): Array<[number, number]> {
 /**
  * Referenz-Bot: vor jeder Welle Türme der Rotation kaufen, sonst das billigste Upgrade, dann Welle spielen.
  * Endet bei Game Over, Sieg oder nach maxWave abgeschlossenen Wellen. Standardmodus: endless.
+ * In Leveln nutzt er nur die freigeschalteten Rollen.
  */
 export function playBot(opts: BotOptions): Game {
-  const game = new Game({ seed: opts.seed, mapId: opts.mapId, mode: opts.mode ?? 'endless', balance: opts.balance });
+  const game = botGame(opts);
+  const rotation = BOT_ROTATION.filter((r) => game.roles.includes(r));
   const cells = candidateCells(game);
   let next = 0;
   const s = game.state;
-  while (!s.over && s.wave < opts.maxWave) {
+  const maxWave = s.waves ?? opts.maxWave;
+  while (!s.over && s.wave < Math.min(opts.maxWave, maxWave)) {
     for (;;) {
-      const type = BOT_ROTATION[next % BOT_ROTATION.length]!;
+      const type = rotation[next % rotation.length]!;
       const cell = cells.find(([cx, cy]) => game.canPlace(type, cx, cy) === null);
-      if (cell && s.money >= TOWERS[type].cost) {
+      if (cell && s.money >= game.towerCost(type)) {
         game.apply({ type: 'place', tower: type, cx: cell[0], cy: cell[1] });
         next++;
         continue;
@@ -49,7 +70,7 @@ export function playBot(opts: BotOptions): Game {
         }
       }
       if (cheapest && s.money >= cheapestCost) {
-        game.apply({ type: 'upgrade', towerId: cheapest.id });
+        game.apply(upgradeCommand(cheapest));
         continue;
       }
       break;

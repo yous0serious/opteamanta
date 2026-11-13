@@ -8,5 +8,6 @@
 | 3a `balancing-challenge` | Challenge-Modus (30 Wellen, Sieg + Moral-Bonus), Endlos-Modus, exponentielle HP-Kurve, knappe Wirtschaft, zäher Boss; per Bot-Tuning (`npm run balance`); Spielversion 0.2.0, Replay-Format 2, gehärteter Parser | Done |
 | 3b `leaderboard-supabase` | Supabase (Projekt vorhanden, Zugang in `supabase.txt`, nicht im Git): Anonymous Auth + Nickname (kein Captcha), Run-Sessions mit serverseitigem Seed, Daily Seed, asynchrone Replay-Prüfung, RLS, Rangliste „30 Wellen + Daily“ pro Spielversion, Live-Highscores im Ticker. Vorarbeit: `.ai/knowledge/requirements/anti-cheat.md` | Done |
 | 4 `office-makeover` | Heller Cartoon-Büro-Look (Kenney-CC0 + eigene SVGs): erzeugte Böden, Kanban-Laufband, Teammitglieder mit Posen an Schreibtischen, Monster mit Tickets, Effekte und Bodenflecken, neue Oberfläche; Daily startet automatisch mit automatischem Teamnamen | Done |
-| 4 `content` | Neue Karten (Tiled), Upgrade-Zweige ab Stufe 3, Wellenvorschau, Zielmodi, Daily Challenge (fester Seed), Achievements, Menü | geplant |
+| 4 `content` | Neue Karten, Upgrade-Zweige ab Stufe 3, Wellenvorschau, Zielmodi, Daily Challenge, Achievements, Menü | Done (`campaigns`) |
+| 6 `campaigns` | Hauptmenü, 4 Kampagnen × 6 Level, 12 neue Gegner/Bosse, XP/Account-Level, Skilltree, Ranglisten je Karte/Level/Daily, Erfolge (Spielversion 0.4.0) | umgesetzt, Deploy offen |
 | 5 `polish` | Mobile/Touch (umgesetzt: Layouts hoch/quer, Tippen mit Bestätigung, Web-App-Manifest, Vollbild), Barrierefreiheit, Performance, Hosting | teilweise |

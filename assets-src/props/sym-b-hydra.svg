@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Integrations-Hydra: verzweigte Schnittstellen. Eigenes Werk. -->
+  <g fill="none" stroke="#2b3440" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 44 L24 28 M24 28 L10 14 M24 28 L24 10 M24 28 L38 14"/>
+  </g>
+  <g fill="#ffffff" stroke="#2b3440" stroke-width="3"><circle cx="10" cy="11" r="5"/><circle cx="24" cy="8" r="5"/><circle cx="38" cy="11" r="5"/></g>
+</svg>

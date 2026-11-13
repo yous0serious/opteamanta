@@ -74,13 +74,13 @@ button { font-family: var(--text); }
 .row { display: flex; gap: 6px; }
 .row button { flex: 1; }
 
-button {
+button:where(:not(#shell *)) {
   background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px; cursor: pointer;
   font-size: 12.5px; font-weight: 700; transition: transform .08s, box-shadow .12s, background .12s;
 }
-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(38, 50, 56, .12); }
-button:active:not(:disabled) { transform: translateY(0); }
-button:disabled { opacity: .45; cursor: default; }
+button:where(:not(#shell *)):hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(38, 50, 56, .12); }
+button:where(:not(#shell *)):active:not(:disabled) { transform: translateY(0); }
+button:where(:not(#shell *)):disabled { opacity: .45; cursor: default; }
 .seg { background: #f1f4f6; border-radius: 10px; padding: 3px; gap: 3px; }
 .seg button { border: none; background: transparent; padding: 4px 6px; box-shadow: none; }
 .seg button.active { background: #fff; box-shadow: 0 1px 4px rgba(38, 50, 56, .15); color: #00796b; }
@@ -221,7 +221,7 @@ html.touch .tw .key, html.touch #team-card h2 small { display: none; }
 html.touch #info { min-height: 68px; }
 @media (hover: none) {
   /* Touch: kein „klebender“ Hover-Zustand nach dem Antippen */
-  button:hover:not(:disabled) { transform: none; box-shadow: none; }
+  button:where(:not(#shell *)):hover:not(:disabled) { transform: none; box-shadow: none; }
   #big:hover { box-shadow: 0 4px 0 #00695c, 0 6px 14px rgba(0, 105, 92, .35); }
   #big.running:hover { box-shadow: 0 4px 0 #546e7a; }
   #big.over:hover { box-shadow: 0 4px 0 #b71c1c; }
@@ -327,3 +327,140 @@ html.touch #info { min-height: 68px; }
   .ctl-main #spd, .ctl-main #mute { min-width: 44px; }
   #ticker, #rotate-tip { display: none; }
 }
+
+/* ---------- Kampagnen-HUD (Spec campaigns): Pause, Menü, Wellenvorschau, Zielmodus, Upgrade-Zweige, gesperrte Rollen ---------- */
+#frame { position: relative; }
+.ico-pause { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='6' y='5' width='4.2' height='14' rx='1.4' fill='%23607d8b'/%3E%3Crect x='13.8' y='5' width='4.2' height='14' rx='1.4' fill='%23607d8b'/%3E%3C/svg%3E"); }
+.chip-pause.on .ico-pause { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5.5v13a1 1 0 0 0 1.5.9l10.2-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z' fill='%23fff'/%3E%3C/svg%3E"); }
+.ico-menu { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23607d8b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11.5L12 4l8 7.5'/%3E%3Cpath d='M6.5 10v9.5h11V10'/%3E%3Cpath d='M10 19.5v-5h4v5'/%3E%3C/svg%3E"); }
+.chip-pause.on { background: var(--teal); border-color: transparent; box-shadow: 0 0 0 3px rgba(38, 166, 154, .3), var(--shadow); }
+.chip-pause:disabled { opacity: .4; }
+/* Menü-Knöpfe nur mit Shell (Hauptmenü vorhanden) */
+#to-menu, #po-menu { display: none; }
+html.has-shell #to-menu { display: inline-flex; }
+html.has-shell #po-menu { display: block; }
+
+#pause-overlay {
+  position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: rgba(243, 239, 232, .55); -webkit-backdrop-filter: blur(4px) saturate(.85); backdrop-filter: blur(4px) saturate(.85);
+  animation: po-in .2s ease-out;
+}
+#pause-overlay[hidden] { display: none; }
+#pause-overlay .po-card {
+  position: relative; width: min(340px, 100%); padding: 22px 22px 18px; border-radius: 18px; background: #fff; text-align: center;
+  box-shadow: 0 2px 4px rgba(38, 50, 56, .08), 0 22px 50px rgba(38, 50, 56, .25);
+}
+#pause-overlay .po-card::before {
+  content: ''; position: absolute; top: -10px; left: 50%; width: 90px; height: 22px; transform: translateX(-50%) rotate(-2deg);
+  background: rgba(255, 243, 166, .9); box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+}
+#pause-overlay h2 { margin: 0 0 6px; font-family: var(--hand); font-size: 40px; line-height: 1; color: #00796b; }
+#pause-overlay p { margin: 0 0 16px; color: var(--muted); font-size: 14px; font-weight: 600; }
+#pause-overlay .row { gap: 8px; }
+#pause-overlay button { min-height: 44px; font-size: 14px; border-radius: 12px; }
+#pause-overlay button.go { background: linear-gradient(180deg, #2bbbad, #00897b); color: #fff; border: none; box-shadow: 0 3px 0 #00695c; }
+html.touch #pause-overlay .po-key { display: none; }
+@keyframes po-in { from { opacity: 0; } }
+
+.wave-preview {
+  display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 4px 8px; border-radius: 10px; background: #f8fafb;
+  border: 1px dashed #cfd8dc; overflow: hidden;
+}
+.wave-preview[hidden] { display: none; }
+/* Desktop: Vorschau flach halten, damit die Bestenliste bei 768 px Höhe genug Platz behält (Spec season-2 AC-12) */
+@media (min-width: 761px) and (min-height: 541px) { .wave-preview { min-height: 28px; padding: 2px 8px; } #control-card { gap: 4px; } }
+@media (min-width: 1101px) and (max-height: 820px) { #side { gap: 7px; } #side > .card { padding: 8px 10px; } }
+.wp-lbl { flex: none; font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.wp-list { display: flex; align-items: center; gap: 4px 8px; flex-wrap: wrap; min-width: 0; }
+.wp-item { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 800; }
+.wp-item .ui-ico { border-radius: 6px; }
+.wp-item .enemy-dot {
+  display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; color: #fff;
+  font-size: 8px; font-weight: 900; text-transform: uppercase;
+}
+.wp-item.boss { color: var(--red); }
+.wp-item.boss .ui-ico { box-shadow: 0 0 0 2px var(--red); background: #fff; }
+
+/* Zielmodus (angreifende Rollen) */
+#info .target-seg { display: flex; align-items: center; gap: 2px; margin: 6px 0 2px; padding: 2px; border-radius: 9px; background: #eef2f4; }
+#info .target-seg .ts-lbl { flex: none; padding: 0 5px 0 4px; font-size: 10.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+#info .target-seg button {
+  flex: 1 1 0; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: 3px; margin: 0; padding: 4px 2px;
+  border: 0; background: transparent; box-shadow: none; font-size: 10.5px; color: var(--muted); border-radius: 7px; white-space: nowrap;
+}
+#info .target-seg button.active { background: #fff; color: #00796b; box-shadow: 0 1px 3px rgba(38, 50, 56, .18); }
+#info .target-seg .ts-ico { display: inline-flex; width: 13px; height: 13px; flex: none; }
+#info .target-seg .ts-ico svg { width: 100%; height: 100%; }
+#info .target-seg .ts-txt { overflow: hidden; text-overflow: ellipsis; }
+
+/* Upgrade-Zweige (Stufe 2 -> 3) */
+#info .branch-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 6px 0 2px; }
+#info .branch-pick.flash { animation: bp-flash .6s ease-out 2; }
+#info button.branch {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin: 0; padding: 6px 7px; min-width: 0; text-align: left;
+  border: 1.5px solid #b2dfdb; border-radius: 10px; background: linear-gradient(180deg, #fff, #f1faf9); line-height: 1.2;
+}
+#info button.branch:nth-child(2) { border-color: #d1c4e9; background: linear-gradient(180deg, #fff, #f6f2fc); }
+#info button.branch b { font-size: 12px; color: var(--ink); }
+#info button.branch small { font-size: 10.5px; font-weight: 600; color: var(--muted); white-space: normal; }
+#info button.branch .bc { display: inline-flex; align-items: center; gap: 2px; margin-top: 2px; font-size: 11px; font-weight: 800; color: #f57f17; }
+#info button.branch .bc .ico { width: 12px; height: 12px; }
+@keyframes bp-flash { 50% { box-shadow: 0 0 0 4px rgba(255, 202, 40, .55); border-radius: 12px; } }
+
+/* Rollen, die das Level (noch) nicht erlaubt */
+.tw.locked { background: repeating-linear-gradient(135deg, #f6f7f8 0 6px, #eef1f3 6px 12px); border-style: dashed; }
+.tw.locked .pt, .tw.locked .nm, .tw.locked .ct { filter: grayscale(1); opacity: .45; }
+.tw.locked::after {
+  content: ''; position: absolute; left: 50%; top: 13px; width: 20px; height: 20px; transform: translateX(-50%); border-radius: 50%;
+  background: #fff center / 13px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4.5' y='10' width='15' height='11' rx='2.6' fill='%23607d8b'/%3E%3Cpath d='M8 10V7.5a4 4 0 0 1 8 0V10' fill='none' stroke='%23607d8b' stroke-width='2.4'/%3E%3C/svg%3E");
+  box-shadow: 0 1px 3px rgba(38, 50, 56, .25);
+}
+.tw.locked:disabled { opacity: 1; }
+
+@media (max-width: 760px), (orientation: landscape) and (max-height: 540px) {
+  .wave-preview { min-height: 36px; }
+  #info .target-seg button { min-height: 34px; font-size: 11px; }
+  #info button.branch { min-height: 56px; padding: 7px 8px; }
+  .tw.locked::after { left: 22px; top: 50%; transform: translate(-50%, -50%); }
+}
+@media (max-width: 760px) {
+  /* Hochkant: Pause/Menü links neben dem Zahnrad oben rechts */
+  #top #pause, #top #to-menu { position: absolute; top: max(6px, env(safe-area-inset-top)); }
+  #top #pause { right: calc(max(8px, env(safe-area-inset-right)) + 40px); }
+  html.has-shell #top #to-menu { right: calc(max(8px, env(safe-area-inset-right)) + 80px); }
+  html.has-shell #top #fullscreen { right: calc(max(8px, env(safe-area-inset-right)) + 120px); }
+  #top #fullscreen { right: calc(max(8px, env(safe-area-inset-right)) + 80px); }
+  #brand h1 { padding-right: 130px; }
+}
+@media (orientation: landscape) and (max-height: 540px) {
+  .tw.locked::after { left: 50%; top: 11px; transform: translateX(-50%); width: 18px; height: 18px; }
+  #info .target-seg .ts-txt { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #pause-overlay, #info .branch-pick.flash { animation: none; }
+}
+
+/* Atlas-Icons im DOM (Shell und HUD, src/ui/atlas.ts) */
+.ui-ico { position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.ui-ico > .svg-ico { width: 80%; height: 80%; }
+.ui-spr { display: block; background-repeat: no-repeat; }
+.enemy-dot {
+  display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%;
+  color: #fff; font-weight: 900; font-size: 11px; text-transform: uppercase; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .14);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .25);
+}
+
+/* Zielmodus kompakt: nur der aktive Modus zeigt den Namen (Seitenleiste ist schmal) */
+#info .target-seg button:not(.active) .ts-txt { display: none; }
+#info .target-seg button.active { flex: 2.4 1 auto; }
+#info button.branch small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* Desktop: Seitenleiste bleibt so hoch wie das Spielfeld; wird die Infobox groß, scrollt die Spalte statt überzulaufen */
+@media (min-width: 1101px) and (min-height: 541px) {
+  #side { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  #side > #lb { min-height: 64px; }
+}
+@media (max-width: 760px) {
+  html.has-shell #brand h1 { font-size: 23px; }
+}
+/* Lange Levelnamen in der Kopfzeile kürzen (voller Name im Tooltip) */
+.chip-map #map { display: inline-block; max-width: 250px; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }

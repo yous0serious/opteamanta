@@ -184,7 +184,7 @@ test.describe('smoke', () => {
       for (const [tower, cx, cy] of cells) {
         const ev = bd.command({ type: 'place', tower, cx, cy }) as Array<{ type: string; tower?: { id: number } }>;
         const id = ev.find((e) => e.type === 'placed')?.tower?.id;
-        if (id) for (let i = 0; i < 4; i++) bd.command({ type: 'upgrade', towerId: id });
+        if (id) for (let i = 0; i < 4; i++) bd.command({ type: 'upgrade', towerId: id, branch: 'a' });
       }
     });
     await page.keyboard.press(' ');

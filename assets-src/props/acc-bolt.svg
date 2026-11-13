@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="70" height="100" viewBox="0 0 70 100">
+  <!-- Blitz-Kamm (Spike). Eigenes Werk. -->
+  <path d="M40 3 L10 56 L32 56 L24 97 L62 36 L40 36 L52 3 Z" fill="#ffeb3b" stroke="#f57f17" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M40 12 L22 46" stroke="#fffde7" stroke-width="4" stroke-linecap="round"/>
+</svg>

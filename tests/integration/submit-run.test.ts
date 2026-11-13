@@ -1,7 +1,11 @@
 // AC-3, AC-4: Ablehnungsgründe, gültiger Lauf -> verified, manipuliertes Ergebnis -> rejected.
 import { randomInt } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { HAVE_ENV, SKIP_MESSAGE, createUser, deleteCreatedUsers, fn, makeReplay, pollSubmission, rest, secretHeaders, sleep, startRun, type TestUser } from './helpers';
+import { CAMPAIGNS, MAPS, SKILLS } from '../../src/sim/index';
+import {
+  HAVE_ENV, SKIP_MESSAGE, createUser, deleteCreatedUsers, fn, makeReplay, makeRunReplay, pollSubmission, rest, secretHeaders, sleep, startRun,
+  type TestUser,
+} from './helpers';
 
 if (!HAVE_ENV) console.warn(SKIP_MESSAGE);
 
@@ -102,5 +106,32 @@ describe.skipIf(!HAVE_ENV)('submit-run (AC-3, AC-4)', () => {
     expect(r.status).toBe(202);
     const done = await pollSubmission(u, r.body.submissionId!);
     expect([done.status, done.reason]).toEqual(['rejected', 'Ergebnis stimmt nicht']);
+  });
+
+  it.each([
+    ['loadout_mismatch', 422, (r: Record<string, unknown>) => (r.loadout = { [SKILLS[0]!.id]: 1 })],
+    ['level_mismatch', 422, (r: Record<string, unknown>) => (r.levelId = CAMPAIGNS[0]!.levels[0]!)],
+    ['replay_invalid', 400, (r: Record<string, unknown>) => delete r.loadout],
+  ])('Daily mit %s -> %i (Spec campaigns)', async (reason, status, mutate) => {
+    const { s, replay } = await fresh();
+    mutate(replay as unknown as Record<string, unknown>);
+    await sleep(1500);
+    const r = await submit(u, s.sessionId, replay);
+    expect([r.status, r.body.error]).toEqual([status, reason]);
+  });
+
+  it('Karten-Lauf wird verified und landet im Board map:<id>', async () => {
+    const s = await startRun(u, { kind: 'map', mapId: MAPS[0]!.id });
+    expect(s.status).toBe(200);
+    const replay = makeRunReplay({ ...s.body, loadout: {} }, randomInt(0, 160_000));
+    await sleep(1500);
+    const r = await submit(u, s.body.sessionId, replay);
+    expect(r.status).toBe(202);
+    const done = await pollSubmission(u, r.body.submissionId!);
+    expect(done.status).toBe('verified');
+    const row = await rest<Array<{ board: string; kind: string; map_id: string; mode: string }>>(
+      'GET', `submissions?id=eq.${r.body.submissionId}&select=board,kind,map_id,mode`, u.headers,
+    );
+    expect(row.body[0]).toEqual({ board: `map:${MAPS[0]!.id}`, kind: 'map', map_id: MAPS[0]!.id, mode: 'challenge' });
   });
 });

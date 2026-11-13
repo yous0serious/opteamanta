@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { Game } from '../../src/sim/index';
+import { GAME_VERSION, Game } from '../../src/sim/index';
 import { SESSION_ID, SUBMISSION_ID, SupabaseMock, USER_ID, type MockBoardRow } from './fixtures/supabase-mock';
 
 const SEED = 1;
@@ -127,7 +127,7 @@ test.describe('online build (mocked Supabase)', () => {
 
     expect(mock.find('POST', '/auth/v1/signup')).toHaveLength(1);
     const first = mock.find('POST', '/rpc/get_leaderboard')[0]!;
-    expect(first.body).toMatchObject({ period: 'day', version: '0.3.0' });
+    expect(first.body).toMatchObject({ period: 'day', version: GAME_VERSION });
     expect((first.body as { ref_date: string }).ref_date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
     await page.locator('#lb-tabs button[data-period=week]').click();
@@ -319,7 +319,7 @@ test.describe('online build (mocked Supabase)', () => {
     });
     await open(page);
     const status = page.locator('#lb-status');
-    await expect(status).toContainText('Daily nicht verfügbar: Tageslimit erreicht (30 Läufe)');
+    await expect(status).toContainText('Daily nicht verfügbar: Tageslimit erreicht');
     await expect(status).toContainText('freies Spiel');
     await expect(page.locator('#play-kind button[data-kind=free]')).toHaveClass(/active/);
     await expect(page.locator('#lb-action')).toHaveText('Daily erneut versuchen');

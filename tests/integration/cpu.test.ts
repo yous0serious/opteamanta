@@ -22,12 +22,12 @@ describe.skipIf(!HAVE_ENV)('CPU-Messung längster Lauf (AC-5)', () => {
     const u = await createUser();
     const sid = randomUUID();
     const sess = await rest('POST', 'run_sessions', secretHeaders(), {
-      id: sid, user_id: u.id, daily_date: '2000-01-01', seed: replay.seed, map_id: replay.mapId, game_version: replay.gameVersion,
+      id: sid, user_id: u.id, daily_date: '2000-01-01', board: 'daily:2000-01-01', seed: replay.seed, map_id: replay.mapId, game_version: replay.gameVersion,
       expires_at: '2030-01-01T00:00:00Z', used_at: new Date().toISOString(),
     });
     expect(sess.status).toBe(201);
     const ins = await rest<Array<{ id: string }>>('POST', 'submissions', secretHeaders(), {
-      session_id: sid, user_id: u.id, daily_date: '2000-01-01', game_version: replay.gameVersion, replay, end_tick: replay.endTick,
+      session_id: sid, user_id: u.id, daily_date: '2000-01-01', board: 'daily:2000-01-01', map_id: replay.mapId, game_version: replay.gameVersion, replay, end_tick: replay.endTick,
       replay_hash: createHash('sha256').update(randomUUID()).digest('hex'), status: 'pending',
     }, { Prefer: 'return=representation' });
     expect(ins.status).toBe(201);

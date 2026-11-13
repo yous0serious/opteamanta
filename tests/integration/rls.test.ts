@@ -16,7 +16,7 @@ describe.skipIf(!HAVE_ENV)('RLS und Nicknames (AC-1, AC-7)', () => {
   });
   afterAll(deleteCreatedUsers);
 
-  it.each(['run_sessions', 'submissions', 'rate_counters'])('Direkte Writes auf %s sind verboten', async (table) => {
+  it.each(['run_sessions', 'submissions', 'rate_counters', 'level_results', 'skill_alloc', 'achievements_unlocked'])('Direkte Writes auf %s sind verboten', async (table) => {
     const ins = await rest('POST', table, a.headers, { user_id: a.id });
     const upd = await rest('PATCH', `${table}?user_id=eq.${a.id}`, a.headers, { user_id: a.id });
     const del = await rest('DELETE', `${table}?user_id=eq.${a.id}`, a.headers);
@@ -48,12 +48,36 @@ describe.skipIf(!HAVE_ENV)('RLS und Nicknames (AC-1, AC-7)', () => {
       ['admin_reject_submission', { p_id: ZERO, p_reason: 'x' }],
       ['admin_delete_profile', { p_user: ZERO }],
       ['bump_rate', { p_user: a.id, p_bucket: 'x', p_day: '2026-01-01', p_limit: 1 }],
+      ['user_xp', { p_user: a.id }],
+      ['user_stats', { p_user: a.id }],
+      ['replace_skill_alloc', { p_user: a.id, p_expected: {}, p_loadout: { x: 1 } }],
+      ['finish_run', { p_id: ZERO, p_status: 'verified', p_reason: null, p_score: 1, p_wave: 1, p_lives: 1, p_won: true, p_kills: 1, p_stars: 3, p_leaks: 0, p_best_combo: 0, p_bosses: [], p_xp: 99999, p_first_clear_bonus: 0, p_achievements: ['x'] }],
     ];
     for (const [name, args] of calls) {
       expect((await rest('POST', `rpc/${name}`, a.headers, args)).status, name).toBe(403);
     }
   });
 
+  it('XP im Profil ist nicht direkt schreibbar (Spec campaigns)', async () => {
+    const own = await rest('POST', 'profiles', b.headers, { user_id: b.id, nickname: `Xp${rand(8)}`, xp: 5000 });
+    expect(denied(own.status)).toBe(true);
+    const ok = await rest('POST', 'profiles', b.headers, { user_id: b.id, nickname: `Xp${rand(8)}` });
+    expect(ok.status).toBe(201);
+    const upd = await rest('PATCH', `profiles?user_id=eq.${b.id}`, b.headers, { xp: 5000 });
+    expect(denied(upd.status)).toBe(true);
+    const row = await rest<Array<{ xp: number }>>('GET', `profiles?user_id=eq.${b.id}&select=xp`, b.headers);
+    expect(row.body[0]?.xp).toBe(0);
+    await rest('POST', 'rpc/admin_delete_profile', secretHeaders(), { p_user: b.id });
+  });
+
+  it('get_progress: eigener Fortschritt, ohne Anmeldung verboten', async () => {
+    const r = await rest<{ xp: number; levels: unknown[]; skills: Record<string, number>; achievements: unknown[] }>('POST', 'rpc/get_progress', a.headers, {});
+    expect(r.status).toBe(200);
+    expect(r.body).toMatchObject({ xp: 0, levels: [], skills: {}, achievements: [] });
+    const anon = await rest('POST', 'rpc/get_progress', secretHeaders(), {});
+    expect(anon.status).toBe(200); // Secret Key: kein Nutzer → null
+    expect(denied((await rest('POST', 'rpc/get_progress', { apikey: a.headers.apikey!, 'Content-Type': 'application/json' }, {})).status)).toBe(true);
+  });
   describe('Nicknames', () => {
     const tag = rand(3).toUpperCase();
     const own = `Nick ${tag}`;

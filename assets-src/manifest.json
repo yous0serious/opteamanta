@@ -88,20 +88,62 @@
       "variants": "sun",
       "variantsOnly": true
     },
-    { "name": "emote/alert", "src": "kenney/emotes-pack/emote_exclamation.png" },
-    { "name": "emote/alerts", "src": "kenney/emotes-pack/emote_exclamations.png" },
-    { "name": "emote/question", "src": "kenney/emotes-pack/emote_question.png" },
-    { "name": "emote/sleep", "src": "kenney/emotes-pack/emote_sleeps.png" },
-    { "name": "emote/cash", "src": "kenney/emotes-pack/emote_cash.png" },
-    { "name": "emote/heartbreak", "src": "kenney/emotes-pack/emote_heartBroken.png" },
-    { "name": "emote/stars", "src": "kenney/emotes-pack/emote_stars.png" },
-    { "name": "emote/anger", "src": "kenney/emotes-pack/emote_anger.png" },
-    { "name": "emote/idea", "src": "kenney/emotes-pack/emote_idea.png" },
-    { "name": "emote/laugh", "src": "kenney/emotes-pack/emote_laugh.png" },
-    { "name": "emote/swirl", "src": "kenney/emotes-pack/emote_swirl.png" },
-    { "name": "emote/dots", "src": "kenney/emotes-pack/emote_dots3.png" },
-    { "name": "emote/sweat", "src": "kenney/emotes-pack/emote_drops.png" },
-    { "name": "emote/heart", "src": "kenney/emotes-pack/emote_heart.png" },
+    {
+      "name": "emote/alert",
+      "src": "kenney/emotes-pack/emote_exclamation.png"
+    },
+    {
+      "name": "emote/alerts",
+      "src": "kenney/emotes-pack/emote_exclamations.png"
+    },
+    {
+      "name": "emote/question",
+      "src": "kenney/emotes-pack/emote_question.png"
+    },
+    {
+      "name": "emote/sleep",
+      "src": "kenney/emotes-pack/emote_sleeps.png"
+    },
+    {
+      "name": "emote/cash",
+      "src": "kenney/emotes-pack/emote_cash.png"
+    },
+    {
+      "name": "emote/heartbreak",
+      "src": "kenney/emotes-pack/emote_heartBroken.png"
+    },
+    {
+      "name": "emote/stars",
+      "src": "kenney/emotes-pack/emote_stars.png"
+    },
+    {
+      "name": "emote/anger",
+      "src": "kenney/emotes-pack/emote_anger.png"
+    },
+    {
+      "name": "emote/idea",
+      "src": "kenney/emotes-pack/emote_idea.png"
+    },
+    {
+      "name": "emote/laugh",
+      "src": "kenney/emotes-pack/emote_laugh.png"
+    },
+    {
+      "name": "emote/swirl",
+      "src": "kenney/emotes-pack/emote_swirl.png"
+    },
+    {
+      "name": "emote/dots",
+      "src": "kenney/emotes-pack/emote_dots3.png"
+    },
+    {
+      "name": "emote/sweat",
+      "src": "kenney/emotes-pack/emote_drops.png"
+    },
+    {
+      "name": "emote/heart",
+      "src": "kenney/emotes-pack/emote_heart.png"
+    },
     {
       "name": "fx/circle",
       "src": "kenney/particle-pack/circle_05.png",
@@ -1603,6 +1645,204 @@
       "src": "props/glow.svg",
       "width": 64,
       "variants": "towers"
+    },
+    {
+      "name": "sym/impediment",
+      "src": "props/sym-impediment.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/spike",
+      "src": "props/sym-spike.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/dependency",
+      "src": "props/sym-dependency.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/enabler",
+      "src": "props/sym-enabler.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/compliance",
+      "src": "props/sym-compliance.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/shadow-it",
+      "src": "props/sym-shadow-it.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/vendor-lock",
+      "src": "props/sym-vendor-lock.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/epic",
+      "src": "props/sym-epic.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/b-scope",
+      "src": "props/sym-b-scope.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/b-pi",
+      "src": "props/sym-b-pi.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/b-hydra",
+      "src": "props/sym-b-hydra.svg",
+      "width": 48
+    },
+    {
+      "name": "sym/b-lbc",
+      "src": "props/sym-b-lbc.svg",
+      "width": 48
+    },
+    {
+      "name": "deco/ficus",
+      "src": "props/deco-ficus.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/bookshelf",
+      "src": "props/deco-bookshelf.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/flipchart-a",
+      "src": "props/deco-flipchart-a.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/flipchart-b",
+      "src": "props/deco-flipchart-b.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/table-long",
+      "src": "props/deco-table-long.svg",
+      "width": 210
+    },
+    {
+      "name": "deco/program-board",
+      "src": "props/deco-program-board.svg",
+      "width": 313
+    },
+    {
+      "name": "deco/sticky-wall",
+      "src": "props/deco-sticky-wall.svg",
+      "width": 210
+    },
+    {
+      "name": "deco/pizza",
+      "src": "props/deco-pizza.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/chairs",
+      "src": "props/deco-chairs.svg",
+      "width": 70
+    },
+    {
+      "name": "deco/rack",
+      "src": "props/deco-rack.svg",
+      "width": 75
+    },
+    {
+      "name": "deco/rack-row",
+      "src": "props/deco-rack-row.svg",
+      "width": 200
+    },
+    {
+      "name": "deco/ups",
+      "src": "props/deco-ups.svg",
+      "width": 70
+    },
+    {
+      "name": "deco/crac",
+      "src": "props/deco-crac.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/extinguisher",
+      "src": "props/deco-extinguisher.svg",
+      "width": 45
+    },
+    {
+      "name": "deco/cable-coil",
+      "src": "props/deco-cable-coil.svg",
+      "width": 80
+    },
+    {
+      "name": "deco/chair-leather",
+      "src": "props/deco-chair-leather.svg",
+      "width": 70
+    },
+    {
+      "name": "deco/trophy-cabinet",
+      "src": "props/deco-trophy-cabinet.svg",
+      "width": 155
+    },
+    {
+      "name": "deco/orchid",
+      "src": "props/deco-orchid.svg",
+      "width": 60
+    },
+    {
+      "name": "deco/globe",
+      "src": "props/deco-globe.svg",
+      "width": 70
+    },
+    {
+      "name": "deco/sofa-leather",
+      "src": "props/deco-sofa-leather.svg",
+      "width": 188
+    },
+    {
+      "name": "deco/table-board",
+      "src": "props/deco-table-board.svg",
+      "width": 313
+    },
+    {
+      "name": "light/spot",
+      "src": "kenney/light-masks/circle_b.png",
+      "width": 160,
+      "lumaToAlpha": true,
+      "variants": "sun",
+      "variantsOnly": true
+    },
+    {
+      "name": "prop/stop",
+      "src": "props/stop.svg",
+      "width": 40
+    },
+    {
+      "name": "prop/shield",
+      "src": "props/shield.svg",
+      "width": 28
+    },
+    {
+      "name": "prop/plus",
+      "src": "props/plus.svg",
+      "width": 24
+    },
+    {
+      "name": "prop/magnifier",
+      "src": "props/magnifier.svg",
+      "width": 36
+    },
+    {
+      "name": "prop/scissors",
+      "src": "props/scissors.svg",
+      "width": 36
     }
   ],
   "monsters": [
@@ -1817,6 +2057,384 @@
         "bgTint": "#fbe9e7"
       },
       "width": 38
+    },
+    {
+      "name": "enemy/impediment",
+      "body": "body_whiteA",
+      "arm": "arm_whiteE",
+      "leg": "leg_whiteC",
+      "eye": "eye_human",
+      "eyes": 2,
+      "eyebrow": "eyebrowB",
+      "mouth": "mouth_closed_sad",
+      "extras": [
+        {
+          "src": "props/acc-cone.svg",
+          "size": 94,
+          "dx": 0.02,
+          "dy": -0.24,
+          "rotate": 6
+        }
+      ],
+      "badge": {
+        "src": "props/sym-impediment.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#efebe9"
+      },
+      "width": 44
+    },
+    {
+      "name": "enemy/spike",
+      "body": "body_whiteC",
+      "arm": "arm_whiteB",
+      "leg": "leg_whiteB",
+      "eye": "eye_cute_light",
+      "eyes": 1,
+      "mouth": "mouthA",
+      "extras": [
+        {
+          "src": "props/acc-bolt.svg",
+          "size": 74,
+          "dx": 0.12,
+          "dy": -0.2,
+          "rotate": 14
+        }
+      ],
+      "badge": {
+        "src": "props/sym-spike.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#e0f7fa"
+      },
+      "width": 32
+    },
+    {
+      "name": "enemy/dependency",
+      "body": "body_whiteB",
+      "arm": "arm_whiteA",
+      "leg": "leg_whiteD",
+      "eye": "eye_cute_dark",
+      "eyes": 2,
+      "mouth": "mouthB",
+      "detail": "detail_white_ear_round",
+      "extras": [
+        {
+          "src": "props/acc-chain.svg",
+          "size": 140,
+          "dx": 0.5,
+          "dy": 0.86,
+          "rotate": 28,
+          "swing": 6
+        }
+      ],
+      "badge": {
+        "src": "props/sym-dependency.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#f3e5f5"
+      },
+      "width": 40
+    },
+    {
+      "name": "enemy/enabler",
+      "body": "body_whiteE",
+      "arm": "arm_whiteC",
+      "leg": "leg_whiteA",
+      "eye": "eye_human_green",
+      "eyes": 2,
+      "mouth": "mouth_closed_happy",
+      "extras": [
+        {
+          "src": "props/acc-hardhat.svg",
+          "size": 150,
+          "dx": 0,
+          "dy": -0.03
+        }
+      ],
+      "badge": {
+        "src": "props/sym-enabler.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#e8f5e9"
+      },
+      "width": 36
+    },
+    {
+      "name": "enemy/compliance",
+      "body": "body_whiteA",
+      "arm": "arm_whiteD",
+      "leg": "leg_whiteE",
+      "eye": "eye_human",
+      "eyes": 2,
+      "eyebrow": "eyebrowA",
+      "mouth": "mouth_closed_teeth",
+      "extras": [
+        {
+          "src": "props/acc-visor.svg",
+          "size": 182,
+          "dx": 0,
+          "dy": -0.06
+        }
+      ],
+      "badge": {
+        "src": "props/sym-compliance.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#eceff1"
+      },
+      "width": 48
+    },
+    {
+      "name": "enemy/shadow-it",
+      "body": "body_whiteF",
+      "arm": "arm_whiteB",
+      "leg": "leg_whiteB",
+      "eye": "eye_red",
+      "eyes": 2,
+      "mouth": "mouth_closed_fangs",
+      "extras": [
+        {
+          "src": "props/acc-hood.svg",
+          "size": 232,
+          "dx": 0,
+          "dy": 0.3,
+          "back": true
+        }
+      ],
+      "badge": {
+        "src": "props/sym-shadow-it.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#e8eaf6"
+      },
+      "width": 36
+    },
+    {
+      "name": "enemy/vendor-lock",
+      "body": "body_whiteD",
+      "arm": "arm_whiteE",
+      "leg": "leg_whiteC",
+      "eye": "eye_psycho_light",
+      "eyes": 2,
+      "mouth": "mouthE",
+      "detail": "detail_white_ear",
+      "extras": [
+        {
+          "src": "props/acc-padlock.svg",
+          "size": 84,
+          "dx": -0.56,
+          "dy": 0.72,
+          "rotate": -10,
+          "swing": 8
+        }
+      ],
+      "badge": {
+        "src": "props/sym-vendor-lock.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#fff3e0"
+      },
+      "width": 46
+    },
+    {
+      "name": "enemy/epic",
+      "body": "body_whiteB",
+      "arm": "arm_whiteA",
+      "leg": "leg_whiteE",
+      "eye": "eye_cute_light",
+      "eyes": 3,
+      "mouth": "mouthG",
+      "detail": "detail_white_antenna_large",
+      "extras": [
+        {
+          "src": "props/acc-boxes.svg",
+          "size": 150,
+          "dx": 0.4,
+          "dy": 0.12,
+          "rotate": 8,
+          "back": true
+        }
+      ],
+      "badge": {
+        "src": "props/sym-epic.svg",
+        "size": 62,
+        "dx": 0.34,
+        "dy": 0.78,
+        "rotate": -8,
+        "bg": "props/postit.svg",
+        "bgTint": "#fce4ec"
+      },
+      "width": 58
+    },
+    {
+      "name": "enemy/b-scope",
+      "body": "body_whiteF",
+      "arm": "arm_whiteD",
+      "leg": "leg_whiteD",
+      "eye": "eye_psycho_light",
+      "eyes": 3,
+      "mouth": "mouthH",
+      "detail": "detail_white_eye",
+      "extras": [
+        {
+          "src": "props/acc-burst.svg",
+          "size": 330,
+          "dx": 0,
+          "dy": 0.42,
+          "back": true
+        }
+      ],
+      "badge": {
+        "src": "props/sym-b-scope.svg",
+        "size": 62,
+        "dx": 0.36,
+        "dy": 0.8,
+        "rotate": -6,
+        "bg": "props/postit.svg",
+        "bgTint": "#f9fbe7"
+      },
+      "crown": {
+        "src": "props/crown.svg",
+        "size": 110
+      },
+      "width": 96
+    },
+    {
+      "name": "enemy/b-pi",
+      "body": "body_whiteD",
+      "arm": "arm_whiteC",
+      "leg": "leg_whiteD",
+      "eye": "eye_angry_red",
+      "eyes": 2,
+      "eyebrow": "eyebrowC",
+      "mouth": "mouthI",
+      "detail": "detail_white_ear_round",
+      "extras": [
+        {
+          "src": "props/acc-megaphone.svg",
+          "size": 124,
+          "dx": 0.74,
+          "dy": 0.46,
+          "rotate": -18,
+          "swing": 10
+        }
+      ],
+      "badge": {
+        "src": "props/sym-b-pi.svg",
+        "size": 62,
+        "dx": 0.36,
+        "dy": 0.8,
+        "rotate": -6,
+        "bg": "props/postit.svg",
+        "bgTint": "#fbe9e7"
+      },
+      "crown": {
+        "src": "props/crown.svg",
+        "size": 110
+      },
+      "width": 98
+    },
+    {
+      "name": "enemy/b-hydra",
+      "body": "body_whiteE",
+      "arm": "arm_whiteA",
+      "leg": "leg_whiteE",
+      "eye": "eye_yellow",
+      "eyes": 2,
+      "mouth": "mouth_closed_fangs",
+      "extras": [
+        {
+          "src": "props/acc-neckhead.svg",
+          "size": 96,
+          "dx": -0.62,
+          "dy": 0.06,
+          "rotate": -24,
+          "tint": "#9575cd",
+          "back": true,
+          "swing": 6
+        },
+        {
+          "src": "props/acc-neckhead.svg",
+          "size": 96,
+          "dx": 0.62,
+          "dy": 0.06,
+          "rotate": 24,
+          "flip": true,
+          "tint": "#9575cd",
+          "back": true,
+          "swing": -6
+        }
+      ],
+      "badge": {
+        "src": "props/sym-b-hydra.svg",
+        "size": 62,
+        "dx": 0.36,
+        "dy": 0.8,
+        "rotate": -6,
+        "bg": "props/postit.svg",
+        "bgTint": "#ede7f6"
+      },
+      "crown": {
+        "src": "props/crown.svg",
+        "size": 100
+      },
+      "width": 104
+    },
+    {
+      "name": "enemy/b-lbc",
+      "body": "body_whiteA",
+      "arm": "arm_whiteD",
+      "leg": "leg_whiteE",
+      "eye": "eye_human_blue",
+      "eyes": 2,
+      "eyebrow": "eyebrowA",
+      "mouth": "mouth_closed_teeth",
+      "extras": [
+        {
+          "src": "props/acc-tophat.svg",
+          "size": 150,
+          "dx": 0,
+          "dy": -0.2
+        },
+        {
+          "src": "props/acc-tie.svg",
+          "size": 36,
+          "dx": -0.02,
+          "dy": 0.9
+        }
+      ],
+      "badge": {
+        "src": "props/sym-b-lbc.svg",
+        "size": 62,
+        "dx": 0.36,
+        "dy": 0.8,
+        "rotate": -6,
+        "bg": "props/postit.svg",
+        "bgTint": "#e8f5e9"
+      },
+      "width": 104
     }
   ],
   "characters": {
@@ -2088,6 +2706,422 @@
           "walk7"
         ],
         "width": 64
+      }
+    ]
+  },
+  "monsterPortraits": 48,
+  "icons": {
+    "size": 48,
+    "items": [
+      {
+        "name": "icon/star",
+        "src": "props/icon-star.svg"
+      },
+      {
+        "name": "icon/star-empty",
+        "src": "props/icon-star-empty.svg"
+      },
+      {
+        "name": "icon/xp",
+        "src": "props/icon-xp.svg"
+      },
+      {
+        "name": "icon/lock",
+        "glyph": "kenney/board-game-icons/lock_closed.png",
+        "color": "#546e7a"
+      },
+      {
+        "name": "icon/unlock",
+        "glyph": "kenney/board-game-icons/lock_open.png",
+        "color": "#43a047"
+      },
+      {
+        "name": "icon/pause",
+        "glyph": "kenney/game-icons/pause.png",
+        "bg": "circle",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/play",
+        "glyph": "kenney/game-icons/right.png",
+        "bg": "circle",
+        "bgColor": "#43a047"
+      },
+      {
+        "name": "icon/target-first",
+        "glyph": "props/glyph-target-first.svg",
+        "bg": "circle",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/target-last",
+        "glyph": "props/glyph-target-last.svg",
+        "bg": "circle",
+        "bgColor": "#00897b"
+      },
+      {
+        "name": "icon/target-strong",
+        "glyph": "props/glyph-target-strong.svg",
+        "bg": "circle",
+        "bgColor": "#e53935"
+      },
+      {
+        "name": "icon/target-near",
+        "glyph": "props/glyph-target-near.svg",
+        "bg": "circle",
+        "bgColor": "#fb8c00"
+      },
+      {
+        "name": "icon/campaign-team",
+        "glyph": "kenney/game-icons/multiplayer.png",
+        "bg": "shield",
+        "bgColor": "#43a047",
+        "scale": 0.5
+      },
+      {
+        "name": "icon/campaign-art",
+        "glyph": "props/glyph-train.svg",
+        "bg": "shield",
+        "bgColor": "#1e88e5",
+        "scale": 0.5
+      },
+      {
+        "name": "icon/campaign-solution",
+        "glyph": "kenney/board-game-icons/puzzle.png",
+        "bg": "shield",
+        "bgColor": "#8e24aa",
+        "scale": 0.5
+      },
+      {
+        "name": "icon/campaign-portfolio",
+        "glyph": "kenney/board-game-icons/crown_a.png",
+        "bg": "shield",
+        "bgColor": "#f9a825",
+        "ring": "#c77800",
+        "scale": 0.5
+      },
+      {
+        "name": "icon/skill-pair",
+        "glyph": "kenney/board-game-icons/pawns.png",
+        "bg": "hex",
+        "bgColor": "#2e9d4f"
+      },
+      {
+        "name": "icon/skill-dual",
+        "glyph": "kenney/board-game-icons/book_open.png",
+        "bg": "hex",
+        "bgColor": "#2e9d4f"
+      },
+      {
+        "name": "icon/skill-tdd",
+        "glyph": "kenney/board-game-icons/flask_full.png",
+        "bg": "hex",
+        "bgColor": "#2e9d4f"
+      },
+      {
+        "name": "icon/skill-swarm",
+        "glyph": "kenney/game-icons/target.png",
+        "bg": "hex",
+        "bgColor": "#2e9d4f"
+      },
+      {
+        "name": "icon/skill-dod",
+        "glyph": "kenney/game-icons/checkmark.png",
+        "bg": "hex",
+        "bgColor": "#2e9d4f"
+      },
+      {
+        "name": "icon/skill-cop",
+        "glyph": "kenney/board-game-icons/campfire.png",
+        "bg": "hex",
+        "bgColor": "#2e9d4f"
+      },
+      {
+        "name": "icon/skill-mob",
+        "glyph": "kenney/game-icons/massiveMultiplayer.png",
+        "bg": "hex",
+        "bgColor": "#2e9d4f"
+      },
+      {
+        "name": "icon/skill-tshape",
+        "glyph": "props/glyph-tshape.svg",
+        "bg": "hex",
+        "bgColor": "#2e9d4f"
+      },
+      {
+        "name": "icon/skill-team-cap",
+        "glyph": "kenney/board-game-icons/fire.png",
+        "bg": "hex",
+        "bgColor": "#2e9d4f",
+        "ring": "#f9a825",
+        "scale": 0.54
+      },
+      {
+        "name": "icon/skill-wsjf",
+        "glyph": "props/glyph-scale.svg",
+        "bg": "hex",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/skill-kanban",
+        "glyph": "props/glyph-kanban.svg",
+        "bg": "hex",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/skill-lbc",
+        "glyph": "kenney/board-game-icons/notepad_write.png",
+        "bg": "hex",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/skill-ci",
+        "glyph": "kenney/board-game-icons/arrow_clockwise.png",
+        "bg": "hex",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/skill-refine",
+        "glyph": "kenney/board-game-icons/cards_order.png",
+        "bg": "hex",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/skill-flow",
+        "glyph": "kenney/game-icons/leaderboardsComplex.png",
+        "bg": "hex",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/skill-devops",
+        "glyph": "props/glyph-infinity.svg",
+        "bg": "hex",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/skill-rod",
+        "glyph": "props/glyph-rocket.svg",
+        "bg": "hex",
+        "bgColor": "#1e88e5"
+      },
+      {
+        "name": "icon/skill-proc-cap",
+        "glyph": "kenney/board-game-icons/cards_stack_high.png",
+        "bg": "hex",
+        "bgColor": "#1e88e5",
+        "ring": "#f9a825",
+        "scale": 0.54
+      },
+      {
+        "name": "icon/skill-servant",
+        "glyph": "kenney/board-game-icons/hand.png",
+        "bg": "hex",
+        "bgColor": "#8e24aa"
+      },
+      {
+        "name": "icon/skill-ia",
+        "glyph": "kenney/game-icons/zoom.png",
+        "bg": "hex",
+        "bgColor": "#8e24aa"
+      },
+      {
+        "name": "icon/skill-pi",
+        "glyph": "props/glyph-calendar.svg",
+        "bg": "hex",
+        "bgColor": "#8e24aa"
+      },
+      {
+        "name": "icon/skill-sync",
+        "glyph": "kenney/board-game-icons/arrow_rotate.png",
+        "bg": "hex",
+        "bgColor": "#8e24aa"
+      },
+      {
+        "name": "icon/skill-runway",
+        "glyph": "kenney/board-game-icons/structure_wall.png",
+        "bg": "hex",
+        "bgColor": "#8e24aa"
+      },
+      {
+        "name": "icon/skill-coach",
+        "glyph": "kenney/board-game-icons/book_closed.png",
+        "bg": "hex",
+        "bgColor": "#8e24aa"
+      },
+      {
+        "name": "icon/skill-gemba",
+        "glyph": "props/glyph-eye.svg",
+        "bg": "hex",
+        "bgColor": "#8e24aa"
+      },
+      {
+        "name": "icon/skill-vision",
+        "glyph": "kenney/board-game-icons/flag_triangle.png",
+        "bg": "hex",
+        "bgColor": "#8e24aa"
+      },
+      {
+        "name": "icon/skill-lead-cap",
+        "glyph": "kenney/board-game-icons/chess_king.png",
+        "bg": "hex",
+        "bgColor": "#8e24aa",
+        "ring": "#f9a825",
+        "scale": 0.54
+      },
+      {
+        "name": "icon/ach-first-pi",
+        "glyph": "kenney/board-game-icons/flag_square.png",
+        "bg": "medal",
+        "bgColor": "#00897b",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-team",
+        "glyph": "kenney/game-icons/multiplayer.png",
+        "bg": "medal",
+        "bgColor": "#2e9d4f",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-art",
+        "glyph": "props/glyph-train.svg",
+        "bg": "medal",
+        "bgColor": "#1e88e5",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-solution",
+        "glyph": "kenney/board-game-icons/puzzle.png",
+        "bg": "medal",
+        "bgColor": "#8e24aa",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-portfolio",
+        "glyph": "kenney/board-game-icons/crown_a.png",
+        "bg": "medal",
+        "bgColor": "#f9a825",
+        "ring": "#c77800",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-three-team",
+        "glyph": "props/glyph-stars3.svg",
+        "bg": "medal",
+        "bgColor": "#2e9d4f",
+        "ring": "#f9a825",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-three-portfolio",
+        "glyph": "props/glyph-stars3.svg",
+        "bg": "medal",
+        "bgColor": "#ef6c00",
+        "ring": "#f9a825",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-all-stars",
+        "glyph": "kenney/game-icons/star.png",
+        "bg": "medal",
+        "bgColor": "#f29900",
+        "ring": "#c77800",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-flawless",
+        "glyph": "kenney/board-game-icons/shield.png",
+        "bg": "medal",
+        "bgColor": "#00acc1",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-combo-25",
+        "glyph": "kenney/game-icons/fastForward.png",
+        "bg": "medal",
+        "bgColor": "#fb8c00",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-combo-50",
+        "glyph": "kenney/board-game-icons/exploding.png",
+        "bg": "medal",
+        "bgColor": "#e53935",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-kills-1000",
+        "glyph": "kenney/board-game-icons/cards_stack.png",
+        "bg": "medal",
+        "bgColor": "#5c6bc0",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-kills-10000",
+        "glyph": "kenney/board-game-icons/award.png",
+        "bg": "medal",
+        "bgColor": "#3949ab",
+        "ring": "#f9a825",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-boss-first",
+        "glyph": "kenney/board-game-icons/sword.png",
+        "bg": "medal",
+        "bgColor": "#d81b60",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-all-bosses",
+        "glyph": "kenney/board-game-icons/skull.png",
+        "bg": "medal",
+        "bgColor": "#6d4c41",
+        "ring": "#f9a825",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-daily",
+        "glyph": "kenney/board-game-icons/timer_CW_75.png",
+        "bg": "medal",
+        "bgColor": "#039be5",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-daily-10",
+        "glyph": "kenney/board-game-icons/timer_100.png",
+        "bg": "medal",
+        "bgColor": "#0277bd",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-challenge",
+        "glyph": "kenney/game-icons/trophy.png",
+        "bg": "medal",
+        "bgColor": "#43a047",
+        "ring": "#f9a825",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-endless-40",
+        "glyph": "kenney/board-game-icons/arrow_rotate.png",
+        "bg": "medal",
+        "bgColor": "#7e57c2",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-skills",
+        "glyph": "props/glyph-bulb.svg",
+        "bg": "medal",
+        "bgColor": "#7cb342",
+        "scale": 0.47
+      },
+      {
+        "name": "icon/ach-level-25",
+        "glyph": "kenney/game-icons/medal1.png",
+        "bg": "medal",
+        "bgColor": "#c62828",
+        "ring": "#f9a825",
+        "scale": 0.47
       }
     ]
   }

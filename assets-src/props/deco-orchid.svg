@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="100" viewBox="0 0 48 100">
+  <!-- Orchidee im weißen Topf (eigenes Werk) -->
+  <ellipse cx="24" cy="95" rx="14" ry="3" fill="#000" opacity="0.15"/>
+  <path d="M24 74 C22 50 26 30 34 16" stroke="#558b2f" stroke-width="2.5" fill="none"/>
+  <g fill="#f8bbd0" stroke="#ec407a" stroke-width="1"><circle cx="34" cy="16" r="6"/><circle cx="28" cy="28" r="6"/><circle cx="25" cy="42" r="5.5"/><circle cx="36" cy="30" r="5"/></g>
+  <g fill="#ad1457"><circle cx="34" cy="16" r="1.8"/><circle cx="28" cy="28" r="1.8"/><circle cx="25" cy="42" r="1.6"/><circle cx="36" cy="30" r="1.5"/></g>
+  <g fill="#689f38"><ellipse cx="16" cy="74" rx="11" ry="4" transform="rotate(-15 16 74)"/><ellipse cx="32" cy="74" rx="11" ry="4" transform="rotate(15 32 74)"/></g>
+  <path d="M12 76 L36 76 L33 94 L15 94 Z" fill="#ffffff" stroke="#cfd8dc" stroke-width="2"/>
+</svg>

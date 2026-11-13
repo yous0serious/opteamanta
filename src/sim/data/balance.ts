@@ -20,8 +20,9 @@ export interface BalanceConfig {
 }
 
 // Werte per Bot-Tuning ermittelt (npm run balance, 2026-11-10; Spec balancing-challenge „Referenzwerte v0.2.0“).
+// v0.4.0 (Spec campaigns): hpGrowth 1.115 → 1.1325 gleicht die Upgrade-Zweige (Stufe 3–5) im Challenge-Modus aus.
 export const BALANCE: Readonly<BalanceConfig> = {
-  hpGrowth: 1.115,
+  hpGrowth: 1.1325,
   rewardFactor: 0.25,
   rewardGrowth: 0,
   waveBonusBase: 40,

@@ -3,10 +3,11 @@ import { join, relative } from 'node:path';
 
 // Prüft public/assets gegen CREDITS.md (Spec visual-overhaul AC-2). Exit 1 bei Verstoß.
 const DIR = 'public/assets';
-// Grafik-Budget: Spec office-makeover/season-2 (Atlas + Schriften ≤ 6 MB; Schriften kommen über Vite, hier nur public/assets)
-const MAX_BYTES = 6 * 1024 * 1024;
+// Grafik-Budget: Spec campaigns AC-10 (Atlas + Schriften ≤ 8 MB; Schriften kommen über Vite, hier nur public/assets)
+const MAX_BYTES = 8 * 1024 * 1024;
 const AUDIO_DIR = 'public/audio';
-const AUDIO_MAX_BYTES = 8 * 1024 * 1024;
+// Audio-Budget: Spec campaigns AC-10 (≤ 12 MB, Musik je Kampagne)
+const AUDIO_MAX_BYTES = 12 * 1024 * 1024;
 const LICENSES = ['CC0', 'OFL-1.1', 'eigenes Werk'];
 
 function walk(dir: string): string[] {
@@ -29,9 +30,8 @@ for (const file of walk(DIR)) {
   if (!row) errors.push(`${rel}: fehlt in CREDITS.md`);
   else if (!LICENSES.some((l) => row.includes(l))) errors.push(`${rel}: keine zulässige Lizenz (${LICENSES.join(', ')})`);
 }
-if (total > MAX_BYTES) errors.push(`Grafik-Assets ${(total / 1024 / 1024).toFixed(2)} MB > 6 MB`);
-
-// Audio (Spec season-2 AC-10/AC-14): jede Datei in CREDITS.md (Abschnitt Audio), Lizenz CC0/eigenes Werk, ≤ 8 MB.
+if (total > MAX_BYTES) errors.push(`Grafik-Assets ${(total / 1024 / 1024).toFixed(2)} MB > 8 MB`);
+// Audio (Spec season-2 AC-10/AC-14, campaigns AC-10): jede Datei in CREDITS.md (Abschnitt Audio), Lizenz CC0/eigenes Werk, ≤ 12 MB.
 let audioTotal = 0;
 let audioCount = 0;
 for (const file of walk(AUDIO_DIR)) {
@@ -43,7 +43,7 @@ for (const file of walk(AUDIO_DIR)) {
   if (!row) errors.push(`${rel}: fehlt in CREDITS.md`);
   else if (!LICENSES.some((l) => row.includes(l))) errors.push(`${rel}: keine zulässige Lizenz (${LICENSES.join(', ')})`);
 }
-if (audioTotal > AUDIO_MAX_BYTES) errors.push(`Audio ${(audioTotal / 1024 / 1024).toFixed(2)} MB > 8 MB`);
+if (audioTotal > AUDIO_MAX_BYTES) errors.push(`Audio ${(audioTotal / 1024 / 1024).toFixed(2)} MB > 12 MB`);
 
 if (errors.length) {
   console.error(errors.join('\n'));

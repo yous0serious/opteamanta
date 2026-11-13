@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Vendor Lock-in: Vorhängeschloss. Eigenes Werk. -->
+  <g fill="none" stroke="#2b3440" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 22 L15 15 A9 9 0 0 1 33 15 L33 22"/>
+    <rect x="10" y="22" width="28" height="21" rx="3"/>
+  </g>
+  <circle cx="24" cy="31" r="3" fill="#2b3440"/><path d="M24 33 L24 38" stroke="#2b3440" stroke-width="3" stroke-linecap="round"/>
+</svg>

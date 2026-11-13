@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Drei Sterne (weiß) (eigenes Werk) -->
+  <g fill="#ffffff" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">
+    <path d="M64 8 L74 34 L102 35 L80 52 L88 79 L64 63 L40 79 L48 52 L26 35 L54 34 Z"/>
+    <path d="M26 66 L32 82 L49 82 L36 92 L41 109 L26 99 L11 109 L16 92 L3 82 L20 82 Z"/>
+    <path d="M102 66 L108 82 L125 82 L112 92 L117 109 L102 99 L87 109 L92 92 L79 82 L96 82 Z"/>
+  </g>
+</svg>

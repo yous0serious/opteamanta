@@ -1,5 +1,5 @@
-import { DT, Game, TILE, type Command, type GameMode, type MapId, type Replay, type SimEvent, type TowerType } from '../sim/index';
-import type { DailySession } from '../online/api';
+import { DT, Game, TILE, type Command, type GameMode, type LevelId, type MapId, type Replay, type SimEvent, type SkillLoadout, type TowerType } from '../sim/index';
+import type { DailySession, RunSession } from '../online/api';
 
 type Listener<T> = (value: T) => void;
 
@@ -46,6 +46,11 @@ export class Controller {
   debug: DebugApi | null = null;
   /** Nur Darstellung: Zeitlupe (Spec season-2 AC-7) – ändert das Echtzeit-Tempo, nicht die Ticks/Ergebnisse. */
   timeScale = 1;
+  /**
+   * Pause (Spec campaigns AC-8): hält nur die Echtzeit an. Kommandos bleiben erlaubt (Planen in der Pause); sie landen
+   * im aktuellen Tick – das Replay bleibt damit exakt nachrechenbar.
+   */
+  paused = false;
   private acc = 0;
   private stopUntil = 0;
   private readonly simListeners = new Set<Listener<SimEvent>>();
@@ -68,6 +73,8 @@ export class Controller {
 
   /** Laufende Daily-Session (Spec leaderboard-supabase); null bei freien Spielen. */
   daily: DailySession | null = null;
+  /** Laufende Server-Session (Daily, Level oder Karte, Spec campaigns); null bei lokalen Spielen. */
+  session: RunSession | null = null;
   private readonly finishedListeners = new Set<Listener<Game>>();
 
   /** Wird einmal pro Spiel aufgerufen, sobald es endet (Sieg oder Burnout). */
@@ -78,19 +85,45 @@ export class Controller {
 
   /** Daily-Lauf mit Server-Seed starten (Challenge-Modus; die Karte folgt aus dem Seed). */
   startDaily(session: DailySession): void {
-    const game = new Game({ seed: session.seed, mode: 'challenge' });
+    // Ältere Server-Antworten (vor Spec campaigns) kennen `kind` nicht
+    this.startSession({ ...session, kind: 'daily', levelId: null, mode: 'challenge', loadout: session.loadout ?? {} });
+  }
+
+  /**
+   * Gewerteter Lauf mit Server-Session (Spec campaigns): Seed, Level/Karte und eingefrorenes Skill-Loadout kommen vom
+   * Server – das Replay muss genau damit übereinstimmen, sonst lehnt submit-run ab.
+   */
+  startSession(session: RunSession): void {
+    const game =
+      session.kind === 'level' && session.levelId
+        ? new Game({ seed: session.seed, levelId: session.levelId as LevelId, loadout: session.loadout })
+        : new Game({ seed: session.seed, mapId: session.kind === 'map' ? session.mapId : undefined, mode: 'challenge', loadout: session.loadout });
     if (game.state.mapId !== session.mapId) throw new Error(`Karte passt nicht zum Seed: ${session.mapId}`);
     if (this.game.state.wave > 0) this.saveReplay();
-    this.daily = session;
-    this.mode = 'challenge';
+    this.session = session;
+    this.daily = session.kind === 'daily' ? (session as DailySession) : null;
+    this.mode = game.state.mode;
+    this.replaceGame(game);
+  }
+
+  /** Lokaler (nicht gewerteter) Lauf: Kampagnen-Level offline, freies Spiel auf einer Karte, Endlos. */
+  startLocal(opts: { levelId?: LevelId | null; mapId?: MapId; mode?: GameMode; loadout?: SkillLoadout; seed?: number }): void {
+    if (this.game.state.wave > 0) this.saveReplay();
+    this.session = null;
+    this.daily = null;
+    const seed = opts.seed ?? this.nextSeed();
+    const game = opts.levelId
+      ? new Game({ seed, levelId: opts.levelId, loadout: opts.loadout })
+      : new Game({ seed, mapId: opts.mapId, mode: opts.mode ?? 'challenge', loadout: opts.loadout });
+    this.mode = game.state.mode;
     this.replaceGame(game);
   }
 
   /** Moduswechsel nur vor dem ersten Sprint (nicht in der Daily): neues Spiel mit demselben Seed. */
   setMode(mode: GameMode): void {
-    if (mode === this.mode || this.game.state.wave > 0 || this.daily) return;
+    if (mode === this.mode || this.game.state.wave > 0 || this.session || this.game.state.levelId || mode === 'level') return;
     this.mode = mode;
-    this.game = new Game({ seed: this.game.state.seed, mapId: this.mapId ?? this.game.state.mapId, mode });
+    this.game = new Game({ seed: this.game.state.seed, mapId: this.mapId ?? this.game.state.mapId, mode, loadout: this.game.state.loadout });
     this.acc = 0;
     this.selected = null;
     this.selectedTowerId = null;
@@ -127,7 +160,7 @@ export class Controller {
 
   /** Fixed-Step: reale Zeit × Tempo in Ticks à DT umrechnen. */
   advance(realDtSec: number): void {
-    if (this.over) return;
+    if (this.over || this.paused) return;
     // Hitstop: Darstellung „friert“ kurz ein; die Simulation pausiert nur in Echtzeit, Ticks bleiben gleich.
     if (performance.now() < this.stopUntil) return;
     this.acc += Math.min(realDtSec, MAX_FRAME_DT) * this.speed * this.timeScale;
@@ -244,6 +277,14 @@ export class Controller {
     this.changed();
   }
 
+  togglePause(force?: boolean): void {
+    const next = force ?? !this.paused;
+    if (next === this.paused || (next && this.over)) return;
+    this.paused = next;
+    this.acc = 0;
+    this.changed();
+  }
+
   /** Tempo direkt setzen (Einstellungen-Popup); nur 1–3 wie über den Button. */
   setSpeed(n: number): void {
     if (![1, 2, 3].includes(n)) return;
@@ -256,22 +297,28 @@ export class Controller {
     this.stopUntil = performance.now() + ms;
   }
 
-  /** Neues freies Spiel (verlässt eine Daily-Session). */
+  /** Neues lokales Spiel (verlässt eine Server-Session): gleiches Level bzw. gleicher Modus, neuer Seed. */
   restart(): void {
     this.saveReplay();
     this.daily = null;
-    this.replaceGame(new Game({ seed: this.nextSeed(), mode: this.mode }));
+    this.session = null;
+    const s = this.game.state;
+    const game = s.levelId
+      ? new Game({ seed: this.nextSeed(), levelId: s.levelId, loadout: s.loadout })
+      : new Game({ seed: this.nextSeed(), mapId: this.mapId ?? s.mapId, mode: this.mode === 'level' ? 'challenge' : this.mode, loadout: s.loadout });
+    this.mode = game.state.mode;
+    this.replaceGame(game);
   }
 
   /** Freies Spiel im gewünschten Modus starten (Schalter „Freies Spiel“). */
   startFree(mode: GameMode = this.mode): void {
-    this.mode = mode;
-    this.restart();
+    this.startLocal({ mode: mode === 'level' ? 'challenge' : mode, loadout: this.game.state.loadout });
   }
 
   private replaceGame(game: Game): void {
     this.game = game;
     this.acc = 0;
+    this.paused = false;
     this.selected = null;
     this.selectedTowerId = null;
     this.preview = null;

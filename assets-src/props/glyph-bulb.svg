@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Lernende Organisation: Glühbirne (weiß) (eigenes Werk) -->
+  <g fill="#ffffff">
+    <path d="M64 6 Q104 6 104 46 Q104 66 86 80 L86 92 L42 92 L42 80 Q24 66 24 46 Q24 6 64 6 Z"/>
+    <rect x="44" y="96" width="40" height="10" rx="5"/><rect x="50" y="110" width="28" height="12" rx="6"/>
+  </g>
+  <path d="M52 70 L52 56 L64 66 L76 56 L76 70" fill="none" stroke="#000000" stroke-opacity="0.3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M42 34 Q48 20 62 18" fill="none" stroke="#000000" stroke-opacity="0.18" stroke-width="6" stroke-linecap="round"/>
+</svg>

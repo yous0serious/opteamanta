@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <!-- Paketstapel auf dem Rücken (Epic zerfällt in Features). Eigenes Werk. -->
+  <g stroke="#8d6e63" stroke-width="4" stroke-linejoin="round">
+    <rect x="8" y="62" width="54" height="52" rx="4" fill="#d7a86e"/>
+    <rect x="58" y="66" width="54" height="48" rx="4" fill="#c99a5e"/>
+    <rect x="30" y="12" width="56" height="52" rx="4" fill="#e0b47c"/>
+  </g>
+  <g stroke="#f5deb3" stroke-width="7"><path d="M35 62 L35 114"/><path d="M85 66 L85 114"/><path d="M58 12 L58 64"/></g>
+  <g fill="#f06292"><rect x="18" y="80" width="14" height="10" rx="2"/><rect x="66" y="84" width="14" height="10" rx="2"/><rect x="40" y="30" width="14" height="10" rx="2"/></g>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- T-Shaped Skills: breiter Balken + tiefer Stamm (weiß) (eigenes Werk) -->
+  <g fill="#ffffff"><rect x="10" y="14" width="108" height="30" rx="9"/><rect x="48" y="36" width="32" height="80" rx="9"/></g>
+  <g fill="#000000" opacity="0.28"><circle cx="30" cy="29" r="6"/><circle cx="52" cy="29" r="6"/><circle cx="76" cy="29" r="6"/><circle cx="98" cy="29" r="6"/><rect x="58" y="56" width="12" height="46" rx="6"/></g>
+</svg>

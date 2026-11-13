@@ -25,16 +25,16 @@ function play(seed: number, ticks: number): { game: Game; spawned: Set<EnemyType
   return { game, spawned };
 }
 
-describe('AC-3 Version', () => {
-  it("GAME_VERSION ist '0.3.0'", () => {
-    expect(GAME_VERSION).toBe('0.3.0');
-    expect(new Game({ seed: 1 }).toReplay().gameVersion).toBe('0.3.0');
+describe('AC-3 Version (fortgeschrieben: Spec campaigns)', () => {
+  it("GAME_VERSION ist '0.4.0'", () => {
+    expect(GAME_VERSION).toBe('0.4.0');
+    expect(new Game({ seed: 1 }).toReplay().gameVersion).toBe('0.4.0');
   });
-  it('parseReplay lehnt gameVersion 0.2.0 ab, nimmt 0.3.0 an; Format bleibt 2', () => {
+  it('parseReplay lehnt gameVersion 0.3.0 ab, nimmt 0.4.0 an; Format 3', () => {
     const r = JSON.parse(JSON.stringify(new Game({ seed: 1 }).toReplay()));
-    expect(r.format).toBe(2);
+    expect(r.format).toBe(3);
     expect(() => parseReplay(r)).not.toThrow();
-    r.gameVersion = '0.2.0';
+    r.gameVersion = '0.3.0';
     expect(() => parseReplay(r)).toThrow();
   });
 });

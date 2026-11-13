@@ -24,3 +24,8 @@ export const MAX_TOWER_ID = 2147483648;
 /** Challenge-Modus (Spec balancing-challenge): Sieg nach dieser Welle, Bonus pro verbliebenem Moralpunkt. */
 export const CHALLENGE_WAVES = 30;
 export const VICTORY_BONUS_PER_LIFE = 100;
+
+/** Kombo: Abschüsse mit höchstens so vielen Ticks Abstand zählen in Folge (2 s). */
+export const COMBO_WINDOW = 120;
+/** Sternschwellen (Mindest-Moral) für Challenge-Siege ohne Level-Daten. */
+export const CHALLENGE_STARS = { two: 60, three: 90 } as const;

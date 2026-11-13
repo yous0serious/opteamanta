@@ -1,6 +1,7 @@
 # Netlify: statischer Build (Vite). Die Assets in public/assets sind vorgebaut (npm run assets lokal).
-# Caching: Netlify-Standard (ETag-Revalidierung). Kein "immutable" für /assets/*, weil dort auch
-# der ungehashte Atlas (game.png/game.json) liegt.
+# Caching: Netlify-Standard (ETag-Revalidierung). "immutable" nur für die von Vite gehashten Bundles
+# (dist/assets/*.js|css|woff|woff2) – public/assets enthält nur den ungehashten Atlas (game.png/game.json) und CREDITS.md,
+# public/audio die Musik; beide bleiben bei der Revalidierung.
 [build]
   command = "npm run build"
   publish = "dist"
@@ -8,8 +9,35 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Sicherheits-Header. CSP: Skripte nur aus dem eigenen Bundle; Inline-Styles für Phaser/DOM-Shell;
+# Bilder/Audio auch als data:/blob: (Phaser-Loader, Teilen-Bild); Netzwerk nur zur eigenen Domain und zu Supabase.
 [[headers]]
   for = "/*"
   [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob: data:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Cross-Origin-Opener-Policy = "same-origin"
+
+[[headers]]
+  for = "/assets/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*.woff"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

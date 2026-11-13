@@ -18,8 +18,10 @@ function hardy(e: Enemy): Enemy {
   return e;
 }
 
+/** Aufwerten; ab Stufe 3 ohne Zweig-Wirkung (Basiswerte der Spec season-2 – Zweige prüft targeting-branches.test). */
 function upgrade(g: Game, t: Tower, times: number): void {
-  for (let i = 0; i < times; i++) g.apply({ type: 'upgrade', towerId: t.id });
+  for (let i = 0; i < times; i++) g.apply({ type: 'upgrade', towerId: t.id, branch: 'a' });
+  t.branch = null;
 }
 
 function placeNear(g: Game, type: TowerType, from: { x: number; y: number }, lo: number, hi: number): Tower {

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="124" height="112" viewBox="0 0 124 112">
+  <!-- Vitrine mit Pokalen (eigenes Werk) -->
+  <ellipse cx="62" cy="107" rx="58" ry="4" fill="#000" opacity="0.15"/>
+  <rect x="4" y="8" width="116" height="98" rx="4" fill="#8d6e63"/>
+  <rect x="4" y="4" width="116" height="9" rx="3" fill="#a1887f"/>
+  <rect x="10" y="16" width="50" height="84" rx="2" fill="#e3f2fd" opacity="0.95"/><rect x="64" y="16" width="50" height="84" rx="2" fill="#e3f2fd" opacity="0.95"/>
+  <g fill="#bcaaa4"><rect x="10" y="56" width="104" height="4"/></g>
+  <g><path d="M22 50 L22 44 Q22 30 30 28 L38 28 Q46 30 46 44 L46 50 Z" fill="#ffca28" stroke="#c77800" stroke-width="2"/><rect x="26" y="48" width="16" height="6" fill="#c77800"/>
+  <path d="M82 50 Q78 40 84 32 L96 32 Q102 40 98 50 Z" fill="#cfd8dc" stroke="#78909c" stroke-width="2"/><rect x="84" y="48" width="12" height="6" fill="#78909c"/>
+  <circle cx="34" cy="80" r="10" fill="#ffb74d" stroke="#e65100" stroke-width="2"/><path d="M30 92 L38 92 L36 98 L32 98 Z" fill="#e65100"/>
+  <rect x="74" y="70" width="32" height="24" rx="2" fill="#ffffff" stroke="#c77800" stroke-width="2"/><path d="M80 78 L100 78 M80 84 L96 84" stroke="#90a4ae" stroke-width="2"/></g>
+  <g stroke="#ffffff" stroke-width="3" opacity="0.7" stroke-linecap="round"><path d="M14 40 L24 20"/><path d="M68 40 L78 20"/></g>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="96" viewBox="0 0 80 96">
+  <!-- Leitkegel als Hut (Impediment). Eigenes Werk. -->
+  <path d="M40 4 L64 80 L16 80 Z" fill="#ff7043" stroke="#bf360c" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M31 34 L49 34 L53 48 L27 48 Z" fill="#ffffff"/>
+  <path d="M22 62 L58 62 L61 72 L19 72 Z" fill="#ffffff"/>
+  <rect x="4" y="78" width="72" height="14" rx="5" fill="#f4511e" stroke="#bf360c" stroke-width="4"/>
+  <path d="M36 12 L28 40" stroke="#ffab91" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+</svg>

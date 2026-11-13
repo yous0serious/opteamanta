@@ -16,6 +16,10 @@ export interface ShareInfo {
   team: string | null;
   map: string;
   won: boolean;
+  /** Kampagnen-Level (`Team 3 Refinement-Marathon`), sonst null/fehlend. */
+  level?: string | null;
+  /** Sterne 0–3 bei Leveln. */
+  stars?: number | null;
 }
 
 export interface ShareResult {
@@ -30,9 +34,11 @@ export const shareState: { last: ShareResult | null; rank: number | null; team: 
 
 const fmt = (n: number): string => n.toLocaleString('de-DE');
 
-/** Format: `Backlog Defense 3000 · <Daily TT.MM. | Freies Spiel> · Welle <n>/30 · Moral <m> % · Score <s>[ · Rang <r>] – <URL>` */
+/**
+ * Format: `Backlog Defense 3000 · <Daily TT.MM. | Level <Name> · <n>/3 Sterne | Freies Spiel> · Welle <n>/30 · Moral <m> % · Score <s>[ · Rang <r>] – <URL>`
+ */
 export function shareText(i: ShareInfo): string {
-  const kind = i.daily ? `Daily ${i.daily}` : 'Freies Spiel';
+  const kind = i.level ? `Level ${i.level}${i.stars !== null && i.stars !== undefined ? ` · ${i.stars}/3 Sterne` : ''}` : i.daily ? `Daily ${i.daily}` : 'Freies Spiel';
   const wave = i.waves ? `Welle ${i.wave}/${i.waves}` : `Welle ${i.wave} (Endlos)`;
   const rank = i.rank ? ` · Rang ${i.rank}` : '';
   return `Backlog Defense 3000 · ${kind} · ${wave} · Moral ${Math.max(0, i.lives)} % · Score ${fmt(i.score)}${rank} – ${SHARE_URL}`;
@@ -85,19 +91,20 @@ export function drawCard(i: ShareInfo, shot: CanvasImageSource | null): HTMLCanv
   const x = 720;
   ctx.fillStyle = '#263238';
   ctx.font = '800 34px Nunito, Arial, sans-serif';
-  ctx.fillText(i.daily ? `Daily ${i.daily}` : 'Freies Spiel', x, 140);
+  ctx.fillText(i.level ? `Level ${i.level}` : i.daily ? `Daily ${i.daily}` : 'Freies Spiel', x, 140, CARD_W - x - 30);
   ctx.font = '700 24px Nunito, Arial, sans-serif';
   ctx.fillStyle = '#607d8b';
   ctx.fillText(i.team ? `Team ${i.team}` : 'Team Prozessoptimierung', x, 178);
   ctx.fillText(i.map, x, 210);
   const rows: Array<[string, string]> = [
+    ...(i.stars !== null && i.stars !== undefined ? ([['Sterne', `${i.stars}/3`]] as Array<[string, string]>) : []),
     ['Welle', i.waves ? `${i.wave}/${i.waves}` : String(i.wave)],
     ['Score', fmt(i.score)],
     ['Moral', `${Math.max(0, i.lives)} %`],
     ...(i.rank ? ([['Rang', `#${i.rank}`]] as Array<[string, string]>) : []),
   ];
   rows.forEach(([k, v], n) => {
-    const y = 270 + n * 62;
+    const y = 270 + n * (rows.length > 4 ? 50 : 62);
     ctx.fillStyle = '#90a4ae';
     ctx.font = '700 22px Nunito, Arial, sans-serif';
     ctx.fillText(k, x, y);
@@ -108,7 +115,7 @@ export function drawCard(i: ShareInfo, shot: CanvasImageSource | null): HTMLCanv
   if (i.won) {
     ctx.fillStyle = '#2e7d32';
     ctx.font = '700 40px Caveat, cursive';
-    ctx.fillText('RELEASE ERFOLGREICH!', x, 540);
+    ctx.fillText(i.level ? 'LEVEL GESCHAFFT!' : 'RELEASE ERFOLGREICH!', x, 540);
   }
   ctx.fillStyle = '#00796b';
   ctx.font = '700 22px Nunito, Arial, sans-serif';

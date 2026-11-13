@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Go See (Gemba): Auge (weiß) (eigenes Werk) -->
+  <path d="M4 64 Q64 -4 124 64 Q64 132 4 64 Z" fill="#ffffff"/>
+  <circle cx="64" cy="64" r="26" fill="#000000" opacity="0.35"/>
+  <circle cx="64" cy="64" r="12" fill="#ffffff"/>
+  <circle cx="72" cy="56" r="5" fill="#000000" opacity="0.35"/>
+</svg>

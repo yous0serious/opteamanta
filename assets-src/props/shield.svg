@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="56" viewBox="0 0 48 56">
+  <!-- Panzer-Schild (Compliance, Bosse) (eigenes Werk) -->
+  <path d="M24 3 L44 9 L44 26 Q44 44 24 53 Q4 44 4 26 L4 9 Z" fill="#90a4ae" stroke="#455a64" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M24 9 L24 47" stroke="#cfd8dc" stroke-width="4"/>
+  <path d="M11 14 L11 26" stroke="#eceff1" stroke-width="4" stroke-linecap="round"/>
+</svg>

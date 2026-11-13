@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- WSJF: Waage (weiß) (eigenes Werk) -->
+  <g fill="#ffffff">
+    <rect x="58" y="16" width="12" height="90" rx="5"/><rect x="34" y="102" width="60" height="14" rx="7"/>
+    <circle cx="64" cy="18" r="10"/><rect x="12" y="28" width="104" height="10" rx="5" transform="rotate(-8 64 33)"/>
+    <path d="M6 74 L26 36 L46 74 Q26 90 6 74 Z"/><path d="M82 66 L102 28 L122 66 Q102 82 82 66 Z"/>
+  </g>
+  <g fill="#000000" opacity="0.28"><path d="M12 74 Q26 82 40 74 Z"/><path d="M88 66 Q102 74 116 66 Z"/></g>
+</svg>

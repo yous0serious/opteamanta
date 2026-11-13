@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56">
+  <!-- Lupe (Schatten-IT entdeckt) (eigenes Werk) -->
+  <path d="M34 34 L50 50" stroke="#5d4037" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="22" cy="22" r="17" fill="#e1f5fe" stroke="#455a64" stroke-width="5"/>
+  <path d="M13 17 Q16 11 23 10" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>

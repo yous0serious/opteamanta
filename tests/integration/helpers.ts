@@ -1,7 +1,7 @@
 // Gemeinsame Helfer der Integrationstests. Geheimnisse werden nur im Testprozess gelesen, nie ausgegeben.
 import { existsSync, readFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
-import { Game, type Replay } from '../../src/sim/index';
+import { Game, type LevelId, type MapId, type Replay, type SkillLoadout } from '../../src/sim/index';
 
 function load(): { url: string; key: string; sk: string; verify: string } | null {
   const files = ['supabase.txt', 'supabase_secret.txt', '.agent-state/fn_secrets.json']; // secret-scan: allow (nur Dateinamen)
@@ -93,15 +93,20 @@ export async function deleteCreatedUsers(): Promise<void> {
 
 export interface StartRun {
   sessionId: string;
+  kind: 'daily' | 'level' | 'map';
+  board: string;
   seed: number;
   mapId: string;
+  levelId: string | null;
   mode: string;
+  loadout: Record<string, number>;
   gameVersion: string;
   dailyDate: string;
   issuedAt: string;
   expiresAt: string;
 }
-export const startRun = (u: TestUser): Promise<Res<StartRun>> => fn<StartRun>('start-run', {}, u.headers);
+/** start-run; ohne Body = Daily (wie alte Clients). */
+export const startRun = (u: TestUser, body: Record<string, unknown> = {}): Promise<Res<StartRun>> => fn<StartRun>('start-run', body, u.headers);
 
 /** Kurzes Replay zur Session; `variant` verändert Turmplatz und Länge, damit der Eingabe-Hash eindeutig bleibt. */
 export function makeReplay(seed: number, variant: number): Replay {
@@ -109,6 +114,22 @@ export function makeReplay(seed: number, variant: number): Replay {
   g.apply({ type: 'place', tower: 'dev', cx: 6 + (variant % 8), cy: 4 });
   g.apply({ type: 'startWave' });
   for (let i = 0; i < 600 + variant; i++) g.step();
+  return g.toReplay();
+}
+
+/**
+ * Kurzes Replay zu einer Level- oder Karten-Session (gleiches Loadout wie die Session). Level-/Karten-Seeds gelten eine
+ * Woche für alle, daher streut `variant` (0…159999) Turmplatz, Platzierungs-Tick und Länge (endTick < 800).
+ */
+export function makeRunReplay(s: { seed: number; mapId: string; levelId: string | null; loadout: SkillLoadout }, variant: number, cy = 4): Replay {
+  const g = new Game({
+    seed: s.seed, mapId: s.mapId as MapId, mode: s.levelId ? 'level' : 'challenge', levelId: s.levelId as LevelId | null, loadout: s.loadout,
+  });
+  for (let i = 0; i < Math.floor(variant / 8) % 100; i++) g.step();
+  g.apply({ type: 'place', tower: 'dev', cx: 6 + (variant % 8), cy });
+  g.apply({ type: 'startWave' });
+  const end = 600 + (Math.floor(variant / 800) % 200);
+  while (g.state.tick < end && !g.state.over) g.step();
   return g.toReplay();
 }
 

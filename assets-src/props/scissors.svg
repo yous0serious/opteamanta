@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56">
+  <!-- Schere (Budget-Kürzung) (eigenes Werk) -->
+  <g fill="none" stroke="#455a64" stroke-width="5" stroke-linecap="round"><path d="M18 40 L44 8"/><path d="M38 40 L12 8"/></g>
+  <g fill="#e53935" stroke="#b71c1c" stroke-width="3"><circle cx="15" cy="45" r="8"/><circle cx="41" cy="45" r="8"/></g>
+  <g fill="#ffffff"><circle cx="15" cy="45" r="3.5"/><circle cx="41" cy="45" r="3.5"/></g>
+</svg>

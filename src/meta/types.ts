@@ -102,7 +102,7 @@ export interface MetaService {
 export interface GameHost {
   startLevel(levelId: string): Promise<void>;
   startDaily(): Promise<void>;
-  startFree(mapId: string, mode: 'challenge' | 'endless'): void;
+  startFree(mapId: string, mode: 'challenge' | 'endless'): Promise<void>;
   /** Laufendes Spiel verlassen (Shell zeigt danach das Menü). */
   quit(): void;
   /** Wird nach jedem Spielende aufgerufen; `verdict` löst sich nach der Server-Prüfung auf. */

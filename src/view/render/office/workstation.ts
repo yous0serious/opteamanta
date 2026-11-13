@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { TOWERS, type Tower, type TowerType } from '../../../sim/index';
+import { TOWERS, type Branch, type Tower, type TowerType } from '../../../sim/index';
 import { ATLAS } from '../../PreloadScene';
 import type { ViewCtx } from '../entities';
 
@@ -27,6 +27,25 @@ const ROLE_ITEM: Record<TowerType, string> = {
 };
 /** Ausstattung je Stufe (rechts auf dem Tisch). */
 const LEVEL_ITEM = ['item/notepad', 'item/notebook', 'item/monitor', 'item/monitor', 'item/monitor'] as const;
+/** Zweig-Gadget auf dem Tisch ab Stufe 3 (Spec campaigns, BRANCHES). */
+const BRANCH_ITEM: Record<TowerType, Record<Branch, string>> = {
+  dualo: { a: 'item/notebook', b: 'item/pot' },
+  analyst: { a: 'item/book', b: 'item/monitor' },
+  dev: { a: 'item/monitor', b: 'item/headphones' },
+  ppl: { a: 'item/folder', b: 'item/badge' },
+  scrum: { a: 'item/bell', b: 'item/headphones' },
+  rte: { a: 'item/hourglass', b: 'item/notebook' },
+  rta: { a: 'item/book', b: 'item/clipboard' },
+  rto: { a: 'item/pot', b: 'item/wallet' },
+  board: { a: 'item/badge', b: 'item/wallet' },
+};
+/** Plakettenfarbe je Zweig. */
+const BRANCH_COLOR: Record<Branch, number> = { a: 0x1e88e5, b: 0xe5397a };
+/** Stufenrahmen: Stufe 4 Silber, Stufe 5 Gold. */
+const TIER_FRAME: Partial<Record<number, { color: number; glow: number }>> = {
+  4: { color: 0xb0bec5, glow: 0xeceff1 },
+  5: { color: 0xf9a825, glow: 0xfff3c4 },
+};
 
 const ROLE_COLOR: Record<TowerType, number> = Object.fromEntries(
   Object.values(TOWERS).map((d) => [d.id, Number.parseInt(d.color.slice(1), 16)]),
@@ -47,7 +66,13 @@ export class WorkstationView {
   private readonly lamp: Phaser.GameObjects.Image;
   private readonly lampGlow: Phaser.GameObjects.Image;
   private readonly stars: Phaser.GameObjects.Image[] = [];
+  /** Stufenrahmen (Silber/Gold) unter dem Arbeitsplatz. */
+  private readonly frame: Phaser.GameObjects.Graphics;
+  /** Zweig-Gadget und -Plakette. */
+  private readonly gadget: Phaser.GameObjects.Image;
+  private readonly branchChip: Phaser.GameObjects.Container;
   private drawnLevel = 0;
+  private drawnBranch: Branch | null | undefined = undefined;
   private pose = '';
   private fireT = 0;
   private fireIdx = 0;
@@ -65,6 +90,7 @@ export class WorkstationView {
   ) {
     const s = ctx.scene;
     const type = tower.type;
+    this.frame = s.add.graphics();
     this.mat = s.add.ellipse(0, FEET_Y + 2, 40, 18, ROLE_COLOR[type], 0.22);
     const shadow = s.add.ellipse(0, FEET_Y + 4, 34, 10, 0x000000, 0.16);
     this.char = s.add.image(0, FEET_Y, ATLAS, `char/${type}/${POSES[type].idle}`).setOrigin(0.5, 1);
@@ -78,10 +104,16 @@ export class WorkstationView {
     this.extra = s.add.image(16, FEET_Y - 7, ATLAS, 'item/cup').setOrigin(0.5, 1).setVisible(false);
     this.extra.setScale(8 / this.extra.width);
     this.zzz = s.add.image(14, -42, ATLAS, 'ui/zzz').setDisplaySize(16, 16).setVisible(false);
+    this.gadget = s.add.image(-17, FEET_Y - 6, ATLAS, 'item/book').setOrigin(0.5, 1).setVisible(false);
+    const chipBg = s.add.circle(0, 0, 6.5, BRANCH_COLOR.a).setStrokeStyle(1.5, 0xffffff);
+    const chipText = s.add.text(0, 0.5, 'A', { fontFamily: 'Nunito, sans-serif', fontSize: '10px', fontStyle: 'bold', color: '#ffffff', resolution: 2 }).setOrigin(0.5);
+    this.branchChip = s.add.container(19, FEET_Y + 4, [chipBg, chipText]).setVisible(false);
     // Abendlampe (Büroleben ab Welle 20, Spec season-2 AC-8)
     this.lampGlow = s.add.image(-14, FEET_Y - 10, ATLAS, 'prop/glow/ppl').setBlendMode(Phaser.BlendModes.ADD).setDisplaySize(46, 30).setAlpha(0.55).setVisible(false);
     this.lamp = s.add.image(-16, FEET_Y - 6, ATLAS, 'prop/lamp').setOrigin(0.5, 1).setDisplaySize(12, 14).setVisible(false);
-    this.root = s.add.container(tower.x, tower.y, [this.lampGlow, this.mat, shadow, this.char, desk, roleItem, this.levelItem, this.extra, this.lamp, this.zzz]);
+    this.root = s.add.container(tower.x, tower.y, [
+      this.lampGlow, this.frame, this.mat, shadow, this.char, desk, roleItem, this.levelItem, this.extra, this.gadget, this.lamp, this.zzz, this.branchChip,
+    ]);
     if (ctx.reducedMotion) this.appearT = 0;
   }
 
@@ -180,7 +212,37 @@ export class WorkstationView {
         this.root.add(star);
       }
       this.mat.setFillStyle(ROLE_COLOR[t.type], 0.18 + t.level * 0.04);
+      this.drawFrame(t.level);
     }
+    const branch = (t as { branch?: Branch | null }).branch ?? null;
+    if (branch !== this.drawnBranch) {
+      this.drawnBranch = branch;
+      this.gadget.setVisible(!!branch);
+      this.branchChip.setVisible(!!branch);
+      if (branch) {
+        this.gadget.setFrame(BRANCH_ITEM[t.type]?.[branch] ?? 'item/book');
+        this.gadget.setScale(12 / Math.max(this.gadget.width, this.gadget.height));
+        const [bg, label] = this.branchChip.list as [Phaser.GameObjects.Arc, Phaser.GameObjects.Text];
+        bg.setFillStyle(BRANCH_COLOR[branch]);
+        label.setText(branch.toUpperCase());
+      }
+    }
+  }
+
+  /** Stufe 4–5: Silber- bzw. Goldrahmen um den Arbeitsplatz. */
+  private drawFrame(level: number): void {
+    const g = this.frame;
+    g.clear();
+    const tier = TIER_FRAME[level];
+    if (!tier) return;
+    g.fillStyle(tier.glow, 0.55).fillEllipse(0, FEET_Y + 2, 52, 24);
+    g.lineStyle(2.5, tier.color, 1).strokeEllipse(0, FEET_Y + 2, 48, 21);
+    g.lineStyle(1, 0xffffff, 0.9).strokeEllipse(0, FEET_Y + 1, 42, 17);
+  }
+
+  /** Zweig des Turms (Debug/E2E). */
+  get branch(): Branch | null {
+    return this.drawnBranch ?? null;
   }
 
   destroy(): void {

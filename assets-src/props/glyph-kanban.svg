@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Kanban-Board: drei Spalten mit Karten (weiß) (eigenes Werk) -->
+  <rect x="6" y="10" width="116" height="108" rx="12" fill="#ffffff"/>
+  <g fill="#000000" opacity="0.3">
+    <rect x="16" y="22" width="28" height="18" rx="4"/><rect x="16" y="46" width="28" height="18" rx="4"/><rect x="16" y="70" width="28" height="18" rx="4"/>
+    <rect x="50" y="22" width="28" height="18" rx="4"/><rect x="50" y="46" width="28" height="18" rx="4"/>
+    <rect x="84" y="22" width="28" height="18" rx="4"/>
+  </g>
+  <g fill="#000000" opacity="0.18"><rect x="46" y="18" width="2" height="92"/><rect x="80" y="18" width="2" height="92"/></g>
+</svg>

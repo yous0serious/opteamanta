@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Zielmodus Nächster: Fadenkreuz (weiß) (eigenes Werk) -->
+  <g fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round"><circle cx="64" cy="64" r="38"/><path d="M64 8 L64 34 M64 94 L64 120 M8 64 L34 64 M94 64 L120 64"/></g>
+  <circle cx="64" cy="64" r="10" fill="#ffffff"/>
+</svg>

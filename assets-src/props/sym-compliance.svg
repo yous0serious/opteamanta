@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Symbol Compliance: Klemmbrett mit Haken. Eigenes Werk. -->
+  <g fill="none" stroke="#2b3440" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="10" y="9" width="28" height="35" rx="3"/>
+    <rect x="18" y="5" width="12" height="7" rx="2"/>
+    <path d="M16 27 L22 33 L33 20"/>
+  </g>
+</svg>

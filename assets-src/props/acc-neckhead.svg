@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="110" viewBox="0 0 80 110">
+  <!-- Zusatzkopf auf Hals (Hydra), weiß zum Einfärben. Eigenes Werk. -->
+  <path d="M30 108 Q22 70 38 44 L50 46 Q38 74 48 108 Z" fill="#ffffff" stroke="#bdbdbd" stroke-width="3"/>
+  <circle cx="44" cy="34" r="30" fill="#ffffff" stroke="#bdbdbd" stroke-width="3"/>
+  <circle cx="34" cy="30" r="9" fill="#ffffff" stroke="#3e2723" stroke-width="3"/><circle cx="36" cy="31" r="4.5" fill="#3e2723"/>
+  <circle cx="56" cy="30" r="9" fill="#ffffff" stroke="#3e2723" stroke-width="3"/><circle cx="58" cy="31" r="4.5" fill="#3e2723"/>
+  <path d="M32 48 Q45 56 58 48" fill="none" stroke="#3e2723" stroke-width="4" stroke-linecap="round"/>
+  <path d="M36 50 L39 55 L42 50 M48 50 L51 55 L54 50" fill="#ffffff" stroke="#3e2723" stroke-width="2"/>
+</svg>

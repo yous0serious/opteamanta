@@ -151,7 +151,7 @@ test.describe('AC-4 roles', () => {
 
     const seen = await page.evaluate(async (id) => {
       const bd = (window as unknown as W).__bd;
-      bd.command({ type: 'upgrade', towerId: id });
+      bd.command({ type: 'upgrade', towerId: id, branch: 'a' });
       const poses = new Set<string>();
       const t0 = performance.now();
       while (performance.now() - t0 < 300) {
@@ -183,7 +183,7 @@ test.describe('AC-4 roles', () => {
           const ev = bd.command({ type: 'place', tower: role, cx: c[0], cy: c[1] });
           const id = ev.find((e) => e.type === 'placed')?.tower?.id;
           if (id === undefined) continue;
-          for (let u = 1; u < l; u++) bd.command({ type: 'upgrade', towerId: id });
+          for (let u = 1; u < l; u++) bd.command({ type: 'upgrade', towerId: id, branch: 'a' });
           count++;
         }
       }
@@ -249,7 +249,7 @@ test.describe('AC-6 effects', () => {
     const ids = await placeNearPath(page, ['dualo', 'analyst', 'dev', 'ppl', 'scrum', 'dev', 'scrum', 'analyst']);
     await page.evaluate((id) => {
       const bd = (window as unknown as W).__bd;
-      bd.command({ type: 'upgrade', towerId: id });
+      bd.command({ type: 'upgrade', towerId: id, branch: 'a' });
       bd.command({ type: 'sell', towerId: id });
     }, ids[ids.length - 1]!);
     await page.evaluate(() => { (window as unknown as W).__bd.game.state.wave = 5; });

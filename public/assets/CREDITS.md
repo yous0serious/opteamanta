@@ -7,8 +7,9 @@ Zulässig sind nur `CC0`, `OFL-1.1` und `eigenes Werk`. Prüfung: `npm run check
 
 | Datei | Inhalt | Lizenz |
 |---|---|---|
-| `game.png` | Spiel-Atlas (generiert von `npm run assets` aus `assets-src/`, Quellen siehe unten) | CC0 (Kenney) + eigenes Werk |
-| `game.json` | Frame-Daten zum Atlas (generiert) | eigenes Werk |
+| `game-0.png` | Spiel-Atlas Seite 1 (generiert von `npm run assets` aus `assets-src/`, Quellen siehe unten) | CC0 (Kenney) + eigenes Werk |
+| `game-1.png` | Spiel-Atlas Seite 2 (generiert, Quellen siehe unten) | CC0 (Kenney) + eigenes Werk |
+| `game.json` | Frame-Daten zum Multiatlas (alle Seiten, generiert) | eigenes Werk |
 
 ## Quellen im Atlas
 
@@ -16,7 +17,7 @@ Zulässig sind nur `CC0`, `OFL-1.1` und `eigenes Werk`. Prüfung: `npm run check
 |---|---|---|---|
 | `head/*` | Toon Characters 1, Ordner `PNG/Parts HD` (`head`, `headFocus`, `headShock`) – https://opengameart.org/content/toon-characters-1 (Kenneys eigener Upload; `assets-src/kenney/toon-characters-1/License.txt`) | Kenney (www.kenney.nl) | CC0 |
 | `fx/*` | Particle Pack (`circle_05`, `spark_04`, `star_06`, `smoke_08`, `dirt_02`) – https://opengameart.org/content/particle-pack-80-sprites (`assets-src/kenney/particle-pack/License.txt`); beim Build Helligkeit → Transparenz umgewandelt | Kenney (www.kenney.nl) | CC0 |
-| `prop/*`, `proj/*`, `sym/*`, `ui/*` | Eigene SVGs in `assets-src/props/` | Projekt Backlog Defense | eigenes Werk |
+| `prop/*`, `proj/*`, `sym/*`, `ui/*`, `deco/*` | Eigene SVGs in `assets-src/props/` (u. a. Programm-Board, Flipcharts, Serverracks, Klimagerät, USV, Pokalvitrine, Ledermöbel, Ticket-Symbole der Kampagnen-Gegner) | Projekt Backlog Defense | eigenes Werk |
 | `char/*` | Toon Characters 1, Ordner `PNG/Poses HD` (Male adventurer, Female adventurer, Female person, Male person, Robot) – https://opengameart.org/content/toon-characters-1 (`assets-src/kenney/toon-characters-1/License.txt`); Saison-2-Rollen (`char/rte|rta|rto|board/*`), Porträts `head/rte|rta|rto|board` und Statisten (`char/npc*/*`) beim Build umgefärbt (`tools/characters.ts`), Zubehör (Mütze, Brillen, Krawatte, Fliege) eigene SVGs | Kenney (www.kenney.nl); Projekt Backlog Defense | CC0 + eigenes Werk |
 | `enemy/*` | Monster Builder Pack, Ordner `PNG/Default`, beim Build zusammengesetzt und eingefärbt (`tools/monsters.ts`) – https://opengameart.org/content/monster-builder-pack (`assets-src/kenney/monster-builder-pack/License.txt`); Ticket-Symbole, Post-it und Krone (`prop/crown`) eigene SVGs | Kenney (www.kenney.nl); Projekt Backlog Defense | CC0 + eigenes Werk |
 | `tile/*` | Topdown Shooter, Ordner `PNG/Tiles` (Böden, Teppiche, Möbel, Pflanzen) – https://opengameart.org/content/topdown-shooter (`assets-src/kenney/topdown-shooter/License.txt`) | Kenney (www.kenney.nl) | CC0 |
@@ -24,6 +25,9 @@ Zulässig sind nur `CC0`, `OFL-1.1` und `eigenes Werk`. Prüfung: `npm run check
 | `splat/*` | Splat Pack, Ordner `PNG/Default (256px)`, beim Build eingefärbt – https://opengameart.org/content/splat-pack (`assets-src/kenney/splat-pack/License.txt`) | Kenney (www.kenney.nl) | CC0 |
 | `puff/*` | Smoke Particles, Ordner `PNG/White puff` – https://opengameart.org/content/smoke-particle-assets (`assets-src/kenney/smoke-particles/License.txt`) | Kenney (www.kenney.nl) | CC0 |
 | `light/*` | Light Masks, Ordner `Default` (`window_k_blur`) – https://kenney.nl/assets/light-masks (`assets-src/kenney/light-masks/License.txt`); beim Build geschert, weichgezeichnet, Helligkeit → Transparenz und warm eingefärbt | Kenney (www.kenney.nl) | CC0 |
+| `icon/*` (Plaketten) | Eigene Plaketten (Kreis, Sechseck, Schild, Medaille; `tools/build-assets.ts`) mit Glyphen: eigene SVGs `assets-src/props/glyph-*.svg`, `icon-*.svg` sowie Board Game Icons, Ordner `PNG/Double (128px)` – https://kenney.nl/assets/board-game-icons (`assets-src/kenney/board-game-icons/License.txt`) und Game Icons, Ordner `PNG/White/2x` – https://kenney.nl/assets/game-icons (`assets-src/kenney/game-icons/License.txt`); Skill-Icons `icon/skill-*`, Erfolge `icon/ach-*`, Kampagnen `icon/campaign-*`, Zielmodi `icon/target-*` | Kenney (www.kenney.nl); Projekt Backlog Defense | CC0 + eigenes Werk |
+| `icon/enemy-*` | Gegner-Porträts, aus denselben Teilen wie `enemy/*` zusammengesetzt (`tools/monsters.ts`) | Kenney (www.kenney.nl); Projekt Backlog Defense | CC0 + eigenes Werk |
+| `light/*` (Lichtkegel) | Light Masks, `circle_b` – https://kenney.nl/assets/light-masks (`assets-src/kenney/light-masks/License.txt`); beim Build Helligkeit → Transparenz, Varianten warm/kühl/gold/weiß | Kenney (www.kenney.nl) | CC0 |
 | `emote/*` | Emotes Pack, Ordner `PNG/Vector/Style 4` – https://kenney.nl/assets/emotes-pack (`assets-src/kenney/emotes-pack/License.txt`) | Kenney (www.kenney.nl) | CC0 |
 
 ## App-Icons (außerhalb von `public/assets/`)
@@ -71,4 +75,16 @@ Jede Datei in `public/audio/` steht hier mit Quelle, Autor und Lizenz (Spec seas
 | `audio/sfx/applause.mp3` | https://opengameart.org/content/well-done | qubodup | CC0 |
 | `audio/sfx/jam.mp3` | https://opengameart.org/content/interface-sounds | Kenney | CC0 |
 | `audio/sfx/businessValue.mp3` | https://opengameart.org/content/50-rpg-sound-effects | Kenney | CC0 |
-
+| `audio/music/music-planning-big-room.mp3` | https://opengameart.org/content/cunning-plan-short-seamless-loop | congusbongus | CC0 |
+| `audio/music/music-wave-big-room.mp3` | https://opengameart.org/content/lasso-lady-seamless-loop | congusbongus | CC0 |
+| `audio/music/music-planning-server-room.mp3` | https://opengameart.org/content/project-utopia-seamless-loop | congusbongus | CC0 |
+| `audio/music/music-wave-server-room.mp3` | https://opengameart.org/content/escape-from-metal-city | congusbongus | CC0 |
+| `audio/music/music-planning-boardroom.mp3` | https://opengameart.org/content/which-brand-of-mustard-shall-i-buy | congusbongus | CC0 |
+| `audio/music/music-wave-boardroom.mp3` | https://opengameart.org/content/covert-action | congusbongus | CC0 |
+| `audio/sfx/ui-click.mp3` | Interface Sounds – https://kenney.nl/assets/interface-sounds | Kenney | CC0 |
+| `audio/sfx/ui-hover.mp3` | UI Pack (2.0) – https://kenney.nl/assets/ui-pack | Kenney | CC0 |
+| `audio/sfx/ui-open.mp3` | Interface Sounds – https://kenney.nl/assets/interface-sounds | Kenney | CC0 |
+| `audio/sfx/ui-back.mp3` | Interface Sounds – https://kenney.nl/assets/interface-sounds | Kenney | CC0 |
+| `audio/sfx/star.mp3` | Interface Sounds – https://kenney.nl/assets/interface-sounds | Kenney | CC0 |
+| `audio/sfx/levelup.mp3` | Music Jingles – https://kenney.nl/assets/music-jingles | Kenney | CC0 |
+| `audio/sfx/xp-tick.mp3` | Interface Sounds – https://kenney.nl/assets/interface-sounds | Kenney | CC0 |

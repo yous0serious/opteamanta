@@ -5,6 +5,19 @@ import type { Controller } from './controller';
 
 type MusicSlot = 'music-planning' | 'music-wave' | 'music-boss';
 type Phase = MusicSlot | 'none';
+/** Kampagnen-Look (Spec campaigns): Musik-Set je Theme (music-planning-<theme>, music-wave-<theme>; Boss geteilt). */
+export type AudioTheme = 'open-office' | 'big-room' | 'server-room' | 'boardroom';
+/** Oberflächen-Klänge der Shell (Spec campaigns, Kenney Interface Sounds / UI Pack / Music Jingles). */
+export type UiSound = 'click' | 'hover' | 'open' | 'back' | 'star' | 'levelup' | 'xp-tick';
+const UI_SFX: Record<UiSound, { key: string; volume: number }> = {
+  click: { key: 'ui-click', volume: 0.6 },
+  hover: { key: 'ui-hover', volume: 0.3 },
+  open: { key: 'ui-open', volume: 0.6 },
+  back: { key: 'ui-back', volume: 0.6 },
+  star: { key: 'star', volume: 0.8 },
+  levelup: { key: 'levelup', volume: 0.9 },
+  'xp-tick': { key: 'xp-tick', volume: 0.35 },
+};
 
 interface AudioManifest {
   music: Record<string, { file: string; loop: boolean }>;
@@ -20,6 +33,9 @@ export interface AudioSettings {
 export interface AudioStatus {
   started: boolean;
   phase: Phase;
+  theme: AudioTheme;
+  /** Tatsächlich laufendes Stück (z. B. music-wave-big-room). */
+  track: string | null;
   loaded: number;
   failed: number;
   played: Record<string, number>;
@@ -29,7 +45,7 @@ export interface AudioStatus {
 const STORAGE_KEY = 'bd.audio';
 const FADE_S = 1.2;
 /** Mindestabstand je Effekt in ms (Dauerfeuer wird gedrosselt). */
-const THROTTLE: Record<string, number> = { hit: 70, throw: 90, kill: 60, coin: 50, typing: 260, jam: 400, sync: 300 };
+const THROTTLE: Record<string, number> = { hit: 70, throw: 90, kill: 60, coin: 50, typing: 260, jam: 400, sync: 300, 'ui-hover': 60, 'xp-tick': 45, star: 120 };
 
 function loadSettings(): AudioSettings {
   try {
@@ -53,10 +69,13 @@ export class SoundEngine {
   private manifest: AudioManifest | null = null;
   private readonly buffers = new Map<string, AudioBuffer>();
   private readonly loading = new Map<string, Promise<AudioBuffer | null>>();
-  private readonly tracks = new Map<MusicSlot, { src: AudioBufferSourceNode; gain: GainNode }>();
+  /** Laufende Musik je Manifest-Schlüssel (Phase + Theme). */
+  private readonly tracks = new Map<string, { src: AudioBufferSourceNode; gain: GainNode }>();
   private readonly last: Record<string, number> = {};
   private readonly played: Record<string, number> = {};
   private phase: Phase = 'none';
+  private theme: AudioTheme = 'open-office';
+  private track: string | null = null;
   private failed = 0;
   private duckUntil = 0;
   private timer: number | null = null;
@@ -103,7 +122,8 @@ export class SoundEngine {
         this.manifest = m;
         if (!m) return;
         for (const key of Object.keys(m.sfx)) void this.buffer(`sfx:${key}`);
-        for (const slot of ['music-planning', 'jingle-wave', 'jingle-boss', 'jingle-victory', 'jingle-gameover', 'music-wave', 'music-boss']) void this.buffer(`music:${slot}`);
+        this.preloadTheme();
+        for (const slot of ['jingle-wave', 'jingle-boss', 'jingle-victory', 'jingle-gameover', 'music-boss']) void this.buffer(`music:${slot}`);
       })
       .catch(() => {
         this.failed++;
@@ -113,7 +133,43 @@ export class SoundEngine {
 
   /** Debug/E2E: Zustand der Audio-Engine. */
   status(): AudioStatus {
-    return { started: this.started, phase: this.phase, loaded: this.buffers.size, failed: this.failed, played: { ...this.played }, settings: { ...this.settings } };
+    return {
+      started: this.started,
+      phase: this.phase,
+      theme: this.theme,
+      track: this.track,
+      loaded: this.buffers.size,
+      failed: this.failed,
+      played: { ...this.played },
+      settings: { ...this.settings },
+    };
+  }
+
+  /** Musik-Set des Kampagnen-Themes wählen (auch vor start() erlaubt); wechselt mit Überblendung. */
+  setTheme(theme: AudioTheme): void {
+    if (theme === this.theme) return;
+    this.theme = theme;
+    if (!this.ac) return;
+    this.preloadTheme();
+    this.updatePhase(true);
+  }
+
+  /** Oberflächen-Klang (Shell). Vor start() ohne Wirkung; Klicks starten die Engine (Nutzergeste). */
+  ui(name: UiSound): void {
+    const def = UI_SFX[name];
+    if (!def) return;
+    if (!this.ac && name !== 'hover') this.start();
+    this.play(def.key, def.volume, name === 'xp-tick' ? 0.95 + Math.random() * 0.15 : 1);
+  }
+
+  /** Manifest-Schlüssel des Stücks für eine Phase im aktuellen Theme (Fallback: Standard-Stück). */
+  private trackKey(slot: MusicSlot): string {
+    const themed = `${slot}-${this.theme}`;
+    return this.manifest?.music[themed] ? themed : slot;
+  }
+
+  private preloadTheme(): void {
+    for (const slot of ['music-planning', 'music-wave'] as const) void this.buffer(`music:${this.trackKey(slot)}`);
   }
 
   toggleMute(): void {
@@ -188,15 +244,17 @@ export class SoundEngine {
     }
     if (next === this.phase && !force) return;
     this.phase = next;
+    const key = next === 'none' ? null : this.trackKey(next);
     const t = this.ac.currentTime;
-    for (const [slot, tr] of this.tracks) {
-      if (slot === next) continue;
+    for (const [k, tr] of this.tracks) {
+      if (k === key) continue;
       tr.gain.gain.setTargetAtTime(0, t, FADE_S / 3);
       tr.src.stop(t + FADE_S * 2);
-      this.tracks.delete(slot);
+      this.tracks.delete(k);
     }
-    if (next === 'none' || this.tracks.has(next)) return;
-    const buf = this.buffers.get(`music:${next}`);
+    this.track = key && this.tracks.has(key) ? key : null;
+    if (!key || this.tracks.has(key)) return;
+    const buf = this.buffers.get(`music:${key}`);
     if (!buf || !this.musicBus) return;
     const src = this.ac.createBufferSource();
     src.buffer = buf;
@@ -207,7 +265,8 @@ export class SoundEngine {
     src.connect(gain);
     gain.connect(this.musicBus);
     src.start(t);
-    this.tracks.set(next, { src, gain });
+    this.tracks.set(key, { src, gain });
+    this.track = key;
   }
 
   private jingle(slot: string, duckMs = 1800): void {
@@ -304,6 +363,19 @@ export class SoundEngine {
     s.start(ac.currentTime + delay);
   }
 
+  /** Effekt für ein Sim-Ereignis, gedrosselt je Ereignis (nicht je Klang); true, wenn gespielt. */
+  private cue(event: string, ms: number, key: string, volume: number, rate: number): boolean {
+    if (this.throttled(`ev:${event}`, ms)) return false;
+    this.playBuffer(`sfx:${key}`, rate * (0.97 + Math.random() * 0.06), volume, event);
+    return true;
+  }
+
+  /** Prozedural: kurzer, heller Glockenakkord (aufsteigend). */
+  private chime(freqs: readonly number[], v: number, label: string): void {
+    freqs.forEach((f, i) => this.tone(f, 0.45, 'sine', v, i * 0.07));
+    this.played[label] = (this.played[label] ?? 0) + 1;
+  }
+
   /** Dauerstrahl des Entwicklers: Tippgeräusch (gedrosselt). */
   laser(): void {
     this.play('typing', 0.35);
@@ -382,6 +454,28 @@ export class SoundEngine {
         break;
       case 'rejected':
         this.play('click', 0.6, 0.6);
+        break;
+      // Kampagnen-Mechaniken (Spec campaigns): vorhandene CC0-Effekte umgestimmt bzw. prozedural, je Ereignis gedrosselt
+      case 'bossPhase':
+        if (this.cue('bossPhase', 800, 'boss', 0.75, 0.85)) this.jingle('jingle-boss', 1400);
+        break;
+      case 'budgetCut':
+        this.cue('budgetCut', 350, 'coin', 0.7, 0.62);
+        break;
+      case 'healed':
+        if (!this.throttled('ev:healed', 600)) this.chime([660, 880], 0.05, 'healed');
+        break;
+      case 'revealed':
+        if (!this.throttled('ev:revealed', 300)) this.chime([988, 1319], 0.045, 'revealed');
+        break;
+      case 'spawnedMinion':
+        this.cue('spawnedMinion', 250, 'split', 0.45, 1.35);
+        break;
+      case 'stalled':
+        this.cue('stalled', 500, 'jam', 0.5, 0.75);
+        break;
+      case 'sprinted':
+        this.cue('sprinted', 300, 'throw', 0.6, 0.7);
         break;
       default:
         break;

@@ -1,4 +1,8 @@
-import { COLS, Game, LEVEL_DMG, ROWS, TILE, TOWERS, type BalanceConfig, type GameMode, type MapId, type Point, type Tower, type TowerType } from '../src/sim/index';
+import {
+  COLS, ENEMIES, Game, LEVEL_DMG, ROWS, TILE, TOWERS, type BalanceConfig, type EnemyType, type GameMode, type LevelId, type MapId, type Point, type SkillLoadout,
+  type TargetMode, type Tower, type TowerType,
+} from '../src/sim/index';
+import { botGame, upgradeCommand } from './bot';
 
 // Starker Bot (Spec balancing-challenge T03): gleicher ausgewogener Turm-Mix wie der Referenz-Bot, aber
 // Platzierung nach Pfadabdeckung, Upgrades nach Nutzen pro SP, Nachkaufen auch während der Wellen.
@@ -9,6 +13,8 @@ const WEIGHT: Partial<Record<TowerType, number>> = { dualo: 17, analyst: 14, dev
 /** Vorstand ab dieser Welle, wenn genug Kapazität da ist (Spec season-2). */
 const BOARD_FROM_WAVE = 6;
 const BUY_INTERVAL = 60;
+/** Zielmodus je Rolle (Spec campaigns); fehlend = 'first'. */
+const TARGET: Partial<Record<TowerType, TargetMode>> = { scrum: 'strong' };
 const MAX_TICKS_PER_WAVE = 60 * 60 * 10;
 
 export interface BotOptions {
@@ -16,6 +22,9 @@ export interface BotOptions {
   maxWave: number;
   mode?: GameMode;
   mapId?: MapId;
+  /** Kampagnen-Level (Spec campaigns): Karte, Wellenzahl und Rollen kommen aus den Level-Daten. */
+  levelId?: LevelId;
+  loadout?: SkillLoadout;
   balance?: Readonly<BalanceConfig>;
   /** Wird nach jeder abgeschlossenen Welle aufgerufen (Messwerkzeug). */
   onWaveEnd?: (game: Game) => void;
@@ -33,8 +42,10 @@ function samplePath(path: readonly Point[], step: number): Point[] {
 }
 
 export function playStrongBot(opts: BotOptions): Game {
-  const game = new Game({ seed: opts.seed, mapId: opts.mapId, mode: opts.mode ?? 'endless', balance: opts.balance });
+  const game: Game = botGame(opts);
   const s = game.state;
+  const rotation = ROTATION.filter((r) => game.roles.includes(r));
+  const boardAllowed = game.roles.includes('board');
   const samples = samplePath(game.path, 10).filter((p) => p.x >= 0 && p.x <= COLS * TILE);
   const coverage = new Map<string, number>();
   const cov = (type: TowerType, cx: number, cy: number): number => {
@@ -52,7 +63,7 @@ export function playStrongBot(opts: BotOptions): Game {
   };
   // Zellen je Typ nach Abdeckung absteigend (stabil nach cy, cx).
   const ranked = new Map<TowerType, Array<[number, number]>>();
-  for (const type of ROTATION) {
+  for (const type of rotation) {
     if (ranked.has(type) || TOWERS[type].range === 0) continue;
     const cells: Array<[number, number, number]> = [];
     for (let cy = 0; cy < ROWS; cy++) for (let cx = 0; cx < COLS; cx++) cells.push([cov(type, cx, cy), cx, cy]);
@@ -98,16 +109,23 @@ export function playStrongBot(opts: BotOptions): Game {
   };
 
   let next = 0;
+  // Schatten-IT (Spec campaigns): ohne Business Analyst/RTA bleibt sie unsichtbar – Entdeckung zuerst sichern.
+  const stealthy = !!game.level?.pool.some((b) => Object.keys(b.weights).some((t) => ENEMIES[t as EnemyType].stealth));
   const shop = (): void => {
+    if (stealthy && game.roles.includes('analyst') && !s.towers.some((t) => t.type === 'analyst' || t.type === 'rta')) {
+      const cell = cellFor('analyst');
+      if (!cell || s.money < game.towerCost('analyst')) return;
+      game.apply({ type: 'place', tower: 'analyst', cx: cell[0], cy: cell[1] });
+    }
     // Vorstand einmal, sobald sinnvoll
-    if (s.wave >= BOARD_FROM_WAVE && !s.towers.some((t) => t.type === 'board') && s.money >= TOWERS.board.cost) {
+    if (boardAllowed && s.wave >= BOARD_FROM_WAVE && !s.towers.some((t) => t.type === 'board') && s.money >= game.towerCost('board')) {
       const cell = cellFor('board');
       if (cell) game.apply({ type: 'place', tower: 'board', cx: cell[0], cy: cell[1] });
     }
     for (let guard = 0; guard < 400; guard++) {
-      const type = ROTATION[next % ROTATION.length]!;
+      const type = rotation[next % rotation.length]!;
       const cell = cellFor(type);
-      const placeCost = TOWERS[type].cost;
+      const placeCost = game.towerCost(type);
       // Bestes Upgrade nach Nutzen pro SP
       let up: Tower | null = null;
       let upCost = 0;
@@ -130,16 +148,20 @@ export function playStrongBot(opts: BotOptions): Game {
       }
       if (cell && placeRatio >= upRatio) {
         if (s.money < placeCost) return;
-        game.apply({ type: 'place', tower: type, cx: cell[0], cy: cell[1] });
+        const ev = game.apply({ type: 'place', tower: type, cx: cell[0], cy: cell[1] });
+        const placed = ev.find((e) => e.type === 'placed');
+        const mode = TARGET[type];
+        if (mode && placed?.type === 'placed') game.apply({ type: 'target', towerId: placed.tower.id, mode });
         next++;
       } else if (up) {
         if (s.money < upCost) return;
-        game.apply({ type: 'upgrade', towerId: up.id });
+        game.apply(upgradeCommand(up));
       } else return;
     }
   };
 
-  while (!s.over && s.wave < opts.maxWave) {
+  const maxWave = Math.min(opts.maxWave, s.waves ?? opts.maxWave);
+  while (!s.over && s.wave < maxWave) {
     shop();
     game.apply({ type: 'startWave' });
     let ticks = 0;

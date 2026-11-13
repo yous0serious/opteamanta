@@ -16,7 +16,9 @@ import { Juice } from './render/office/juice';
 import { OfficeLife } from './render/office/life';
 import { Season2Fx } from './render/office/season2fx';
 import { OfficeFloor } from './render/office/floor';
-import { MONSTER_W, MonsterView, createMonsterAnims } from './render/office/monster';
+import { MonsterView, createMonsterAnims, monsterWidth } from './render/office/monster';
+import { Mechanics } from './render/office/mechanics';
+import { themeOf } from './render/office/themes';
 import { WorkstationView } from './render/office/workstation';
 import { Particles } from './render/particles';
 import { PileView } from './render/pile';
@@ -54,6 +56,7 @@ export class GameScene extends Phaser.Scene {
   private juice!: Juice;
   private life!: OfficeLife;
   private emotes!: Emotes;
+  private mech!: Mechanics;
   private puffs!: Phaser.GameObjects.Particles.ParticleEmitter;
   private under!: Phaser.GameObjects.Graphics;
   private beams!: Phaser.GameObjects.Graphics;
@@ -110,6 +113,7 @@ export class GameScene extends Phaser.Scene {
         ...Object.fromEntries(Object.entries(this.juice.counters).map(([k, v]) => [`juice:${k}`, v])),
         ...Object.fromEntries(Object.entries(this.life.counters).map(([k, v]) => [`life:${k}`, v])),
         ...Object.fromEntries(Object.entries(this.emotes.counters).map(([k, v]) => [`emote:${k}`, v])),
+        ...Object.fromEntries(Object.entries(this.mech.counters).map(([k, v]) => [`mech:${k}`, v])),
       }),
     };
   }
@@ -129,6 +133,7 @@ export class GameScene extends Phaser.Scene {
     this.juice = new Juice(this, this.layers.texts, this.ctl, this.settings, (k, v, r) => this.sfx.play(k, v, r));
     this.life = new OfficeLife(this, this.layers.actors, this.layers.texts, this.settings);
     this.emotes = new Emotes(this, this.layers.texts, () => this.settings.reducedMotion);
+    this.mech = new Mechanics(this, this.layers.under, this.layers.texts, () => this.settings.reducedMotion);
     this.under = this.add.graphics();
     this.layers.under.add(this.under);
 
@@ -209,6 +214,7 @@ export class GameScene extends Phaser.Scene {
       blocked: (x, y) => game.pathCells.has(`${Math.floor(x / TILE)},${Math.floor(y / TILE)}`),
     });
     this.pileView = new PileView(this, this.layers.pile, pile);
+    this.sfx.setTheme(themeOf(game.map));
   }
 
   private reset(game: Game): void {
@@ -234,6 +240,7 @@ export class GameScene extends Phaser.Scene {
     this.juice.reset();
     this.life.reset();
     this.emotes.clear();
+    this.mech.clear();
     this.banner.hide();
     if (this.desat) {
       this.cameras.main.filters.internal.remove(this.desat);
@@ -317,6 +324,7 @@ export class GameScene extends Phaser.Scene {
     const game = this.ctl.game;
     const key = e.type === 'fired' ? `fired:${e.tower.type}` : e.type;
     this.effectCounts[key] = (this.effectCounts[key] ?? 0) + 1;
+    this.mech.onSim(e, (id) => this.enemies.get(id));
     switch (e.type) {
       case 'placed':
         parts.burst(e.tower.x, e.tower.y + 10, TOWERS[e.tower.type].color, 18, 150, 'circle');
@@ -363,13 +371,13 @@ export class GameScene extends Phaser.Scene {
         this.towers.get(e.tower.id)?.fire();
         break;
       case 'killed': {
-        const boss = e.enemy.type === 'boss';
+        const boss = !!ENEMIES[e.enemy.type].boss;
         const color = ENEMIES[e.enemy.type].color;
         const n = Math.max(1, Math.round((boss ? 14 : 5) * this.settings.particleScale));
         this.puffs.explode(n, e.enemy.x, e.enemy.y);
         parts.burst(e.enemy.x, e.enemy.y, color, boss ? 90 : 14, boss ? 400 : 200, 'circle');
         parts.burst(e.enemy.x, e.enemy.y, INK.yellow, boss ? 30 : 4, boss ? 300 : 160, 'star');
-        this.decals.splat(e.enemy.x, e.enemy.y, e.enemy.type, MONSTER_W[e.enemy.type] * 1.3);
+        this.decals.splat(e.enemy.x, e.enemy.y, e.enemy.type, monsterWidth(e.enemy.type) * 1.3);
         this.juice.kill(e.enemy, this.time_);
         if (boss || Math.random() < 0.3) fx.text(e.enemy.x, e.enemy.y - 24, pick(KILL), INK.neutral, 13, 1);
         this.flyToPile(e.enemy);
@@ -480,7 +488,7 @@ export class GameScene extends Phaser.Scene {
       case 'pushed':
         fx.ring(e.enemy.x, e.enemy.y, 26, INK.purple);
         parts.burst(e.enemy.x, e.enemy.y, TOWERS.scrum.color, 8, 160, 'spark');
-        fx.text(e.enemy.x, e.enemy.y - 30, e.enemy.type === 'boss' ? 'Hmm, nochmal schätzen…' : 'Zurück ins Refinement!', INK.purple, 12, 1);
+        fx.text(e.enemy.x, e.enemy.y - 30, ENEMIES[e.enemy.type].boss ? 'Hmm, nochmal schätzen…' : 'Zurück ins Refinement!', INK.purple, 12, 1);
         this.emotes.show(`e${e.enemy.id}`, e.enemy.x + 12, e.enemy.y - 30, 'question', 1);
         break;
       default:
@@ -495,7 +503,7 @@ export class GameScene extends Phaser.Scene {
       this.pileView.land(ball);
       return;
     }
-    const boss = enemy.type === 'boss';
+    const boss = !!ENEMIES[enemy.type].boss;
     const size = boss ? 54 : 30;
     const img = this.add.image(enemy.x, enemy.y, ATLAS, boss ? `prop/postit-curl/${enemy.type}` : `prop/postit/${enemy.type}`).setDisplaySize(size, size);
     this.layers.particles.add(img);
@@ -548,6 +556,7 @@ export class GameScene extends Phaser.Scene {
     this.decals.update(dt);
     this.s2.update(dt, this.time_, this.ctl.game);
     this.juice.update(s.enemies, this.time_);
+    this.mech.update(dt, this.time_, s.enemies, (id) => this.enemies.get(id));
     this.life.update(dt, this.time_, this.ctl.game, this.board, this.towers, this.s2);
     this.banner.update(dt);
     this.syncEntities(dt);

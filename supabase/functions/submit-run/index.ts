@@ -1,5 +1,6 @@
-// submit-run: nimmt ein Replay zur eigenen Session entgegen, speichert es als `pending` und stößt die Prüfung an.
-// Spec leaderboard-supabase AC-3, ADR-0004.
+// submit-run: nimmt ein Replay (Format 3) zur eigenen Session entgegen, speichert es als `pending` und stößt die Prüfung an.
+// Art, Level, Karte, Modus und Loadout der Einreichung stammen aus der Session; das Replay muss dazu passen.
+// Spec leaderboard-supabase AC-3, Spec campaigns, ADR-0004.
 import { REASON_STATUS, checkSubmission, replayHash, type SessionRow } from '../_shared/logic.ts';
 import { env, json, preflight, serviceClient, userFromRequest } from '../_shared/http.ts';
 
@@ -26,12 +27,14 @@ Deno.serve(async (req) => {
   if (!check.ok) return json(req, check.status, { error: check.reason, detail: check.detail });
 
   const replay = check.replay;
+  const s = session as SessionRow;
   const hash = await replayHash(replay);
   const { data: inserted, error } = await db
     .from('submissions')
     .insert({
-      session_id: body.sessionId, user_id: user.id, daily_date: (session as SessionRow).daily_date,
-      game_version: replay.gameVersion, replay, replay_hash: hash, end_tick: replay.endTick,
+      session_id: body.sessionId, user_id: user.id, daily_date: s.daily_date, game_version: replay.gameVersion, replay,
+      replay_hash: hash, end_tick: replay.endTick, kind: s.kind ?? 'daily', board: s.board ?? `daily:${s.daily_date}`,
+      level_id: s.level_id ?? null, map_id: s.map_id, mode: s.mode, loadout: s.loadout ?? {},
     })
     .select('id')
     .single();
@@ -51,5 +54,5 @@ Deno.serve(async (req) => {
   }).catch(() => undefined);
   if (typeof EdgeRuntime !== 'undefined') EdgeRuntime.waitUntil(trigger);
 
-  return json(req, 202, { submissionId: inserted.id, status: 'pending' });
+  return json(req, 202, { submissionId: inserted.id, status: 'pending', board: s.board ?? `daily:${s.daily_date}` });
 });

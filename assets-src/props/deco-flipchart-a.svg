@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="116" viewBox="0 0 64 116">
+  <!-- Flipchart mit Balkendiagramm (eigenes Werk) -->
+  <ellipse cx="32" cy="110" rx="22" ry="5" fill="#000" opacity="0.15"/>
+  <g stroke="#78909c" stroke-width="4" stroke-linecap="round"><path d="M14 108 L24 60"/><path d="M50 108 L40 60"/><path d="M32 100 L32 62"/></g>
+  <rect x="6" y="8" width="52" height="64" rx="3" fill="#ffffff" stroke="#b0bec5" stroke-width="2"/>
+  <rect x="4" y="4" width="56" height="8" rx="3" fill="#607d8b"/>
+  <g fill="none" stroke-linecap="round"><path d="M12 64 L52 64" stroke="#455a64" stroke-width="2"/></g>
+  <rect x="14" y="44" width="7" height="20" fill="#42a5f5"/><rect x="25" y="34" width="7" height="30" fill="#66bb6a"/><rect x="36" y="24" width="7" height="40" fill="#ffa726"/>
+  <path d="M12 22 Q20 16 28 18 T46 14" stroke="#e53935" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M12 72 L18 78 L22 72" fill="#ffffff" stroke="#b0bec5"/>
+</svg>

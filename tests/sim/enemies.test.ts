@@ -60,8 +60,8 @@ describe('AC-7 Scope Creep', () => {
     g.state.wave = 6;
     const e = g.spawnEnemy('creep');
     stepN(g, 1200);
-    expect(e.maxHp).toBeLessThanOrEqual(137.86826933575 + 1e-6);
-    expect(e.maxHp).toBeGreaterThan(137);
+    expect(e.maxHp).toBeLessThanOrEqual(149.0325184179141 + 1e-6);
+    expect(e.maxHp).toBeGreaterThan(149);
   });
 });
 

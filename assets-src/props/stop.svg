@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Haltschild (Impediment steht) (eigenes Werk) -->
+  <path d="M21 3 L43 3 L61 21 L61 43 L43 61 L21 61 L3 43 L3 21 Z" fill="#ffffff"/>
+  <path d="M23 8 L41 8 L56 23 L56 41 L41 56 L23 56 L8 41 L8 23 Z" fill="#e53935"/>
+  <rect x="15" y="27" width="34" height="10" rx="3" fill="#ffffff"/>
+  <path d="M24 12 L40 12" stroke="#ef9a9a" stroke-width="3" stroke-linecap="round"/>
+</svg>
