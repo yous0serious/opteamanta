@@ -8,5 +8,6 @@ const REF = 'hqdvuessvcmtlcsysrmi';
 const names = process.argv.slice(2);
 const env = { ...process.env, SUPABASE_ACCESS_TOKEN: readFileSync('supabase_token.txt', 'utf8').trim() };
 const args = ['supabase', 'functions', 'deploy', ...names, `--remote=${REF}`, '--use-api', '--yes'];
-const res = spawnSync('npx', args, { stdio: 'inherit', env });
+// Windows: npx ist eine .cmd-Datei und braucht eine Shell
+const res = spawnSync('npx', args, { stdio: 'inherit', env, shell: process.platform === 'win32' });
 process.exit(res.status ?? 1);

@@ -85,7 +85,7 @@ export function profilePlaque(ctx: ShellCtx, p: ProfileView, onSecure: () => voi
           ? h('button', { type: 'button', class: 'pp-points', onclick: () => ctx.router.go({ name: 'skills' }), title: 'Zum Skilltree' }, svg(I.tree), `${free} Skillpunkt${free === 1 ? '' : 'e'} frei`)
           : null,
         p.ranked ? null : h('span', { class: 'pp-offline', title: 'Fortschritt nur auf diesem Gerät' }, svg(I.cloudOff), 'Offline – nicht gewertet'),
-        p.ranked && !p.email ? h('button', { type: 'button', class: 'pp-secure', onclick: onSecure }, svg(I.shield), 'Konto sichern') : null,
+        p.ranked && !p.email ? h('button', { type: 'button', class: 'pp-secure', onclick: onSecure, title: 'Konto sichern oder mit gesichertem Konto anmelden' }, svg(I.shield), 'Konto sichern / Anmelden') : null,
         p.email ? h('span', { class: 'pp-secured', title: p.email }, svg(I.shield), 'Gesichert') : null,
       ),
     ),

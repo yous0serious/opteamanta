@@ -198,11 +198,16 @@ export class MockMeta implements MetaService {
     return 'ok';
   }
 
-  async secureAccount(email: string): Promise<'sent' | 'error'> {
+  async secureAccount(email: string, _password: string): Promise<'ok' | 'invalid' | 'taken' | 'weak' | 'error'> {
     await this.delay(null, 500);
     this.s.email = email;
     this.save();
-    return 'sent';
+    return 'ok';
+  }
+
+  async login(_email: string, _password: string): Promise<'ok' | 'wrong' | 'error'> {
+    await this.delay(null, 500);
+    return 'wrong';
   }
 
   onChange(fn: () => void): () => void {

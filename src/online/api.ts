@@ -107,7 +107,10 @@ export interface Account {
 export type Period = 'day' | 'week';
 export type NicknameResult = 'ok' | 'taken' | 'invalid';
 export type SkillResult = 'ok' | 'no_points' | 'locked' | 'error';
-export type EmailResult = 'sent' | 'invalid' | 'taken' | 'error';
+export type SecureResult = 'ok' | 'invalid' | 'taken' | 'weak' | 'error';
+export type LoginResult = 'ok' | 'wrong' | 'error';
+/** Mindestlänge wie Supabase Auth (Standard). */
+export const MIN_PASSWORD = 6;
 
 /** Fehler einer Edge Function mit maschinenlesbarem Grund (z. B. `rate_limited`). */
 export class ApiError extends Error {
@@ -214,23 +217,27 @@ export class OnlineApi {
   }
 
   /**
-   * Konto sichern: E-Mail an das (anonyme) Konto hängen. Supabase schickt einen Bestätigungslink; danach lässt sich
-   * dasselbe Konto auf anderen Geräten per `sendLoginLink` öffnen.
+   * Konto sichern: E-Mail + Passwort an das (anonyme) Konto hängen – sofort aktiv, ohne Bestätigungsmail
+   * (Supabase Auth „Confirm email“ aus). Gleiche Nutzer-ID, Fortschritt bleibt; andere Geräte melden sich per
+   * `loginWithPassword` an.
    */
-  async secureAccount(email: string): Promise<EmailResult> {
+  async secureAccount(email: string, password: string): Promise<SecureResult> {
     const addr = email.trim();
     if (!EMAIL_RE.test(addr)) return 'invalid';
+    if (password.length < MIN_PASSWORD) return 'weak';
     if (!this.userId) await this.signIn();
-    const { error } = await this.sb.auth.updateUser({ email: addr }, { emailRedirectTo: redirectUrl() });
-    return emailResult(error);
+    const { error } = await this.sb.auth.updateUser({ email: addr, password });
+    return secureResult(error);
   }
 
-  /** Anmelde-Link für ein gesichertes Konto (anderes Gerät). Legt keine neuen Konten an. */
-  async sendLoginLink(email: string): Promise<EmailResult> {
+  /** Mit gesichertem Konto anmelden (anderes Gerät). Ersetzt das anonyme Konto dieses Geräts. */
+  async loginWithPassword(email: string, password: string): Promise<LoginResult> {
     const addr = email.trim();
-    if (!EMAIL_RE.test(addr)) return 'invalid';
-    const { error } = await this.sb.auth.signInWithOtp({ email: addr, options: { shouldCreateUser: false, emailRedirectTo: redirectUrl() } });
-    return emailResult(error);
+    if (!EMAIL_RE.test(addr) || !password) return 'wrong';
+    const { data, error } = await this.sb.auth.signInWithPassword({ email: addr, password });
+    if (error || !data.user) return error?.code === 'invalid_credentials' || error?.status === 400 ? 'wrong' : 'error';
+    this.userId = data.user.id;
+    return 'ok';
   }
 
   /** Abmelden (lokal); der nächste Aufruf meldet wieder anonym an. */
@@ -390,13 +397,10 @@ export class OnlineApi {
   }
 }
 
-function redirectUrl(): string | undefined {
-  return typeof location === 'undefined' ? undefined : `${location.origin}${location.pathname}`;
-}
-
-function emailResult(error: { code?: string; status?: number } | null): EmailResult {
-  if (!error) return 'sent';
+function secureResult(error: { code?: string; status?: number } | null): SecureResult {
+  if (!error) return 'ok';
   if (error.code === 'email_exists' || error.code === 'user_already_exists') return 'taken';
+  if (error.code === 'weak_password') return 'weak';
   if (error.code === 'email_address_invalid' || error.code === 'validation_failed') return 'invalid';
   return 'error';
 }

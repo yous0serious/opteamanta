@@ -105,7 +105,7 @@ Level 6 jeder Kampagne ist der Boss-Level. Kampagne 1 ist Tutorial-geführt (Lev
 - Server speichert `profiles.xp`, `level_results(user, level_id, best_stars, best_score)`, `skill_alloc(user, skill, rank)`;
   Skill-Zuteilung nur per RPC mit Prüfung (Punkte, Voraussetzungen). `start-run` friert das Loadout des Nutzers in der
   Run-Session ein; `submit-run` verlangt Gleichheit mit dem Replay-Loadout.
-- Anonyme Konten wie bisher; „Konto sichern“ per E-Mail-Link (Supabase `updateUser({ email })`) für mehrere Geräte.
+- Anonyme Konten wie bisher; „Konto sichern“ per E-Mail + Passwort (Supabase `updateUser({ email, password })`, sofort aktiv, „Confirm email“ aus, kein Mailversand), auf anderen Geräten `signInWithPassword` (Nutzerentscheidung 2026-11-13).
 
 ### Ranglisten
 - Board-IDs: `daily:<YYYY-MM-DD>` (wie bisher), `level:<LevelId>` (Bestwert je Nutzer), `map:<MapId>` (Challenge 30 auf

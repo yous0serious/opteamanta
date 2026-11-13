@@ -93,7 +93,10 @@ export interface MetaService {
   leaderboard(board: BoardId, period: RankPeriod): Promise<RankRow[]>;
   achievements(): Promise<AchievementView[]>;
   rename(nickname: string): Promise<NicknameResult>;
-  secureAccount(email: string): Promise<'sent' | 'error'>;
+  /** Konto sichern: E-Mail + Passwort ans aktuelle Konto (sofort aktiv, keine Mail). */
+  secureAccount(email: string, password: string): Promise<'ok' | 'invalid' | 'taken' | 'weak' | 'error'>;
+  /** Mit gesichertem Konto anmelden (anderes Gerät); ersetzt das Konto dieses Geräts. */
+  login(email: string, password: string): Promise<'ok' | 'wrong' | 'error'>;
   /** Benachrichtigung bei Änderungen (XP, Skills, Fortschritt). */
   onChange(fn: () => void): () => void;
 }

@@ -33,56 +33,97 @@ export function confirmDialog(title: string, text: string, ok: string, cancel = 
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const MIN_PASSWORD = 6;
 
-/** „Konto sichern“: E-Mail-Link für mehrere Geräte (Supabase `updateUser({ email })`). */
+const SECURE_TEXT: Record<string, string> = {
+  invalid: 'Bitte eine gültige E-Mail-Adresse eingeben.',
+  taken: 'Diese E-Mail gehört schon zu einem Konto – dann bitte „Anmelden“ wählen.',
+  weak: `Das Passwort braucht mindestens ${MIN_PASSWORD} Zeichen.`,
+  error: 'Speichern fehlgeschlagen – bitte später erneut versuchen.',
+};
+
+/**
+ * „Konto sichern“: E-Mail + Passwort ans aktuelle (anonyme) Konto hängen – sofort aktiv, keine Bestätigungsmail.
+ * Umschaltbar auf „Anmelden“ für ein schon gesichertes Konto (anderes Gerät); danach lädt die Seite neu.
+ */
 export function secureDialog(ctx: ShellCtx): Promise<void> {
   return new Promise((resolve) => {
-    const input = h('input', { type: 'email', id: 'secure-email', autocomplete: 'email', required: true, placeholder: 'name@firma.de', 'aria-describedby': 'secure-msg' });
-    const msg = h('div', { id: 'secure-msg', class: 'hint', text: 'Wir schicken dir einen Bestätigungslink. Danach kannst du auf jedem Gerät weiterspielen.' });
-    const ok = h('button', { type: 'submit', class: 'sh-btn primary', text: 'Link senden' });
+    let mode: 'secure' | 'login' = 'secure';
+    const email = h('input', { type: 'email', id: 'secure-email', autocomplete: 'email', required: true, placeholder: 'name@firma.de', 'aria-describedby': 'secure-msg' });
+    const pass = h('input', { type: 'password', id: 'secure-pass', autocomplete: 'new-password', required: true, minlength: String(MIN_PASSWORD), 'aria-describedby': 'secure-msg' });
+    const title = h('h2', { text: 'Konto sichern' });
+    const msg = h('div', { id: 'secure-msg', class: 'hint' });
+    const ok = h('button', { type: 'submit', class: 'sh-btn primary' });
     const cancel = h('button', { type: 'button', class: 'sh-btn', text: 'Abbrechen' });
-    const form = h('form', { method: 'dialog' }, h('div', { class: 'dlg-ico' }, svg(I.shield)), h('h2', { text: 'Konto sichern' }), h('label', { for: 'secure-email', class: 'lbl', text: 'E-Mail-Adresse' }), input, msg, h('div', { class: 'row' }, cancel, ok));
+    const toggle = h('button', { type: 'button', class: 'sh-link' });
+    const form = h(
+      'form',
+      { method: 'dialog' },
+      h('div', { class: 'dlg-ico' }, svg(I.shield)),
+      title,
+      h('label', { for: 'secure-email', class: 'lbl', text: 'E-Mail-Adresse' }),
+      email,
+      h('label', { for: 'secure-pass', class: 'lbl', text: 'Passwort' }),
+      pass,
+      msg,
+      h('div', { class: 'row' }, cancel, ok),
+      toggle,
+    );
     const dlg = modal('secure', form);
-    dlg.setAttribute('aria-label', 'Konto sichern');
+    const setMode = (m: typeof mode): void => {
+      mode = m;
+      const secure = m === 'secure';
+      title.textContent = secure ? 'Konto sichern' : 'Anmelden';
+      dlg.setAttribute('aria-label', title.textContent);
+      ok.textContent = secure ? 'Sichern' : 'Anmelden';
+      pass.setAttribute('autocomplete', secure ? 'new-password' : 'current-password');
+      toggle.textContent = secure ? 'Schon ein gesichertes Konto? Anmelden' : 'Noch kein Konto? Dieses Konto sichern';
+      msg.classList.remove('err');
+      msg.textContent = secure
+        ? 'Damit spielst du mit deinem Fortschritt auf jedem Gerät weiter. Sofort aktiv – keine Bestätigungsmail.'
+        : 'Achtung: Der Fortschritt auf diesem Gerät wird durch dein gesichertes Konto ersetzt.';
+    };
+    setMode('secure');
     const done = (): void => {
       dlg.close();
       dlg.remove();
       resolve();
     };
+    const fail = (text: string): void => {
+      msg.textContent = text;
+      msg.classList.add('err');
+    };
     cancel.addEventListener('click', done);
+    toggle.addEventListener('click', () => setMode(mode === 'secure' ? 'login' : 'secure'));
     dlg.addEventListener('cancel', (ev) => {
       ev.preventDefault();
       done();
     });
     form.addEventListener('submit', (ev) => {
       ev.preventDefault();
-      const email = input.value.trim();
-      if (!EMAIL_RE.test(email)) {
-        msg.textContent = 'Bitte eine gültige E-Mail-Adresse eingeben.';
-        msg.classList.add('err');
-        return;
-      }
+      const addr = email.value.trim();
+      if (!EMAIL_RE.test(addr)) return fail(SECURE_TEXT.invalid!);
+      if (mode === 'secure' && pass.value.length < MIN_PASSWORD) return fail(SECURE_TEXT.weak!);
       ok.disabled = true;
-      msg.textContent = 'Wird gesendet…';
       msg.classList.remove('err');
-      ctx.meta
-        .secureAccount(email)
-        .then((r) => {
-          if (r === 'sent') {
-            ctx.toast('Link gesendet – bitte E-Mail bestätigen.', 'ok', I.mail);
-            done();
-          } else {
-            msg.textContent = 'Senden fehlgeschlagen – bitte später erneut versuchen.';
-            msg.classList.add('err');
-          }
-        })
-        .catch(() => {
-          msg.textContent = 'Senden fehlgeschlagen – bitte später erneut versuchen.';
-          msg.classList.add('err');
-        })
-        .finally(() => (ok.disabled = false));
+      msg.textContent = mode === 'secure' ? 'Wird gespeichert…' : 'Anmeldung läuft…';
+      const run =
+        mode === 'secure'
+          ? ctx.meta.secureAccount(addr, pass.value).then((r) => {
+              if (r !== 'ok') return fail(SECURE_TEXT[r] ?? SECURE_TEXT.error!);
+              ctx.toast('Konto gesichert – auf anderen Geräten einfach anmelden.', 'ok', I.shield);
+              done();
+            })
+          : ctx.meta.login(addr, pass.value).then((r) => {
+              if (r !== 'ok') return fail(r === 'wrong' ? 'E-Mail oder Passwort falsch.' : 'Anmeldung fehlgeschlagen – bitte später erneut versuchen.');
+              done();
+              // Neu laden: Spielstand, Profil und Ranglisten gehören jetzt zum angemeldeten Konto
+              location.reload();
+            });
+      run.catch(() => fail(SECURE_TEXT.error!)).finally(() => (ok.disabled = false));
     });
     dlg.showModal();
-    input.focus();
+    email.focus();
   });
 }
+

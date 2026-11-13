@@ -50,7 +50,7 @@ Das Spiel startet im **Hauptmenü** (Profil mit Account-Level und XP, Rangliste,
 - Im Spiel: Pause (`P`/Knopf), Wellenvorschau, Zielmodus je Rolle (Erster/Letzter/Stärkster/Nächster),
   Upgrade-Zweig ab Stufe 3.
 
-Online liegt der Fortschritt im Konto (anonym; per E-Mail-Link sicherbar und auf anderen Geräten nutzbar),
+Online liegt der Fortschritt im Konto (anonym; per E-Mail + Passwort sicherbar – sofort, ohne Bestätigungsmail – und damit auf anderen Geräten nutzbar),
 offline lokal im Browser („nicht gewertet“). Routen: `#/menu`, `#/campaign`, `#/level/<id>`, `#/skills`, `#/ranks`,
 `#/achievements`, `#/free`. Direktlinks mit Spielparametern (z. B. `?map=…&seed=…`) starten wie früher sofort ein
 freies Spiel ohne Menü. Entwicklung: `npm run dev` + `?shell=mock` zeigt die Shell mit Testdaten.
@@ -249,8 +249,9 @@ Function-Secrets im Projekt: `DAILY_SECRET` (Tages-Seed), `VERIFY_SECRET` (Prüf
 - *Grenzen:* bis 30 Daily-Läufe und 150 Level-/Karten-Läufe pro Nutzer und Tag, 30 anonyme Anmeldungen pro Stunde
   und IP (Supabase-Standard), Replays höchstens 200.000 Ticks.
   Bots/TAS lassen sich nicht ausschließen (Anti-Cheat-Analyse: `.ai/knowledge/requirements/anti-cheat.md`).
-- *Konto sichern (E-Mail-Link):* In Supabase Auth die Seiten-URLs (Produktion, Netlify-Previews, localhost) als
-  Redirect-URLs erlauben und einen eigenen SMTP-Versand einrichten (der eingebaute erlaubt nur ~2 Mails/Stunde).
+- *Konto sichern:* E-Mail + Passwort werden direkt ans anonyme Konto gehängt (`updateUser`), Anmelden auf anderen
+  Geräten per `signInWithPassword`. Es werden keine Mails verschickt: In Supabase Auth ist „Confirm email“ aus
+  (`mailer_autoconfirm`), kein SMTP nötig. Folge: E-Mail-Adressen sind ungeprüft, „Passwort vergessen“ gibt es nicht.
 
 ## Weiterführend
 

@@ -287,6 +287,10 @@ html.shell-open #ticker span { animation-play-state: paused; }
 .sh-dialog input:focus { outline: none; border-color: var(--sh-teal); box-shadow: var(--sh-ring); }
 .sh-dialog .hint { margin-top: 8px; font-size: 13px; color: var(--sh-muted); }
 .sh-dialog .hint.err { color: var(--sh-red-d); font-weight: 700; }
+.sh-dialog .sh-link {
+  display: block; margin: 14px auto 0; padding: 6px 8px; min-height: 40px; border: 0; background: none; box-shadow: none; cursor: pointer;
+  font: inherit; font-size: 13.5px; font-weight: 800; color: var(--sh-teal-d); text-decoration: underline; text-underline-offset: 3px;
+}
 .sh-dialog :focus-visible { outline: 3px solid var(--sh-teal); outline-offset: 2px; }
 @keyframes sh-pop { from { opacity: 0; transform: translateY(10px) scale(.97); } }
 

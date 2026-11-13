@@ -122,7 +122,11 @@ export class OfflineMeta extends Base implements Meta {
     return 'ok';
   }
 
-  async secureAccount(_email: string): Promise<'sent' | 'error'> {
+  async secureAccount(_email: string, _password: string): Promise<'ok' | 'invalid' | 'taken' | 'weak' | 'error'> {
+    return 'error';
+  }
+
+  async login(_email: string, _password: string): Promise<'ok' | 'wrong' | 'error'> {
     return 'error';
   }
 
@@ -228,9 +232,16 @@ export class OnlineMeta extends Base implements Meta {
     return res;
   }
 
-  async secureAccount(email: string): Promise<'sent' | 'error'> {
-    const res = await this.api.secureAccount(email).catch(() => 'error' as const);
-    return res === 'sent' ? 'sent' : 'error';
+  async secureAccount(email: string, password: string): Promise<'ok' | 'invalid' | 'taken' | 'weak' | 'error'> {
+    const res = await this.api.secureAccount(email, password).catch(() => 'error' as const);
+    if (res === 'ok') this.refresh();
+    return res;
+  }
+
+  async login(email: string, password: string): Promise<'ok' | 'wrong' | 'error'> {
+    const res = await this.api.loginWithPassword(email, password).catch(() => 'error' as const);
+    if (res === 'ok') this.refresh();
+    return res;
   }
 
   recordLocal(): null {
